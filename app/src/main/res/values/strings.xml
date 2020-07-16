@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Handrail</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_course_participation">map_course_participation</string>
+</resources>
