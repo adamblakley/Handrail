@@ -10,10 +10,10 @@ import android.widget.TextView
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Event
 import com.orienteering.handrail.classes.Participant
-import com.orienteering.handrail.classes.ParticipantControlPerformance
-import com.orienteering.handrail.httprequests.EventService
-import com.orienteering.handrail.httprequests.ParticipantService
-import com.orienteering.handrail.httprequests.ServiceFactory
+import com.orienteering.handrail.controllers.EventController
+import com.orienteering.handrail.services.EventService
+import com.orienteering.handrail.services.ParticipantService
+import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.GeofencingConstants
 import retrofit2.Call
@@ -21,38 +21,78 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 
+private const val TAG : String = "ViewEventActivity"
+
+/**
+ * class to view selected event, join and participate in event, view results of event if completed
+ */
 class ViewEventActivity : AppCompatActivity() {
 
-    val TAG : String = "ViewEventActivity"
-
+    // textview for event name
     lateinit var eventNameTextView : TextView
+    // text view for event note
     lateinit var eventNoteTextView : TextView
+    // text view for event date
     lateinit var eventDateTextView: TextView
+    // text view for event time
     lateinit var eventTimeTextView: TextView
+    // button to join event
     lateinit var joinEventButton: Button
+    // button to participate in event
     lateinit var startEventCourse : Button
 
+    // event for information display and use in http calls to update participants list
     lateinit var event : Event
+
+    //event id passed from intent
     var eventIdPassed : Int? = null
 
+    val eventController : EventController = EventController()
+
+    // handle event callback, success/failure of retrieval of getEvent
+    private val getEventCallback = object : Callback<Event> {
+        override fun onFailure(call: Call<Event>, t: Throwable) {
+            Log.e(TAG, "Failure getting event")
+        }
+        override fun onResponse(call: Call<Event>, response: Response<Event>) {
+            Log.e(TAG, "Success getting event")
+            val eventgot: Event? = response.body()
+            if (eventgot != null) {
+                event = eventgot
+                fillEventInformation()
+                for (participant in event.participants){
+                    Log.e(TAG,"${participant.toString()}")
+                    if (participant.participantUser.userId?.equals(3)!!){
+                        joinEventButton.visibility = View.INVISIBLE
+                        startEventCourse.visibility = View.VISIBLE
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * initialise buttons and text variables, collect intent extra
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_event)
 
-        eventNameTextView = findViewById(R.id.textView_event_name_view_event)
-        eventNoteTextView = findViewById(R.id.textView_event_note_view_event)
-        eventDateTextView = findViewById(R.id.textView_event_date_event_view)
-        eventTimeTextView = findViewById(R.id.textView_event_time_event_view)
-
-        joinEventButton = findViewById(R.id.button_join_event_event_view)
-        startEventCourse = findViewById(R.id.button_start_course_view_event)
-
-        startEventCourse.visibility =View.INVISIBLE
+        createButtons()
+        intialiseTextView()
 
         this.eventIdPassed =  intent.getSerializableExtra("EVENT_ID") as Int
         getEvent()
 
+    }
 
+    /**
+     * function to create buttons from view and add on click listeners
+     */
+    private fun createButtons(){
+        joinEventButton = findViewById(R.id.button_join_event_event_view)
+        startEventCourse = findViewById(R.id.button_start_course_view_event)
 
         startEventCourse.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -67,8 +107,23 @@ class ViewEventActivity : AppCompatActivity() {
                 joinEvent()
             }
         })
+
+        startEventCourse.visibility =View.INVISIBLE
     }
 
+    /**
+     * initialise text view variables
+     */
+    private fun intialiseTextView(){
+        eventNameTextView = findViewById(R.id.textView_event_name_view_event)
+        eventNoteTextView = findViewById(R.id.textView_event_note_view_event)
+        eventDateTextView = findViewById(R.id.textView_event_date_event_view)
+        eventTimeTextView = findViewById(R.id.textView_event_time_event_view)
+    }
+
+    /**
+     * function to call for update to event participants list, user joins event
+     */
     private fun joinEvent() {
         val participant = Participant(GeofencingConstants.userTest)
         participant.participantUser.userId=3
@@ -93,38 +148,18 @@ class ViewEventActivity : AppCompatActivity() {
             })
     }
 
-
-    fun getEvent() {
+    /**
+     * get event from intent extra event id
+     */
+    fun getEvent(){
         if (intent.extras!=null){
-            ServiceFactory.makeService(EventService::class.java).read(eventIdPassed)
-                .enqueue(object : Callback<Event> {
-                    override fun onFailure(call: Call<Event>, t: Throwable) {
-                        Log.e(TAG, "Failure getting event")
-                    }
-                    override fun onResponse(
-                        call: Call<Event>,
-                        response: Response<Event>
-                    ) {
-                        Log.e(TAG, "Success getting event")
-                        val eventgot: Event? = response.body()
-                        if (eventgot != null) {
-                            event = eventgot
-                            fillEventInformation()
-                            for (participant in event.participants){
-                                Log.e(TAG,"${participant.toString()}")
-                                if (participant.participantUser.userId?.equals(3)!!){
-                                    joinEventButton.visibility = View.INVISIBLE
-                                    startEventCourse.visibility = View.VISIBLE
-                                    break
-                                }
-                            }
-                        }
-
-                    }
-                })
+            eventIdPassed?.let { eventController.retreiveByID(it,getEventCallback) }
         }
     }
 
+    /**
+     * fill event information on screen from event retrieved for getEvent
+     */
     fun fillEventInformation(){
         eventNameTextView.text = event.eventName
         eventNoteTextView.text = event.eventNote

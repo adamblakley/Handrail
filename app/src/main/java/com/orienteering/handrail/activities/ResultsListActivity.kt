@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Participant
-import com.orienteering.handrail.httprequests.ParticipantService
-import com.orienteering.handrail.httprequests.ServiceFactory
+import com.orienteering.handrail.services.ParticipantService
+import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.utilities.ResultsRecylcerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -46,7 +46,8 @@ class ResultsListActivity : AppCompatActivity() {
     }
 
     fun getParticipants(){
-        ServiceFactory.makeService(ParticipantService::class.java).readEventParticipants(1)
+        ServiceFactory.makeService(
+            ParticipantService::class.java).readEventParticipants(1)
             .enqueue(object : Callback<List<Participant>?> {
                 override fun onFailure(call: Call<List<Participant>?>, t: Throwable) {
                     Log.e(TAG, "Failure getting events")

@@ -23,7 +23,7 @@ import com.orienteering.handrail.*
 import com.orienteering.handrail.classes.Control
 import com.orienteering.handrail.classes.Course
 import com.orienteering.handrail.classes.User
-import com.orienteering.handrail.httprequests.*
+import com.orienteering.handrail.services.*
 import com.orienteering.handrail.utilities.PermissionManager
 import kotlinx.android.synthetic.main.activity_home_menu.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -34,8 +34,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
 class HomeActivity : AppCompatActivity() {
 

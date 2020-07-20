@@ -22,7 +22,14 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.orienteering.handrail.classes.*
+import com.orienteering.handrail.controllers.EventController
+import com.orienteering.handrail.controllers.PcpController
+import com.orienteering.handrail.controllers.RoutePointController
 import com.orienteering.handrail.httprequests.*
+import com.orienteering.handrail.services.EventService
+import com.orienteering.handrail.services.PcpService
+import com.orienteering.handrail.services.RoutePointService
+import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.utilities.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,33 +37,119 @@ import retrofit2.Response
 
 class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    //geofencing
-
+    //geofence builder to create fences on request
     val geofenceBuilder : GeofenceBuilder = GeofenceBuilder()
 
+    // geofencing client to manage geofences
     lateinit var geofencingClient: GeofencingClient
 
+    // pending intent to handle geofence transitions
     val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
         PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
+    // event controller to manage service requests
+    val eventController:EventController = EventController()
+
+    // pcp controller to manage service requests
+    val pcpController:PcpController = PcpController()
+
+    // route point controller to manage service requests
+    val routePointController: RoutePointController = RoutePointController()
+
+    // manage response of getEvents
+    val getEventsCallback = object : Callback<Event>{
+        override fun onFailure(call: Call<Event>, t: Throwable) {
+            Log.e(TAG, "Failure getting event")
+        }
+
+        override fun onResponse(
+            call: Call<Event>,
+            response: Response<Event>
+        ) {
+            Log.e(TAG, "Success getting event")
+            val eventgot: Event? = response.body()
+            if (eventgot != null) {
+
+                for (participant in eventgot.participants){
+                    if (participant.participantUser.userId==3){
+                        myParticipant=participant;
+                        myParticipant.startTime = System.currentTimeMillis()
+                    }
+                }
+
+                for (control in eventgot.eventCourse.courseControls){
+                    if (control.controlPosition==0){
+                        myControl = control
+                    }
+                }
+
+                event = eventgot
+                Log.e(TAG,event.toString())
+                for (control in event.eventCourse.courseControls){
+                    control.createLatLng()
+                }
+            }
+            addNextControl()
+        }
+    }
+
+    // manage response of upload performance
+    val uploadParticipantControlPerformanceCallback = object : Callback<StatusResponseEntity<List<ParticipantControlPerformance>>?> {
+
+        override fun onFailure(call: Call<StatusResponseEntity<List<ParticipantControlPerformance>>?>, t: Throwable) {
+            Log.e(TAG,"Failure adding pcps")
+        }
+
+        override fun onResponse(
+            call: Call<StatusResponseEntity<List<ParticipantControlPerformance>>?>,
+            response: Response<StatusResponseEntity<List<ParticipantControlPerformance>>?>
+        ) {
+            Log.e(TAG,"Success adding pcps")
+        }
+    }
+
+    // manage reponse of upload route points
+    val uploadRoutePointsCallback = object : Callback<StatusResponseEntity<List<RoutePoint>>?> {
+
+        override fun onFailure(call: Call<StatusResponseEntity<List<RoutePoint>>?>, t: Throwable) {
+            Log.e(TAG,"Failure adding RoutePoints")
+        }
+
+        override fun onResponse(
+            call: Call<StatusResponseEntity<List<RoutePoint>>?>,
+            response: Response<StatusResponseEntity<List<RoutePoint>>?>
+        ) {
+            Log.e(TAG,"Success adding RoutePoints")
+        }
+    }
+
+    // google map view
     private lateinit var courseMap: GoogleMap
 
+    // course list listview
     private lateinit var courseList : ListView
 
+    // button for results upload
     private lateinit var uploadResultsButton : Button
 
+    //button for results viewing
     private lateinit var viewResultsButton: Button
 
+    //list of unique rest ids for geofences
     var geoFencingRequestIds = mutableListOf<String>()
 
-    var myList = mutableListOf<String>()
+    // list of performance times
+    var performanceList = mutableListOf<String>()
 
+    // event for course
     lateinit var event : Event
 
+    // next control for participant
     lateinit var myControl : Control
 
+    //adapt performance results to list
     lateinit var arrayAdapter : ArrayAdapter<String>
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -70,8 +163,10 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     //Last Location
     private lateinit var lastLocation: Location
 
+    //current participant
     lateinit var myParticipant : Participant
 
+    // geofence performance calculator
     val geofencePerformanceCalculator = GeofencePerformanceCalculator()
 
     /**
@@ -103,72 +198,15 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_course_participation) as SupportMapFragment
 
-
-
-        uploadResultsButton = findViewById(R.id.button_upload_results_course_participation)
-        viewResultsButton =findViewById(R.id.button_view_results_course_participation)
-
-        uploadResultsButton.visibility= View.INVISIBLE
-        viewResultsButton.visibility=View.INVISIBLE
-
-        uploadResultsButton?.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                uploadParticipantControlPerformances()
-                uploadRoutePoints()
-            }
-        })
+        createButtons()
 
         if(intent.extras!=null){
-            Log.e(TAG,"Creating")
 
-            val eventId = intent.getSerializableExtra("EVENT_ID") as Int
-
-            ServiceFactory.makeService(EventService::class.java).read(eventId)
-                .enqueue(object : retrofit2.Callback<Event> {
-                    override fun onFailure(call: Call<Event>, t: Throwable) {
-                        Log.e(TAG, "Failure getting event")
-                    }
-
-                    override fun onResponse(
-                        call: Call<Event>,
-                        response: Response<Event>
-                    ) {
-                        Log.e(TAG, "Success getting event")
-                        val eventgot: Event? = response.body()
-                        if (eventgot != null) {
-
-                            for (participant in eventgot.participants){
-                                if (participant.participantUser.userId==3){
-                                    myParticipant=participant;
-                                    myParticipant.startTime = System.currentTimeMillis()
-                                }
-                            }
-
-                            for (control in eventgot.eventCourse.courseControls){
-                                if (control.controlPosition==0){
-                                    myControl = control
-                                }
-                            }
-
-                            event = eventgot
-                            Log.e(TAG,event.toString())
-                            for (control in event.eventCourse.courseControls){
-                                control.createLatLng()
-                            }
-                        }
-                        /**
-                         * Incorrect Position
-                         * Move to onMapReady
-                         * Add execute to HTTP call. Call not completing before events below take place in OnMapReady
-                         */
-                        addNextControl()
-                    }
-                })
-
+            getEvents()
 
             courseList = findViewById(com.orienteering.handrail.R.id.list_course_participation)
 
-            arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,myList)
+            arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,performanceList)
 
             courseList.adapter = arrayAdapter
 
@@ -195,10 +233,37 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
             createLocationRequest()
 
         }  else {
-            Log.e(TAG,"Event not found")
+            Log.e(TAG,"Error: Event not found")
         }
 
 
+    }
+
+
+    /**
+     * Function to create buttons for view and map uses
+     */
+    fun createButtons(){
+        uploadResultsButton = findViewById(R.id.button_upload_results_course_participation)
+        viewResultsButton =findViewById(R.id.button_view_results_course_participation)
+
+        uploadResultsButton.visibility= View.INVISIBLE
+        viewResultsButton.visibility=View.INVISIBLE
+
+        uploadResultsButton?.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                uploadParticipantControlPerformances()
+                uploadRoutePoints()
+            }
+        })
+    }
+
+    /**
+     * Function to get event by intent extra event ID
+     */
+    fun getEvents(){
+        val eventId = intent.getSerializableExtra("EVENT_ID") as Int
+        eventController.retreiveByID(eventId,getEventsCallback)
     }
 
     /**
@@ -213,7 +278,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         courseMap.uiSettings.setAllGesturesEnabled(false)
 
         setUpMap()
-
     }
 
     /**
@@ -340,7 +404,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             makeButtonVisibile(uploadResultsButton)
         }
-
     }
 
     private fun makeButtonVisibile(button : Button){
@@ -386,44 +449,20 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val timeString = geofencePerformanceCalculator.convertMilliToMinutes(time)
 
-        myList.add("Time/Minutes: $timeString")
-        arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,myList)
+        performanceList.add("Time/Minutes: $timeString")
+        arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,performanceList)
         courseList.adapter = arrayAdapter
     }
 
+
     fun uploadParticipantControlPerformances(){
-
-        ServiceFactory.makeService(PcpService::class.java).createMany(myParticipant.participantId,myParticipant.participantControlPerformances).enqueue(object :
-            Callback<StatusResponseEntity<List<ParticipantControlPerformance>>?> {
-            override fun onFailure(call: Call<StatusResponseEntity<List<ParticipantControlPerformance>>?>, t: Throwable) {
-                Log.e(TAG,"Failure adding pcps")
-            }
-
-            override fun onResponse(
-                call: Call<StatusResponseEntity<List<ParticipantControlPerformance>>?>,
-                response: Response<StatusResponseEntity<List<ParticipantControlPerformance>>?>
-            ) {
-                Log.e(TAG,"Success adding pcps")
-            }
-        })
+       pcpController.create(myParticipant.participantId,myParticipant.participantControlPerformances,uploadParticipantControlPerformanceCallback)
     }
 
     fun uploadRoutePoints(){
-
-        ServiceFactory.makeService(RoutePointService::class.java).createMany(myParticipant.participantId,myParticipant.routePoints).enqueue(object :
-            Callback<StatusResponseEntity<List<RoutePoint>>?> {
-            override fun onFailure(call: Call<StatusResponseEntity<List<RoutePoint>>?>, t: Throwable) {
-                Log.e(TAG,"Failure adding RoutePoints")
-            }
-
-            override fun onResponse(
-                call: Call<StatusResponseEntity<List<RoutePoint>>?>,
-                response: Response<StatusResponseEntity<List<RoutePoint>>?>
-            ) {
-                Log.e(TAG,"Success adding RoutePoints")
-            }
-        })
+        routePointController.create(myParticipant.participantId,myParticipant.routePoints,uploadRoutePointsCallback)
     }
+
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -29,7 +29,7 @@ import com.orienteering.handrail.dialogs.EventDialogListener
 import com.orienteering.handrail.dialogs.CreateControlDialog
 import com.orienteering.handrail.dialogs.ExampleDialogListener
 
-import com.orienteering.handrail.utilities.CourseCreator
+import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.utilities.GPXBuilder
 import com.orienteering.handrail.utilities.PermissionManager
 
@@ -70,6 +70,9 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
     // map fragment
     private lateinit var mapFragment: SupportMapFragment
 
+    // course Controller to initiate service calls
+    lateinit var courseController: CourseController
+
     //control position
     var controlPosition : Int = 0
 
@@ -100,23 +103,21 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
         //create fusedLocationClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        // initialise course Controller
+        this.courseController=CourseController()
+
         //map buttons and add listeners
         val btnAddMarker = findViewById<Button>(com.orienteering.handrail.R.id.btn_add_marker)
         val btnSaveCourse = findViewById<Button>(com.orienteering.handrail.R.id.btn_save_course)
-
 
         btnAddMarker.setOnClickListener(){
                 Log.e(TAG,"BUTTON PRESSED")
                 openDialog()
         }
 
-
         btnSaveCourse.setOnClickListener() {
             Log.e(TAG,"Save pressed")
-
             openEventDialog()
-
-
         }
 
         // fused location provider invokes the LocationCallback.onLocationResult() method. Incoming argument contains a  Locaiton obkect containing location's lat and lng
@@ -174,6 +175,7 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
                     val currentLatLng = LatLng(location.latitude, location.longitude)
 
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+
                 } else {
                     // cannot find location
                     Log.e(TAG,"Unable to find location -> Location = null")
@@ -259,7 +261,6 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
                 Toast.makeText(this@CreateMapsActivity, "Unable to find current location", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     /**
@@ -271,7 +272,7 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
         val course = Course(controlsForCourse,name)
 
         Log.e(TAG, "${course.courseDate}")
-        CourseCreator.uploadCourse(course, this)
+        courseController.uploadCourse(course, this)
 
         if(PermissionManager.checkPermission(this,this@CreateMapsActivity, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE),PermissionManager.MULTIPLE_REQUEST_CODES)
         ){

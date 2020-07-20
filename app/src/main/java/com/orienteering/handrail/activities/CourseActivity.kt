@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Course
-import com.orienteering.handrail.httprequests.CourseService
-import com.orienteering.handrail.httprequests.ServiceFactory
+import com.orienteering.handrail.services.CourseService
+import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.utilities.RecyclerViewAdapter
 
 import retrofit2.Call
@@ -54,7 +54,8 @@ class CourseActivity : AppCompatActivity() {
 
          val courseIdPassed =  intent.getSerializableExtra("COURSE_ID") as Int
 
-        ServiceFactory.makeService(CourseService::class.java).read(courseIdPassed)
+        ServiceFactory.makeService(
+            CourseService::class.java).read(courseIdPassed)
             .enqueue(object : retrofit2.Callback<Course> {
                 override fun onFailure(call: Call<Course>, t: Throwable) {
                     Log.e(TAG, "Failure getting course")

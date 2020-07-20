@@ -1,6 +1,7 @@
-package com.orienteering.handrail.httprequests
+package com.orienteering.handrail.services
 
 import com.orienteering.handrail.classes.Control
+import com.orienteering.handrail.httprequests.StatusResponseEntity
 import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.http.Body
@@ -12,13 +13,13 @@ interface ControlService {
 
 
     @POST("controls")
-    fun create(@Body control: Control): Call<StatusResponseEntity<Control>>
+    fun <Control> create(@Body control: Class<Control>): Call<StatusResponseEntity<Control>>
 
     @POST("controls")
     fun createMany(@Body controls :List<Control>): Call<StatusResponseEntity<List<Control>>>
 
     @GET("controls/{id}")
-    fun read(@Path("id") controlID : Int) : Observable<Control>
+    fun <Control> read(@Path("id") controlID : Int) : Observable<Control>
 
     @GET("controls")
     fun readAll(): Call<List<Control>>

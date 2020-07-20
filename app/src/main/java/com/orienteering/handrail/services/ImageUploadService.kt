@@ -1,4 +1,4 @@
-package com.orienteering.handrail.httprequests
+package com.orienteering.handrail.services
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
