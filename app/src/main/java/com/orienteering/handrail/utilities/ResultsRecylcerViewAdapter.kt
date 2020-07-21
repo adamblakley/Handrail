@@ -14,7 +14,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.ViewEventActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ResultsRecylcerViewAdapter(participantNames : MutableList<String>,participantTimes : MutableList<String>,participantImages : MutableList<String>,participantIds : List<Int?>,participantPositions : MutableList<String>, context : Context ) : RecyclerView.Adapter<ResultsRecylcerViewAdapter.ViewHolder>() {
+class ResultsRecylcerViewAdapter(participantNames : MutableList<String>,participantTimes : MutableList<String>,participantImages : MutableList<String>,participantIds : List<Int?>,participantPositions : MutableList<Int>, context : Context ) : RecyclerView.Adapter<ResultsRecylcerViewAdapter.ViewHolder>() {
 
     private val TAG : String = "ResultsAdapter"
 
@@ -22,7 +22,7 @@ class ResultsRecylcerViewAdapter(participantNames : MutableList<String>,particip
     var participantTimes = mutableListOf<String>()
     var participantImages = mutableListOf<String>()
     var participantIds = mutableListOf<Int>()
-    var participantPositions = mutableListOf<String>()
+    var participantPositions = mutableListOf<Int>()
     var context : Context
 
     init {
@@ -57,9 +57,8 @@ class ResultsRecylcerViewAdapter(participantNames : MutableList<String>,particip
 
         holder.name.text=participantNames[position]
         holder.time.text=participantTimes[position]
-        holder.position.text=participantPositions[position]
+        holder.position.text=participantPositions[position].toString()
         holder.parentLayout.setOnClickListener(object : View.OnClickListener {
-
             override fun onClick(view: View?) {
                 Log.e(TAG,"onClick : clicked ${participantNames[position]}")
 
@@ -68,7 +67,6 @@ class ResultsRecylcerViewAdapter(participantNames : MutableList<String>,particip
                 intent.putExtra("PARTICIPANT_ID", participantIds[position])
 
                 view?.context?.startActivity(intent)
-
             }
         })
 

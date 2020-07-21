@@ -11,7 +11,6 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Event
 import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.controllers.EventController
-import com.orienteering.handrail.services.EventService
 import com.orienteering.handrail.services.ParticipantService
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.httprequests.StatusResponseEntity
@@ -40,6 +39,8 @@ class ViewEventActivity : AppCompatActivity() {
     lateinit var joinEventButton: Button
     // button to participate in event
     lateinit var startEventCourse : Button
+    // button to view results
+    lateinit var viewEventResults : Button
 
     // event for information display and use in http calls to update participants list
     lateinit var event : Event
@@ -60,12 +61,19 @@ class ViewEventActivity : AppCompatActivity() {
             if (eventgot != null) {
                 event = eventgot
                 fillEventInformation()
-                for (participant in event.participants){
-                    Log.e(TAG,"${participant.toString()}")
-                    if (participant.participantUser.userId?.equals(3)!!){
-                        joinEventButton.visibility = View.INVISIBLE
-                        startEventCourse.visibility = View.VISIBLE
-                        break
+                if (event.eventStatus.equals(2)){
+                    startEventCourse.visibility=View.INVISIBLE
+                    joinEventButton.visibility=View.INVISIBLE
+                    viewEventResults.visibility=View.VISIBLE
+                } else{
+                    for (participant in event.participants){
+                        Log.e(TAG,"${participant.toString()}")
+                        if (participant.participantUser.userId?.equals(3)!!){
+                            joinEventButton.visibility = View.INVISIBLE
+                            viewEventResults.visibility = View.INVISIBLE
+                            startEventCourse.visibility = View.VISIBLE
+                            break
+                        }
                     }
                 }
             }
@@ -93,12 +101,13 @@ class ViewEventActivity : AppCompatActivity() {
     private fun createButtons(){
         joinEventButton = findViewById(R.id.button_join_event_event_view)
         startEventCourse = findViewById(R.id.button_start_course_view_event)
+        viewEventResults = findViewById(R.id.button_view_results)
 
         startEventCourse.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@ViewEventActivity, CourseParticipationActivity::class.java).apply {}
-                intent.putExtra("EVENT_ID", event.eventId)
-                startActivity(intent)
+                val intentParticipate = Intent(this@ViewEventActivity, CourseParticipationActivity::class.java).apply {}
+                intentParticipate.putExtra("EVENT_ID", event.eventId)
+                startActivity(intentParticipate)
             }
         })
 
@@ -108,7 +117,16 @@ class ViewEventActivity : AppCompatActivity() {
             }
         })
 
+        viewEventResults.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                val intentResults = Intent(this@ViewEventActivity,ResultsListActivity::class.java).apply {  }
+                intentResults.putExtra("EVENT_ID",event.eventId)
+                startActivity(intentResults)
+            }
+        })
+        viewEventResults.visibility=View.INVISIBLE
         startEventCourse.visibility =View.INVISIBLE
+        joinEventButton.visibility=View.INVISIBLE
     }
 
     /**

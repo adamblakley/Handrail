@@ -25,10 +25,8 @@ class GeofencePerformanceCalculator {
     }
 
     fun convertMilliToMinutes(time : Long) : String{
-
         val minutes : Long = (time/1000) / 60
         val seconds : Int = ((time/1000) % 60).toInt()
-
         return String.format("%d:%d",minutes,seconds)
 }
 

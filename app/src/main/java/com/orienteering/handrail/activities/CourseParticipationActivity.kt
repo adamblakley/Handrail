@@ -407,7 +407,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun makeButtonVisibile(button : Button){
-        button.visibility= View.VISIBLE
+        button.visibility = View.VISIBLE
     }
 
 

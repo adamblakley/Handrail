@@ -8,13 +8,17 @@ class RoutePoint(routePointPosition: Int, routePointLatitude : Double, routePoin
     private var routePointPosition: Int
     private var routePointLatitude : Double
     private var routePointLongitude : Double
-    private var latlng : LatLng
+    var latlng : LatLng
 
     init{
         this.routePointPosition=routePointPosition
         this.routePointLatitude=routePointLatitude
         this.routePointLongitude=routePointLongitude
-        this.latlng = LatLng(this.routePointLongitude,this.routePointLatitude)
+        this.latlng = LatLng(this.routePointLatitude,this.routePointLongitude)
+    }
+
+    fun createLatLng(){
+        this.latlng=LatLng(this.routePointLatitude,this.routePointLongitude)
     }
 
     override fun toString(): String {

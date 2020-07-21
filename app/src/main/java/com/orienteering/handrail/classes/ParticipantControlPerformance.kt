@@ -12,7 +12,6 @@ class ParticipantControlPerformance(controlTime : Long, control : Control) {
 
     }
 
-
     override fun toString(): String {
         return "ParticipantControlPerformance(participantControlId=$pcpId, controlTime=$controlTime, control=$pcpControl)"
     }

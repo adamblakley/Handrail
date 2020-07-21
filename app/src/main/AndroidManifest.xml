@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.ResultsListActivity"></activity>
+        <activity android:name=".activities.ViewTopRoutesActivity"></activity>
+        <activity android:name=".activities.ResultsListActivity" />
         <activity android:name=".activities.ViewEventActivity" />
         <activity android:name=".activities.CreateEventActivity" />
         <activity android:name=".activities.CourseActivity" />
