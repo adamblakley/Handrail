@@ -12,6 +12,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.utilities.MapUtilities
 import com.orienteering.handrail.utilities.PermissionManager
 import com.orienteering.handrail.utilities.ResultsRecylcerViewAdapter
 import retrofit2.Call
@@ -42,6 +43,8 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
     var mImageUrls = mutableListOf<String>()
     // geofence performance calculator to convert performance times
     val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+    // map utilities such as camera and movement
+    val mapUtilities = MapUtilities()
 
     // check if running Q or later
     // additional permission required if so
@@ -70,7 +73,7 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
                 addRoutes(participants)
-                determineBounds(participants)
+                routesMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapUtilities.determineNESW(mapUtilities.getAllParticipantRoutePoints(participants)),100))
                 addMarkers()
                 initRecyclerView()
             }
@@ -173,40 +176,6 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         }
     }
-
-    fun determineBounds(participants: List<Participant>){
-        var allLatLngs : MutableList<LatLng> = mutableListOf()
-        for (participant in participants){
-            for (routePoint in participant.routePoints){
-                allLatLngs.add(routePoint.latlng)
-            }
-        }
-        routesMap.animateCamera(CameraUpdateFactory.newLatLngBounds(determineNESW(allLatLngs),100))
-    }
-
-    fun determineNESW(latlngs : MutableList<LatLng>) :LatLngBounds{
-        var latNE : Double? = null
-        var latSW : Double? = null
-        var lngNE : Double? = null
-        var lngSW : Double? = null
-
-        for (latlng in latlngs){
-            if (latNE==null||latSW==null||lngNE==null||lngSW==null){
-                latSW = latlng.latitude
-                latNE  = latlng.latitude
-                lngSW = latlng.longitude
-                lngNE = latlng.longitude
-            } else {
-                if (latlng.latitude > latNE) latNE = latlng.latitude;
-                if (latlng.latitude < latSW) latSW = latlng.latitude;
-                if (latlng.longitude > lngNE) lngNE = latlng.longitude;
-                if (latlng.longitude < lngSW) lngSW = latlng.longitude;
-            }
-        }
-
-        return LatLngBounds(LatLng(latSW!!, lngSW!!),LatLng(latNE!!,lngNE!!))
-    }
-
 
     /**
      * initialises recycler view of participants

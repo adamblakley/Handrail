@@ -43,6 +43,7 @@ class HomeActivity : AppCompatActivity() {
 
     var button7: Button? = null
     var button8: Button? = null
+    var button9: Button? = null
 
     lateinit var imageview1: ImageView
 
@@ -61,7 +62,17 @@ class HomeActivity : AppCompatActivity() {
         button7 = findViewById<Button>(R.id.btn_take_photo)
         button8 = findViewById<Button>(R.id.btn_upload_photo)
 
+        button9 = findViewById<Button>(R.id.btn_login)
+
         imageview1 = findViewById<ImageView>(R.id.imageview_myphoto)
+
+        button9?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    val intent = Intent(this@HomeActivity, LoginActivity::class.java).apply {}
+                    startActivity(intent)
+                }
+
+            })
 
         button1?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
