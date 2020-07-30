@@ -24,6 +24,8 @@ import com.orienteering.handrail.classes.Control
 import com.orienteering.handrail.classes.Course
 import com.orienteering.handrail.classes.User
 import com.orienteering.handrail.services.*
+import com.orienteering.handrail.utilities.App
+import com.orienteering.handrail.utilities.ImageSelect
 import com.orienteering.handrail.utilities.PermissionManager
 import kotlinx.android.synthetic.main.activity_home_menu.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -47,6 +49,8 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var imageview1: ImageView
 
+
+
     private val IMAGE_CAPTURE_CODE = 1001
     private val PICK_IMAGE_CODE = 1002
     var image_uri: Uri? = null
@@ -62,13 +66,18 @@ class HomeActivity : AppCompatActivity() {
         button7 = findViewById<Button>(R.id.btn_take_photo)
         button8 = findViewById<Button>(R.id.btn_upload_photo)
 
-        button9 = findViewById<Button>(R.id.btn_login)
+        button9 = findViewById<Button>(R.id.btn_logout)
 
         imageview1 = findViewById<ImageView>(R.id.imageview_myphoto)
 
         button9?.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    val intent = Intent(this@HomeActivity, LoginActivity::class.java).apply {}
+
+                    val sharedPreferences = App.sharedPreferences
+                    val sharedPreferencesEditor = sharedPreferences.edit()
+                    sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
+                    sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
+                    val intent = Intent(this@HomeActivity, WelcomeActivity::class.java).apply {}
                     startActivity(intent)
                 }
 
@@ -270,19 +279,6 @@ class HomeActivity : AppCompatActivity() {
         val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
 
         Log.e(TAG,"$body")
-        ServiceFactory.makeService(ImageUploadService::class.java).upload(body)
-            .enqueue(object : Callback<ResponseBody> {
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e(TAG,"Upload failure ${t.message}")
-                }
-
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    Log.e(TAG,"Upload success")
-                }
-            })
     }
 
     fun checkExternalStoragePermission() : Boolean{

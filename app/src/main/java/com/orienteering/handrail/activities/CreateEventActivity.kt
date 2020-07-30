@@ -1,12 +1,19 @@
 package com.orienteering.handrail.activities
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
+import android.content.Intent
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,13 +21,18 @@ import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Course
-import com.orienteering.handrail.classes.Event
+import com.orienteering.handrail.classes.*
 import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.controllers.EventController
-import com.orienteering.handrail.utilities.GeofencingConstants
+import com.orienteering.handrail.utilities.ImageSelect
+import com.orienteering.handrail.utilities.PermissionManager
+import kotlinx.android.synthetic.main.activity_create_event.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
+import java.io.File
 import java.util.*
 
 /**
@@ -50,10 +62,19 @@ class CreateEventActivity : AppCompatActivity() {
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
 
+    val imageSelect : ImageSelect = ImageSelect(this,this)
+
+    // Image capture codes and uri for image selection
+    private val IMAGE_CAPTURE_CODE = 1001
+    private val PICK_IMAGE_CODE = 1002
+    var image_uri: Uri? = null
+
     // textview event name
     lateinit var eventNameDisplay : TextView
     // textview event description
     lateinit var eventDescriptionDisplay : TextView
+    // image view for event image
+    lateinit var eventImageView : ImageView
 
     // button to select photo for event
     var buttonUpdatePhoto: Button? = null
@@ -138,6 +159,19 @@ class CreateEventActivity : AppCompatActivity() {
 
         buttonUpdatePhoto?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
+                if (PermissionManager.checkPermission(
+                        this@CreateEventActivity,
+                        this@CreateEventActivity,
+                        arrayOf(
+                            android.Manifest.permission.CAMERA,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ),
+                        PermissionManager.MULTIPLE_REQUEST_CODES
+                    )
+                ) {
+                    image_uri=imageSelect.selectImage()
+                }
             }
         })
 
@@ -182,6 +216,7 @@ class CreateEventActivity : AppCompatActivity() {
      * function to initiate text displays
      */
     fun initiateText(){
+        eventImageView = findViewById(R.id.imageview_create_event)
         eventNameDisplay = findViewById(R.id.text_event_name_display_create)
         eventDescriptionDisplay  = findViewById(R.id.text_event_description_display_create)
 
@@ -233,17 +268,100 @@ class CreateEventActivity : AppCompatActivity() {
      * function to call service to upload event
      */
     fun createEvent(){
+
+        val imageMultipartBodyPart : MultipartBody.Part? = image_uri?.let { createImageMultipartBody(it) }
+
+
+
         val eventDateString = "$eventDate $eventTime"
-        Log.e(TAG,eventDateString)
         if (eventName!=null && eventDescription!=null){
             val event = Event(eventName.toString(),eventcourse,eventDateString,"2020-06-19 14:27:28",eventDescription.toString())
-            event.eventOrganiser=GeofencingConstants.userTest
-            event.eventOrganiser.userId=3
             event.eventStatus=1 as Integer
-
-            eventController.create(event)
+            if (imageMultipartBodyPart != null) {
+                eventController.create(event,imageMultipartBodyPart )
+            } else {
+                Log.e(TAG,"Imagemultipart body null")
+            }
         }
+    }
 
+
+    /**
+     * Create image upload Request and return
+     *
+    */
+    fun createImageMultipartBody(fileUri : Uri) : MultipartBody.Part{
+        val file = File(imageSelect.getImagePath(fileUri))
+
+        val requestBody : RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let {
+            it
+                .toMediaTypeOrNull()
+        },file)
+
+        val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
+        return body
+    }
+
+    /**
+     * On Activity Result for image select
+     * Displays image view of event
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.e(TAG, "Displaying Photo")
+        if (requestCode != Activity.RESULT_CANCELED) {
+            when (requestCode) {
+                1001 -> {
+                    Log.e(TAG, "Request 1001")
+                    if (resultCode == Activity.RESULT_OK && data != null) {
+                        Log.e(TAG, "Result ok, data not null")
+                        val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
+                        imageview_create_event.setImageBitmap(selectedImage)
+                    } else {
+                        Log.e(TAG,"Result: $resultCode  Data: $data")
+                    }
+                }
+                1002 -> {
+                    val permission = imageSelect.checkExternalStoragePermission()
+                    Log.e("FileWriter","Permission check = $permission")
+
+                    Log.e(TAG, "Request 1002")
+                    if (resultCode == Activity.RESULT_OK && data != null) {
+                        Log.e(TAG,"result ok and data doesn't equal null")
+                        val selectedImage: Uri? = data.data
+                        image_uri = data.data
+                        var filePathColumn = arrayOf<String>(MediaStore.Images.Media.DATA)
+                        if (selectedImage != null) {
+                            val cursor: Cursor? = contentResolver.query(
+                                selectedImage,
+                                filePathColumn,
+                                null,
+                                null,
+                                null
+                            )
+                            if (cursor != null) {
+                                cursor.moveToFirst()
+
+                                val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+                                val picturePath: String = cursor.getString(columnIndex)
+                                imageview_create_event.setImageBitmap(
+                                    BitmapFactory.decodeFile(
+                                        picturePath
+                                    )
+                                )
+                                cursor.close()
+                            }
+                        }
+                    }
+                }
+
+            }
+        } else {
+            Log.e(TAG, "Request cancelled...")
+        }
     }
 
 }

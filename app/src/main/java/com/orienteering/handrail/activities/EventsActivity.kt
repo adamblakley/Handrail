@@ -48,7 +48,7 @@ class EventsActivity : AppCompatActivity() {
                     mNames.add(event.eventName)
                     mNotes.add(event.eventNote)
                     mIds.add(event.eventId)
-                    Log.e(TAG,"event id = ${event.toString()}")
+                    mImageUrls.add(event.eventPhotograph.photoPath)
                 }
             }
             initRecyclerView()
@@ -61,9 +61,7 @@ class EventsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_events)
-
         initImageBitmaps()
-
     }
 
     /**

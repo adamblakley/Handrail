@@ -5,6 +5,7 @@ import com.orienteering.handrail.classes.Event
 import com.orienteering.handrail.services.EventService
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.httprequests.StatusResponseEntity
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,8 +19,8 @@ class EventController {
         eventService = ServiceFactory.makeService(EventService::class.java)
     }
 
-    fun create(event: Event) {
-        eventService.create(event).enqueue(object :
+    fun create(event : Event, file : MultipartBody.Part) {
+        eventService.create(event,file).enqueue(object :
             Callback<StatusResponseEntity<Event>?> {
             override fun onFailure(call: Call<StatusResponseEntity<Event>?>, t: Throwable) {
                 Log.e(TAG, "Failure adding Event")

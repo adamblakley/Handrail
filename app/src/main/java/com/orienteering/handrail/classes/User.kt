@@ -2,11 +2,9 @@ package com.orienteering.handrail.classes
 
 import java.io.Serializable
 
-class User(userCreated : String, userEmail : String, userPassword : String, userFirstName : String, userLastName : String, userDob : String, userBio : String, userType : Int)  : Serializable {
+class User(userEmail : String, userPassword : String, userFirstName : String, userLastName : String, userDob : String, userBio : String)  : Serializable {
 
-    var userId : Int? = null
-
-    lateinit var userCreated : String
+    var userId : Long? = null
 
     lateinit var userEmail : String
 
@@ -23,20 +21,17 @@ class User(userCreated : String, userEmail : String, userPassword : String, user
     var userType : Int? = null
 
     init{
-
-        this.userCreated=userCreated
         this.userEmail=userEmail
         this.userFirstName = userFirstName
         this.userLastName=userLastName
         this.userDob = userDob
         this.userBio = userBio
-        this.userType=userType
         this.userPassword=userPassword
 
     }
 
     override fun toString(): String {
-        return "User(userId=$userId, userCreated='$userCreated', userEmail='$userEmail', userPassword='$userPassword', userFirstName='$userFirstName', userLastName='$userLastName', userDOB='$userDob', userBio='$userBio', userType=$userType)"
+        return "User(userId=$userId, userEmail='$userEmail', userPassword='$userPassword', userFirstName='$userFirstName', userLastName='$userLastName', userDOB='$userDob', userBio='$userBio')"
     }
 
 

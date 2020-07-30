@@ -1,6 +1,8 @@
 package com.orienteering.handrail.utilities
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.location.Location
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.maps.model.LatLng
@@ -32,7 +34,7 @@ internal object GeofencingConstants {
 
     val locationControls = ArrayList<Location>()
 
-val userTest : User = User("2020-06-19T14:27:28.054+00:00","test@test","testpass","test","testing","2020-06-19T14:27:28.054+00:00","testbio",1)
+val userTest : User = User("test@test","testpass","test","testing","2020-06-19T14:27:28.054+00:00","testbio")
 
     const val GEOFENCE_RADIUS_IN_METERS = 20f
     const val GEOFENCE_LOITERING_DELAY_IN_MS = 100

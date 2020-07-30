@@ -53,7 +53,7 @@ class CourseController {
         call.enqueue(callback)
     }
 
-    fun retrieveAllByUser(userId: Int, callback: Callback<List<Course>?>){
+    fun retrieveAllByUser(userId: Long, callback: Callback<List<Course>?>){
         val call = courseService.readAllByUser(userId)
         call.enqueue(callback)
     }

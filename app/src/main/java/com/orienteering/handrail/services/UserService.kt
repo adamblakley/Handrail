@@ -12,7 +12,7 @@ interface UserService {
     fun create(@Body user: User): Call<StatusResponseEntity<User>>
 
     @GET("users/{id}")
-    fun read(@Path("id") userID : Int) : Observable<User>
+    fun read(@Path("id") userID : Long) : Observable<User>
 
     @GET("users")
     fun readAll(): Call<List<User>>

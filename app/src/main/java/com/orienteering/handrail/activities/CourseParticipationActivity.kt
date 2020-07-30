@@ -73,7 +73,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
             if (eventgot != null) {
 
                 for (participant in eventgot.participants){
-                    if (participant.participantUser.userId==3){
+                    if (participant.participantUser.userId?.equals(3)!!){
                         myParticipant=participant;
                         myParticipant.startTime = System.currentTimeMillis()
                     }

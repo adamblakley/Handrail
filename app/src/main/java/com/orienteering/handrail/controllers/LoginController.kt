@@ -1,14 +1,12 @@
 package com.orienteering.handrail.controllers
 
-import android.util.Log
 import com.orienteering.handrail.httprequests.LoginRequest
 import com.orienteering.handrail.httprequests.LoginResponse
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.LoginService
 import com.orienteering.handrail.services.ServiceFactory
-import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Response
+
 
 /**
  * Control login service requests
@@ -28,6 +26,16 @@ class LoginController {
      */
     fun login(loginRequest:LoginRequest, callback: Callback<StatusResponseEntity<LoginResponse>>){
         val call = loginService.login(loginRequest)
+        call.enqueue(callback)
+    }
+
+    /**
+     * Check user is currently authenticated
+     *
+     * @param callback
+     */
+    fun checkLogin(callback: Callback<StatusResponseEntity<Boolean>>){
+        val call = loginService.checkLoggedIn()
         call.enqueue(callback)
     }
 }

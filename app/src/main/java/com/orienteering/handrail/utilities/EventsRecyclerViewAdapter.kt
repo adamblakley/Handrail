@@ -10,6 +10,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.CourseActivity
 import com.orienteering.handrail.activities.ViewEventActivity
@@ -48,10 +49,13 @@ class EventsRecyclerViewAdapter(eventNames : MutableList<String>, eventNotes: Mu
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.e(TAG,"onBindViewHolder: Called")
 
+        val options : RequestOptions  = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+
         if (eventImages.size>=1){
             Glide.with(context)
                 .asBitmap()
                 .load(eventImages.get(position))
+                .apply(options)
                 .into(holder.image)
         }
 
