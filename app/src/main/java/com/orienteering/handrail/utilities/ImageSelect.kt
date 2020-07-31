@@ -57,12 +57,7 @@ class ImageSelect(activity: Activity, context: Context){
             options,
             DialogInterface.OnClickListener() { dialogInterface: DialogInterface, item: Int ->
                 if (options[item].equals("Take Photo")) {
-                    val values = ContentValues()
-                    values.put(MediaStore.Images.Media.TITLE, "New Picture")
-                    values.put(MediaStore.Images.Media.TITLE, "From the Camera")
-                    image_uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    activity.startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE)
+                    image_uri=openCamera()
                 } else if (options[item].equals("Choose from Gallery")) {
                     val pickPhotoIntent = Intent(
                         Intent.ACTION_PICK,
@@ -75,6 +70,16 @@ class ImageSelect(activity: Activity, context: Context){
             })
         builder.show()
         return image_uri
+    }
+
+    fun openCamera() : Uri? {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+        values.put(MediaStore.Images.Media.TITLE, "From the Camera")
+        val image_uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        activity.startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE)
+        return  image_uri
     }
 
     /**

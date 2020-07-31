@@ -19,20 +19,9 @@ class EventController {
         eventService = ServiceFactory.makeService(EventService::class.java)
     }
 
-    fun create(event : Event, file : MultipartBody.Part) {
-        eventService.create(event,file).enqueue(object :
-            Callback<StatusResponseEntity<Event>?> {
-            override fun onFailure(call: Call<StatusResponseEntity<Event>?>, t: Throwable) {
-                Log.e(TAG, "Failure adding Event")
-            }
-
-            override fun onResponse(
-                call: Call<StatusResponseEntity<Event>?>,
-                response: Response<StatusResponseEntity<Event>?>
-            ) {
-                Log.e(TAG, "Success adding Event")
-            }
-        })
+    fun create(userId : Long, event : Event, file : MultipartBody.Part, callback: Callback<StatusResponseEntity<Event>>) {
+        val call = eventService.create(userId,event,file)
+        call.enqueue(callback)
     }
 
     fun retreive(callback: Callback<List<Event>>){

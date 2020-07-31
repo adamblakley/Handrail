@@ -3,7 +3,7 @@ package com.orienteering.handrail.classes
 import java.io.Serializable
 import java.text.SimpleDateFormat
 
-class Event(eventName: String, eventCourse: Course, eventDate: String, eventCreated : String, eventNote: String) : Serializable{
+class Event(eventName: String, eventCourse: Course, eventDate: String, eventNote: String) : Serializable{
 
     val eventId : Int? = null
     var eventName : String
@@ -19,12 +19,10 @@ class Event(eventName: String, eventCourse: Course, eventDate: String, eventCrea
     init{
         this.eventName = eventName
         this.eventCourse = eventCourse
-        val sdf1 = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val sdf1 = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val sdf2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
         val receivedDate = sdf1.parse(eventDate)
         this.eventDate = sdf2.format(receivedDate)
-        val receivedCreatedDate = sdf1.parse(eventCreated)
-        this.eventCreated = sdf2.format(receivedCreatedDate)
         this.eventNote = eventNote
     }
 

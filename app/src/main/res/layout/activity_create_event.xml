@@ -6,115 +6,122 @@
     android:layout_height="match_parent"
     tools:context=".activities.CreateEventActivity">
 
-    <RelativeLayout
-        android:id="@+id/parent_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageview_create_event"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@mipmap/ic_launcher" />
-
-        <TextView
-            android:id="@+id/text_event_name_display_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_toRightOf="@id/imageview_create_event"
-            android:hint="Event Name"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/text_event_description_display_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/text_event_name_display_create"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_toRightOf="@id/imageview_create_event"
-            android:hint="Event Description" />
-
-
-    </RelativeLayout>
 
     <EditText
         android:id="@+id/editText_event_name_create"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Event Name"
         android:inputType="textPersonName"
+        android:maxLength="30"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/parent_layout" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editText_event_description_create"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="Event Description"
         android:inputType="textPersonName"
+        android:maxLength="200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_event_name_create" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imageview_create_event"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="96dp"
+        android:layout_marginLeft="96dp"
+        android:layout_marginTop="16dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_event_description_create" />
 
     <Button
         android:id="@+id/button_event_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="Select Photo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toEndOf="@+id/imageview_create_event"
         app:layout_constraintTop_toBottomOf="@+id/editText_event_description_create" />
+
+    <TextView
+        android:id="@+id/textView_event_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="YYYY/MM/DD"
+        app:layout_constraintEnd_toStartOf="@+id/button_event_date"
+        app:layout_constraintStart_toStartOf="@+id/imageview_create_event"
+        app:layout_constraintTop_toBottomOf="@+id/imageview_create_event" />
+
 
     <Button
         android:id="@+id/button_event_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="Select Date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/button_event_image"
+        app:layout_constraintStart_toEndOf="@+id/textView_event_date"
         app:layout_constraintTop_toBottomOf="@+id/button_event_image" />
+
+    <TextView
+        android:id="@+id/textView_event_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:hint="HH:MM"
+        app:layout_constraintEnd_toStartOf="@+id/button_event_date"
+        app:layout_constraintStart_toStartOf="@+id/textView_event_date"
+        app:layout_constraintTop_toBottomOf="@+id/button_event_date" />
 
     <Button
         android:id="@+id/button_event_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="Select Time"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView_event_time"
         app:layout_constraintTop_toBottomOf="@+id/button_event_date" />
+
+    <TextView
+        android:id="@+id/textView_event_course"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:hint="Course"
+        app:layout_constraintEnd_toStartOf="@+id/button_event_date"
+        app:layout_constraintStart_toStartOf="@+id/textView_event_date"
+        app:layout_constraintTop_toBottomOf="@+id/button_event_time" />
 
     <Button
         android:id="@+id/button_event_course"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="Select Course"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView_event_course"
         app:layout_constraintTop_toBottomOf="@+id/button_event_time" />
 
     <Button
         android:id="@+id/button_event_create"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="Create Event"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

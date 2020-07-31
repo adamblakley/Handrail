@@ -75,7 +75,7 @@ class LoginActivity : AppCompatActivity() {
             } else if (response.isSuccessful){
                 val loginResponse : LoginResponse? = response.body()?.entity
                 if (loginResponse!=null){
-                    insertSharedPreferences(loginResponse.accessToken,loginResponse.tokenType)
+                    insertSharedPreferences(loginResponse.accessToken,loginResponse.tokenType,loginResponse.userId)
                     Log.e(TAG, "Success logging in")
                     val toast : Toast = Toast.makeText(this@LoginActivity,"Success logging in",Toast.LENGTH_SHORT)
                     toast.show()
@@ -171,9 +171,10 @@ class LoginActivity : AppCompatActivity() {
      * @param authToken
      * @param tokenType
      */
-    fun insertSharedPreferences(authToken : String, tokenType : String){
+    fun insertSharedPreferences(authToken : String, tokenType : String,userId : Long){
         val sharedPreferencesEditor = sharedPreferences.edit()
         sharedPreferencesEditor.putString(App.SharedPreferencesAuthToken,authToken).commit()
         sharedPreferencesEditor.putString(App.SharedPreferencesTokenType,tokenType).commit()
+        sharedPreferencesEditor.putLong(App.SharedPreferencesUserId,userId).commit()
     }
 }

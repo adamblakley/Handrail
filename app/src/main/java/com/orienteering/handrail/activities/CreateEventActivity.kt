@@ -24,6 +24,8 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.*
 import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.controllers.EventController
+import com.orienteering.handrail.httprequests.StatusResponseEntity
+import com.orienteering.handrail.utilities.App
 import com.orienteering.handrail.utilities.ImageSelect
 import com.orienteering.handrail.utilities.PermissionManager
 import kotlinx.android.synthetic.main.activity_create_event.*
@@ -31,6 +33,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.util.*
@@ -44,13 +47,13 @@ class CreateEventActivity : AppCompatActivity() {
     val TAG : String = "CreateEventActivity"
 
     // event name for display and creation
-    var eventName : String? = null
+    var eventName : String = ""
     // event discritpion for display and creation
-    var eventDescription : String? = null
+    var eventDescription : String = ""
     // event date for creation
-    lateinit var eventDate : String
+    var eventDate : String = ""
     // event time for creation
-    lateinit var eventTime : String
+    var eventTime : String = ""
     // event course for creation
     lateinit var eventcourse : Course
 
@@ -69,12 +72,19 @@ class CreateEventActivity : AppCompatActivity() {
     private val PICK_IMAGE_CODE = 1002
     var image_uri: Uri? = null
 
-    // textview event name
-    lateinit var eventNameDisplay : TextView
-    // textview event description
-    lateinit var eventDescriptionDisplay : TextView
     // image view for event image
     lateinit var eventImageView : ImageView
+
+    // edit text for name
+    lateinit var editTextEventName : EditText
+    // edit text for description
+    lateinit var editTextEventDescription : EditText
+    //text view for date
+    lateinit var textViewEventDate : TextView
+    //text view for time
+    lateinit var textViewEventTime : TextView
+    //text view for course
+    lateinit var textViewEventCourse : TextView
 
     // button to select photo for event
     var buttonUpdatePhoto: Button? = null
@@ -91,6 +101,33 @@ class CreateEventActivity : AppCompatActivity() {
     val courseController = CourseController()
     // controller to manage event services
     val eventController = EventController()
+
+    // callback create event
+    val createEventCallback = object :
+        Callback<StatusResponseEntity<Event>> {
+        override fun onFailure(call: Call<StatusResponseEntity<Event>?>, t: Throwable) {
+            Log.e(TAG, "Failure connecting successfully")
+            val toast = Toast.makeText(this@CreateEventActivity,"Connection Failure, please try again later",Toast.LENGTH_SHORT)
+            toast.show()
+        }
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Event>?>,
+            response: Response<StatusResponseEntity<Event>?>
+        ) {
+            if (response.isSuccessful){
+                Log.e(TAG, "Success adding Event")
+                val toast = Toast.makeText(this@CreateEventActivity,"Success creating event.",Toast.LENGTH_SHORT)
+                toast.show()
+                val intent : Intent = Intent(this@CreateEventActivity,ViewEventActivity::class.java)
+                intent.putExtra("EVENT_ID", response.body()?.entity?.eventId)
+                startActivity(intent)
+            } else {
+                Log.e(TAG, "Failure adding Event")
+                val toast = Toast.makeText(this@CreateEventActivity,"Failure to create event, try again. If problem persists, please contact admin.",Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+    }
 
     // callback to manage course request response
     val getCoursesCallback = object : retrofit2.Callback<List<Course>?> {
@@ -128,6 +165,7 @@ class CreateEventActivity : AppCompatActivity() {
                             }
                         }
                         eventcourse=selectedCourse
+                        textViewEventCourse.text=eventcourse.courseName
                     })
                 builder.show()
             }
@@ -138,12 +176,9 @@ class CreateEventActivity : AppCompatActivity() {
      * On create, initiates buttons, views and text
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_event)
-
         initiateText()
-
         createButtons()
     }
 
@@ -180,8 +215,18 @@ class CreateEventActivity : AppCompatActivity() {
             override fun onClick(p0: View?) {
 
                 val datePickerDialog = DatePickerDialog(this@CreateEventActivity,DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
-                    Log.e(TAG,"$Tyear,$Tmonth,$TdayOfMonth")
-                    eventDate = "$Tyear-$Tmonth-$TdayOfMonth"
+                    var yearString : String = Tyear.toString()
+                    var monthString : String = Tmonth.toString()
+                    var dayString : String = TdayOfMonth.toString()
+
+                    if (monthString.length==1){
+                        monthString="0"+monthString
+                    }
+                    if (dayString.length==1){
+                        dayString="0"+dayString
+                    }
+                    eventDate = "$yearString-$monthString-$dayString"
+                    textViewEventDate.text = eventDate
                 }, year, month, day)
                 datePickerDialog.show()
             }
@@ -193,7 +238,18 @@ class CreateEventActivity : AppCompatActivity() {
 
                 val timePickerDialog = TimePickerDialog(this@CreateEventActivity,TimePickerDialog.OnTimeSetListener{ view: TimePicker?, Thour: Int, Tminute: Int ->
                     Log.e(TAG,"$Thour,$Tminute")
-                    eventTime = "$Thour:$Tminute:00"
+
+                    var hourString : String = Thour.toString()
+                    var minuteString : String = Tminute.toString()
+
+                    if (hourString.length==1){
+                        hourString="0"+hourString
+                    }
+                    if (minuteString.length==1){
+                        minuteString="0"+minuteString
+                    }
+                    eventTime = "$hourString:$minuteString"
+                    textViewEventTime.text=eventTime
                 }, hour, minute, false)
                 timePickerDialog.show()
             }
@@ -207,7 +263,12 @@ class CreateEventActivity : AppCompatActivity() {
 
         buttonCreateEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                createEvent()
+                if (checkFields()){
+                    createEvent()
+                } else {
+                    val toast : Toast = Toast.makeText(this@CreateEventActivity,"Please check all fields",Toast.LENGTH_SHORT)
+                    toast.show()
+                }
             }
         })
     }
@@ -216,36 +277,29 @@ class CreateEventActivity : AppCompatActivity() {
      * function to initiate text displays
      */
     fun initiateText(){
+
+        textViewEventDate = findViewById(R.id.textView_event_date)
+        textViewEventTime = findViewById(R.id.textView_event_time)
+        textViewEventCourse = findViewById(R.id.textView_event_course)
+
         eventImageView = findViewById(R.id.imageview_create_event)
-        eventNameDisplay = findViewById(R.id.text_event_name_display_create)
-        eventDescriptionDisplay  = findViewById(R.id.text_event_description_display_create)
 
-        val editTextEventName : EditText = findViewById(R.id.editText_event_name_create)
-        val editTextEventDescription: EditText = findViewById(R.id.editText_event_description_create)
-
-
+        editTextEventName  = findViewById(R.id.editText_event_name_create)
+        editTextEventDescription = findViewById(R.id.editText_event_description_create)
         editTextEventName.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 eventName = editTextEventName.text.toString()
-                updateEventDisplay()
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
         })
 
         editTextEventDescription.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 eventDescription = editTextEventDescription.text.toString()
-                updateEventDisplay()
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
         })
     }
 
@@ -253,34 +307,55 @@ class CreateEventActivity : AppCompatActivity() {
      * function to retrieve courses
      */
     fun getCourses(){
-        courseController.retrieveAllByUser(3, getCoursesCallback)
+        courseController.retrieveAllByUser(App.sharedPreferences.getLong(App.SharedPreferencesUserId,0), getCoursesCallback)
     }
 
     /**
-     * function to update event display when text altered by user
+     * Check user input fields for createEvent
+     *
      */
-    fun updateEventDisplay(){
-        eventNameDisplay.text=eventName
-        eventDescriptionDisplay.text=eventDescription
+    fun checkFields() : Boolean{
+        var inputsOk = true
+        if(eventName?.trim()?.isEmpty()!!){
+            editText_event_name_create.setError("Enter an Event name")
+            inputsOk = false
+        }
+        if(eventDescription?.trim()?.isEmpty()!!){
+            editText_event_description_create.setError("Enter an Event description")
+            inputsOk = false
+        }
+        if(eventDate.trim().isEmpty()){
+            textViewEventDate.setError("Please enter a valid date")
+            inputsOk = false
+        }
+        if (eventTime.trim().isEmpty()){
+            textViewEventTime.setError("Please enter a valid time")
+            inputsOk = false
+        }
+        if (textViewEventCourse.text.trim().isEmpty()){
+            buttonSelectCourse?.setError("Please select a course")
+            inputsOk = false
+        }
+        if (image_uri==null){
+            buttonUpdatePhoto?.setError("Please select a photo")
+        }
+        return inputsOk
     }
 
     /**
      * function to call service to upload event
      */
     fun createEvent(){
-
         val imageMultipartBodyPart : MultipartBody.Part? = image_uri?.let { createImageMultipartBody(it) }
-
-
-
         val eventDateString = "$eventDate $eventTime"
         if (eventName!=null && eventDescription!=null){
-            val event = Event(eventName.toString(),eventcourse,eventDateString,"2020-06-19 14:27:28",eventDescription.toString())
-            event.eventStatus=1 as Integer
+            val event = Event(eventName.toString(),eventcourse,eventDateString,eventDescription.toString())
             if (imageMultipartBodyPart != null) {
-                eventController.create(event,imageMultipartBodyPart )
+                eventController.create(App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),event,imageMultipartBodyPart,createEventCallback)
             } else {
                 Log.e(TAG,"Imagemultipart body null")
+                val toast = Toast.makeText(this,"System Error. Please contact admin.",Toast.LENGTH_SHORT)
+                toast.show()
             }
         }
     }
@@ -292,12 +367,10 @@ class CreateEventActivity : AppCompatActivity() {
     */
     fun createImageMultipartBody(fileUri : Uri) : MultipartBody.Part{
         val file = File(imageSelect.getImagePath(fileUri))
-
         val requestBody : RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let {
             it
                 .toMediaTypeOrNull()
         },file)
-
         val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
         return body
     }
@@ -357,7 +430,6 @@ class CreateEventActivity : AppCompatActivity() {
                         }
                     }
                 }
-
             }
         } else {
             Log.e(TAG, "Request cancelled...")

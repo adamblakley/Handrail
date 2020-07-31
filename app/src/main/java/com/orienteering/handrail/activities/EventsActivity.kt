@@ -3,6 +3,7 @@ package com.orienteering.handrail.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,20 +39,30 @@ class EventsActivity : AppCompatActivity() {
     private val getEventsCallback = object: Callback<List<Event>>{
         override fun onFailure(call: Call<List<Event>>, t: Throwable) {
             Log.e(TAG, "Failure getting events")
+            val toast = Toast.makeText(this@EventsActivity,"Failure getting events, please contact admin",Toast.LENGTH_SHORT)
+            toast.show()
         }
-
         override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
-            Log.e(TAG, "Success getting events")
-            val eventgot: List<Event>? = response.body()
-            if (eventgot != null) {
-                for (event in eventgot) {
-                    mNames.add(event.eventName)
-                    mNotes.add(event.eventNote)
-                    mIds.add(event.eventId)
-                    mImageUrls.add(event.eventPhotograph.photoPath)
+            if (response.isSuccessful){
+                Log.e(TAG, "Success getting events")
+                val eventgot: List<Event>? = response.body()
+                if (eventgot != null) {
+                    for (event in eventgot) {
+                        mNames.add(event.eventName)
+                        mNotes.add(event.eventNote)
+                        mIds.add(event.eventId)
+                        mImageUrls.add(event.eventPhotograph.photoPath)
+                    }
+                    initRecyclerView()
+                } else {
+                    val toast = Toast.makeText(this@EventsActivity,"No Upcoming Events",Toast.LENGTH_SHORT)
+                    toast.show()
                 }
+            } else {
+                Log.e(TAG, "Problem getting events")
+                val toast = Toast.makeText(this@EventsActivity,"Problem getting Events, please try again later",Toast.LENGTH_SHORT)
+                toast.show()
             }
-            initRecyclerView()
         }
     }
 

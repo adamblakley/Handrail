@@ -126,7 +126,6 @@ class SignupActivity : AppCompatActivity() {
             override fun onClick(v: View?) {
                 val datePickerDialog = DatePickerDialog(this@SignupActivity,
                     DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
-                        Log.e(TAG,"$Tyear,$Tmonth,$TdayOfMonth")
 
                         var yearString : String = Tyear.toString()
                         var monthString : String = Tmonth.toString()

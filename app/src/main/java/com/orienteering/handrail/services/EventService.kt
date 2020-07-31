@@ -8,9 +8,9 @@ import retrofit2.http.*
 
 interface EventService {
 
-    @POST("events")
+    @POST("users/{id}/events")
     @Multipart
-    fun create(@Part("event") event : Event, @Part file : MultipartBody.Part): Call<StatusResponseEntity<Event>>
+    fun create(@Path("id") id: Long?,@Part("event") event : Event, @Part file : MultipartBody.Part): Call<StatusResponseEntity<Event>>
 
     @GET("events/{id}")
     fun read(@Path("id") iD : Int?) : Call<Event>

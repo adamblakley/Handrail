@@ -33,9 +33,7 @@ data class ParticipantPerformance (val id: Int, var controldata : Array<ControlD
 internal object GeofencingConstants {
 
     val locationControls = ArrayList<Location>()
-
-val userTest : User = User("test@test","testpass","test","testing","2020-06-19T14:27:28.054+00:00","testbio")
-
+    val userTest : User = User("test@test","testpass","test","testing","2020-06-19T14:27:28.054+00:00","testbio")
     const val GEOFENCE_RADIUS_IN_METERS = 20f
     const val GEOFENCE_LOITERING_DELAY_IN_MS = 100
     const val EXTRA_GEOFENCE_INDEX = "GEOFENCE_INDEX"

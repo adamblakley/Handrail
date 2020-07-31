@@ -13,6 +13,7 @@ class App : Application() {
         lateinit var sharedPreferencesEditor : SharedPreferences.Editor
         const val SharedPreferencesAuthToken : String = "AUTH_TOKEN"
         const val SharedPreferencesTokenType : String = "TOKEN_TYPE"
+        const val SharedPreferencesUserId : String = "USER_ID"
     }
 
 
