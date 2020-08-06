@@ -3,7 +3,7 @@ package com.orienteering.handrail.classes
 import com.google.android.gms.maps.model.LatLng
 import java.io.Serializable
 
-class Control(controlName : String, controlPosition: Int, controlNote : String, controlLatitude : Double, controlLongitude : Double, controlAltitude : Double)  : Serializable {
+class Control(controlName : String, controlNote : String, controlLatitude : Double, controlLongitude : Double, controlAltitude : Double)  : Serializable {
 
     var controlId : Int? = null
     var controlPosition : Int? = null
@@ -16,7 +16,6 @@ class Control(controlName : String, controlPosition: Int, controlNote : String, 
     var controlAltitude: Double? = null
 
     init {
-        this.controlPosition=controlPosition
         this.controlLatitude = controlLatitude
         this.controlLongitude = controlLongitude
         this.controlName = controlName

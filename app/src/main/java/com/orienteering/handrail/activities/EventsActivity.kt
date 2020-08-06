@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.*
 import com.orienteering.handrail.classes.Event
 import com.orienteering.handrail.controllers.EventController
+import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.EventsRecyclerViewAdapter
 
 import retrofit2.Call
@@ -36,16 +37,16 @@ class EventsActivity : AppCompatActivity() {
     val eventController : EventController = EventController()
 
     // callback to manage response of getEvents
-    private val getEventsCallback = object: Callback<List<Event>>{
-        override fun onFailure(call: Call<List<Event>>, t: Throwable) {
+    private val getEventsCallback = object: Callback<StatusResponseEntity<List<Event>>>{
+        override fun onFailure(call: Call<StatusResponseEntity<List<Event>>>, t: Throwable) {
             Log.e(TAG, "Failure getting events")
             val toast = Toast.makeText(this@EventsActivity,"Failure getting events, please contact admin",Toast.LENGTH_SHORT)
             toast.show()
         }
-        override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
+        override fun onResponse(call: Call<StatusResponseEntity<List<Event>>>, response: Response<StatusResponseEntity<List<Event>>>) {
             if (response.isSuccessful){
                 Log.e(TAG, "Success getting events")
-                val eventgot: List<Event>? = response.body()
+                val eventgot: List<Event>? = response.body()?.entity
                 if (eventgot != null) {
                     for (event in eventgot) {
                         mNames.add(event.eventName)
@@ -59,8 +60,8 @@ class EventsActivity : AppCompatActivity() {
                     toast.show()
                 }
             } else {
-                Log.e(TAG, "Problem getting events")
-                val toast = Toast.makeText(this@EventsActivity,"Problem getting Events, please try again later",Toast.LENGTH_SHORT)
+                Log.e(TAG, "No events available events")
+                val toast = Toast.makeText(this@EventsActivity,"No Events available, please try again later",Toast.LENGTH_SHORT)
                 toast.show()
             }
         }

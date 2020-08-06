@@ -24,17 +24,11 @@ class CreateControlDialog : AppCompatDialogFragment() {
         val layoutInflater : LayoutInflater = activity!!.layoutInflater
         val view : View = layoutInflater.inflate(com.orienteering.handrail.R.layout.layout_dialog,null)
 
-
-
         alertDialogueBuilder.setView(view).setTitle("Add Control").setNegativeButton("Cancel",{ dialogInterface: DialogInterface, i: Int -> })
             .setPositiveButton("Create",DialogInterface.OnClickListener(){ dialogInterface: DialogInterface, i: Int ->
-
-                    Log.e("dialog","Create")
-
-                    val username : String = edittextControlName.text.toString()
-                    val note : String = edittextControlNote.text.toString()
-                    listener.applyText(username,note)
-
+                val username : String = edittextControlName.text.toString()
+                val note : String = edittextControlNote.text.toString()
+                listener.applyText(username,note)
             })
 
         edittextControlName = view.findViewById<EditText>(com.orienteering.handrail.R.id.edittext_control_name)

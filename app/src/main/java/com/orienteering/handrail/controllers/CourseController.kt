@@ -9,9 +9,12 @@ import com.orienteering.handrail.activities.HomeActivity
 
 import com.orienteering.handrail.classes.Course
 import com.orienteering.handrail.classes.Event
+import com.orienteering.handrail.classes.MultiFilesUploadRequest
 import com.orienteering.handrail.services.CourseService
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.httprequests.StatusResponseEntity
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,29 +27,11 @@ class CourseController {
         courseService = ServiceFactory.makeService(CourseService::class.java)
     }
 
-    fun uploadCourse(course: Course, context: Context) {
-        ServiceFactory.makeService(CourseService::class.java).create(course).enqueue(object :
-            Callback<StatusResponseEntity<Course>?> {
-            override fun onFailure(call: Call<StatusResponseEntity<Course>?>, t: Throwable) {
-                Log.e(TAG, "Failure adding Course")
-                Toast.makeText(
-                    context,
-                    "Failure Creating Course. Network Error.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            override fun onResponse(
-                call: Call<StatusResponseEntity<Course>?>,
-                response: Response<StatusResponseEntity<Course>?>
-            ) {
-                Log.e(TAG, "Success adding Course")
-                Toast.makeText(context, "Success Creating Course", Toast.LENGTH_SHORT).show()
-                val intent = Intent(context, HomeActivity::class.java).apply {}
-                context.startActivity(intent)
-            }
-        })
+    fun uploadCourse(id : Long,course : Course, files : Array<MultipartBody.Part?>, callback : Callback<StatusResponseEntity<Course>>){
+        val call = courseService.createWPhoto(id,course,files)
+        call.enqueue(callback)
     }
+
 
     fun retreive(callback: Callback<List<Course>>) {
         val call = courseService.readAll()

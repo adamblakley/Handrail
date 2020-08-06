@@ -6,17 +6,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Event
-import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.controllers.EventController
-import com.orienteering.handrail.services.ParticipantService
-import com.orienteering.handrail.services.ServiceFactory
+import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.GeofencingConstants
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,6 +28,9 @@ private const val TAG: String = "ViewEventActivity"
  * class to view selected event, join and participate in event, view results of event if completed
  */
 class ViewEventActivity : AppCompatActivity() {
+
+    // image view for event image
+    lateinit var eventImageImageView : ImageView
 
     // textview for event name
     lateinit var eventNameTextView: TextView
@@ -53,7 +56,11 @@ class ViewEventActivity : AppCompatActivity() {
     //event id passed from intent
     var eventIdPassed: Int? = null
 
+    // control event services
     val eventController: EventController = EventController()
+
+    // control participant services
+    val participantController : ParticipantController = ParticipantController()
 
     // handle event callback, success/failure of retrieval of getEvent
     private val getEventCallback = object : Callback<Event> {
@@ -61,7 +68,7 @@ class ViewEventActivity : AppCompatActivity() {
             Log.e(TAG, "Failure getting event")
             val toast = Toast.makeText(
                 this@ViewEventActivity,
-                "Failure getting event, please contact admin.",
+                "Failure getting event, service currently unavailable.",
                 Toast.LENGTH_SHORT
             )
             toast.show()
@@ -103,6 +110,169 @@ class ViewEventActivity : AppCompatActivity() {
         }
     }
 
+    // callback for participant creation
+    private val createParticipantCallback = object : Callback<StatusResponseEntity<Event>> {
+        override fun onFailure(
+            call: Call<StatusResponseEntity<Event>>,
+            t: Throwable
+        ) {
+            Log.e(TAG, "Failure connecting to create participant service")
+            val toast = Toast.makeText(
+                this@ViewEventActivity,
+                "Failure joining event, service currently unavailable.",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+        }
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Event>>,
+            response: Response<StatusResponseEntity<Event>>
+        ) {
+
+            if (response.isSuccessful){
+                event = response.body()?.entity!!
+                setupForUser()
+                Log.e(TAG, "Success creating participant")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Success joining event",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            } else {
+                Log.e(TAG, "Failure creating participant")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Failure joining event, please contact an admin if problem persists",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            }
+        }
+    }
+
+    // callback for remove participant
+    val leaveEventCallback = object : Callback<StatusResponseEntity<Event>> {
+        override fun onFailure(
+            call: Call<StatusResponseEntity<Event>>,
+            t: Throwable
+        ) {
+            Log.e(TAG, "Failure connecting to remove participant service")
+            val toast = Toast.makeText(
+                this@ViewEventActivity,
+                "Failure removing event, service currently unavailable.",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+        }
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Event>>,
+            response: Response<StatusResponseEntity<Event>>
+        ) {
+
+            if (response.isSuccessful){
+                event = response.body()?.entity!!
+                setupForUser()
+                Log.e(TAG, "Success removing participant")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Success leaving event",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            } else {
+                Log.e(TAG, "Failure removing participant")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Failure removing event, please contact an admin if problem persists",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            }
+        }
+    }
+
+    // callback for remove participant
+    val updateEventStatusCallback = object : Callback<StatusResponseEntity<Event>> {
+        override fun onFailure(
+            call: Call<StatusResponseEntity<Event>>,
+            t: Throwable
+        ) {
+            Log.e(TAG, "Failure connecting to update event service")
+            val toast = Toast.makeText(
+                this@ViewEventActivity,
+                "Failure updating event, service currently unavailable.",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+        }
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Event>>,
+            response: Response<StatusResponseEntity<Event>>
+        ) {
+            if (response.isSuccessful){
+                event = response.body()?.entity!!
+                setupForOrganiser()
+                Log.e(TAG, "Success updating event")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Event Status updated",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            } else {
+                Log.e(TAG, "Failure removing participant")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Event Status cannot be updated, if problem persists - please contact admin",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            }
+        }
+    }
+
+    // callback for remove participant
+    val deleteEventCallback = object : Callback<StatusResponseEntity<Boolean>> {
+        override fun onFailure(
+            call: Call<StatusResponseEntity<Boolean>>,
+            t: Throwable
+        ) {
+            Log.e(TAG, "Failure connecting to delete event service")
+            val toast = Toast.makeText(
+                this@ViewEventActivity,
+                "Failure removing event, service currently unavailable.",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+        }
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Boolean>>,
+            response: Response<StatusResponseEntity<Boolean>>
+        ) {
+            if (response.isSuccessful || response.equals(409)){
+                Log.e(TAG, "Success removing event")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Event Deleted",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+                val intent = Intent(this@ViewEventActivity, HomeActivity::class.java).apply { }
+                startActivity(intent)
+            }   else {
+                Log.e(TAG, "Failure removing event")
+                val toast = Toast.makeText(
+                    this@ViewEventActivity,
+                    "Event cannot be deleted, if problem persists - please contact admin",
+                    Toast.LENGTH_SHORT
+                )
+                toast.show()
+            }
+        }
+    }
+
+
     /**
      * initialise buttons and text variables, collect intent extra
      */
@@ -111,6 +281,7 @@ class ViewEventActivity : AppCompatActivity() {
         setContentView(R.layout.activity_view_event)
 
         createButtons()
+        createImages()
         intialiseTextView()
 
         this.eventIdPassed = intent.getSerializableExtra("EVENT_ID") as Int
@@ -121,27 +292,22 @@ class ViewEventActivity : AppCompatActivity() {
      * function to create buttons from view and add on click listeners
      */
     private fun createButtons() {
-
         buttonDelete = findViewById(R.id.button_delete_event_view_event)
         buttonAction = findViewById(R.id.button_action_view_event)
-
         buttonDelete.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intentParticipate =
-                    Intent(this@ViewEventActivity, CourseParticipationActivity::class.java).apply {}
-                intentParticipate.putExtra("EVENT_ID", event.eventId)
-                startActivity(intentParticipate)
+                deleteEvent()
             }
         })
-
         buttonAction.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 eventAction()
             }
         })
+    }
 
-        buttonDelete.visibility = View.INVISIBLE
-        buttonAction.visibility = View.VISIBLE
+    private fun createImages(){
+        eventImageImageView = findViewById(R.id.imageview_event_photo_view_event)
     }
 
     /**
@@ -158,28 +324,28 @@ class ViewEventActivity : AppCompatActivity() {
      * function to call for update to event participants list, user joins event
      */
     private fun joinEvent() {
-        val participant = Participant(GeofencingConstants.userTest)
-        participant.participantUser.userId = 3
-        ServiceFactory.makeService(ParticipantService::class.java)
-            .create(eventIdPassed, participant)
-            .enqueue(object : Callback<StatusResponseEntity<Participant>> {
-                override fun onFailure(
-                    call: Call<StatusResponseEntity<Participant>>,
-                    t: Throwable
-                ) {
-                    Log.e(TAG, "Failure creating participant")
-                }
+        eventIdPassed?.let { participantController.createParticipant(it, App.sharedPreferences.getLong(App.SharedPreferencesUserId,0), createParticipantCallback) }
+    }
 
-                override fun onResponse(
-                    call: Call<StatusResponseEntity<Participant>>,
-                    response: Response<StatusResponseEntity<Participant>>
-                ) {
-                    buttonAction.visibility = View.INVISIBLE
-                    buttonDelete.visibility = View.VISIBLE
-                    Log.e(TAG, "Success creating participant")
-                }
+    /**
+     * function to call for update to event participants list, user leaves event
+     */
+    private fun leaveEvent(){
+        eventIdPassed?.let { participantController.removeParticipant(it,App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),leaveEventCallback) }
+    }
 
-            })
+    /**
+     * function to call for update to event status
+     */
+    private fun updateEvent(){
+        eventIdPassed?.let { eventController.updateStatus(it,updateEventStatusCallback) }
+    }
+
+    /**
+     * function to call for delete of event
+     */
+    private fun deleteEvent(){
+        eventIdPassed?.let{eventController.deleteEvent(it,deleteEventCallback)}
     }
 
     /**
@@ -195,6 +361,8 @@ class ViewEventActivity : AppCompatActivity() {
      * fill event information on screen from event retrieved for getEvent
      */
     fun fillEventInformation() {
+        setupImage()
+
         eventNameTextView.text = event.eventName
         eventNoteTextView.text = event.eventNote
 
@@ -213,6 +381,20 @@ class ViewEventActivity : AppCompatActivity() {
         eventTimeTextView.text = time
     }
 
+    /**
+     * Setup event image
+     */
+    private fun setupImage(){
+        val options : RequestOptions  = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        if (event.eventPhotograph.photoPath.isNotEmpty()){
+            Glide.with(this)
+                .asBitmap()
+                .load(event.eventPhotograph.photoPath)
+                .apply(options)
+                .into(eventImageImageView)
+        }
+    }
+
 
     /**
      * Handles Action button depending on user/organiser involvement
@@ -221,8 +403,10 @@ class ViewEventActivity : AppCompatActivity() {
     fun eventAction() {
         when (buttonAction.tag) {
             1 -> {
+                updateEvent()
             }
             2 -> {
+                updateEvent()
             }
             3 -> {
                 val intentResults = Intent(this@ViewEventActivity, ResultsListActivity::class.java).apply { }
@@ -230,8 +414,10 @@ class ViewEventActivity : AppCompatActivity() {
                 startActivity(intentResults)
             }
             4 -> {
+                joinEvent()
             }
             5 -> {
+                leaveEvent()
             }
             else -> {
                 val toast = Toast.makeText(

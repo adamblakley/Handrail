@@ -134,7 +134,6 @@ class CreateEventActivity : AppCompatActivity() {
         override fun onFailure(call: Call<List<Course>?>, t: Throwable) {
             Log.e(TAG, "Failure getting courses")
         }
-
         override fun onResponse(
             call: Call<List<Course>?>,
             response: Response<List<Course>?>
@@ -154,7 +153,7 @@ class CreateEventActivity : AppCompatActivity() {
 
                 val options : Array<CharSequence> = courseNames.toTypedArray()
                 val builder: AlertDialog.Builder = AlertDialog.Builder(this@CreateEventActivity)
-                builder.setTitle("Choose Control Photo")
+                builder.setTitle("Choose Course")
                 builder.setItems(
                     options,
                     DialogInterface.OnClickListener() { dialogInterface: DialogInterface, item: Int ->
@@ -366,11 +365,8 @@ class CreateEventActivity : AppCompatActivity() {
      *
     */
     fun createImageMultipartBody(fileUri : Uri) : MultipartBody.Part{
-        val file = File(imageSelect.getImagePath(fileUri))
-        val requestBody : RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let {
-            it
-                .toMediaTypeOrNull()
-        },file)
+        var file = File(imageSelect.getImagePath(fileUri))
+        val requestBody : RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() },file)
         val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
         return body
     }
@@ -393,6 +389,7 @@ class CreateEventActivity : AppCompatActivity() {
                         Log.e(TAG, "Result ok, data not null")
                         val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
                         imageview_create_event.setImageBitmap(selectedImage)
+                        image_uri = data.data
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")
                     }

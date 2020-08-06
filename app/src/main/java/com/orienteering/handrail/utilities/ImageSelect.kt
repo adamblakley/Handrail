@@ -10,17 +10,26 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.nfc.Tag
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.FileProvider
 import androidx.loader.content.CursorLoader
 import kotlinx.android.synthetic.main.activity_home_menu.*
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ImageSelect(activity: Activity, context: Context){
 
     private val IMAGE_CAPTURE_CODE = 1001
     private val PICK_IMAGE_CODE = 1002
+    lateinit var currentPhotoPath: String
+    lateinit var tempImageUri : Uri
     var activity : Activity
     var context : Context
 
@@ -57,7 +66,7 @@ class ImageSelect(activity: Activity, context: Context){
             options,
             DialogInterface.OnClickListener() { dialogInterface: DialogInterface, item: Int ->
                 if (options[item].equals("Take Photo")) {
-                    image_uri=openCamera()
+                    openCamera()
                 } else if (options[item].equals("Choose from Gallery")) {
                     val pickPhotoIntent = Intent(
                         Intent.ACTION_PICK,
@@ -72,14 +81,44 @@ class ImageSelect(activity: Activity, context: Context){
         return image_uri
     }
 
-    fun openCamera() : Uri? {
+    fun openCamera() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
+            takePictureIntent -> takePictureIntent.resolveActivity(context.packageManager)?.also {
+
+                val photoFile: File? = try {
+                    createPhotoFile()
+                } catch (ex: IOException) {
+                    Log.e("ImageSelect",ex.printStackTrace().toString())
+                    null
+                }
+
+                photoFile.also {
+                    val photoUri : Uri? = it?.let { it ->
+                        FileProvider.getUriForFile(context,"com.orienteering.handrail.fileprovider",
+                            it
+                        )
+
+                    }
+                    if (photoUri != null) {
+                        tempImageUri=photoUri
+                    }
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
+                    activity.startActivityForResult(takePictureIntent, IMAGE_CAPTURE_CODE)
+                }
+
+            }
+        }
+
+/*
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Picture")
         values.put(MediaStore.Images.Media.TITLE, "From the Camera")
         val image_uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
         activity.startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE)
-        return  image_uri
+
+ */
     }
 
     /**
@@ -88,14 +127,33 @@ class ImageSelect(activity: Activity, context: Context){
      * @return
      */
     fun getImagePath(contentUri: Uri) : String?{
+        var result : String? = null
         val proj = arrayOf(MediaStore.Images.Media.DATA)
+
         val loader = CursorLoader(context,contentUri,proj,null,null,null)
+
         val cursor : Cursor? = loader.loadInBackground()
-        val columnIndex = cursor?.getColumnIndex(MediaStore.Images.Media.DATA)
-        cursor?.moveToFirst()
-        val result = columnIndex?.let { cursor?.getString(it) }
-        cursor?.close()
+        if (cursor!=null){
+            val columnIndex = cursor?.getColumnIndex(MediaStore.Images.Media.DATA)
+            cursor?.moveToFirst()
+            result = columnIndex?.let { cursor?.getString(it) }
+            cursor?.close()
+        }
         return result
+    }
+
+    fun createPhotoFile() : File{
+        val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
+        val storageDir : File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        if (!storageDir.exists()){
+            try{
+                storageDir.mkdirs()
+            } catch(ex : Exception){
+                Log.e("ImageSelect",ex.printStackTrace().toString())
+            }
+        }
+
+        return File.createTempFile("JPEG_${timeStamp}_",".jpg",storageDir).apply { currentPhotoPath=absolutePath }
     }
 
 

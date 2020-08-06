@@ -8,16 +8,11 @@ class Course(courseControls: List<Control>, courseName : String )  : Serializabl
 
     val courseId : Int? = null
     var courseName : String
-    var courseDate : String
+    lateinit var courseDate : String
     var courseControls = mutableListOf<Control>()
 
     init{
         this.courseName = courseName
-
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-        val formattedDate = sdf.format(Date())
-        this.courseDate = formattedDate
-
         this.courseControls = courseControls as MutableList<Control>
     }
 
