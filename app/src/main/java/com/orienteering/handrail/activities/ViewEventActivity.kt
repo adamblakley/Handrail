@@ -419,6 +419,9 @@ class ViewEventActivity : AppCompatActivity() {
             5 -> {
                 leaveEvent()
             }
+            6 ->{
+                startEvent()
+            }
             else -> {
                 val toast = Toast.makeText(
                     this@ViewEventActivity,
@@ -428,6 +431,15 @@ class ViewEventActivity : AppCompatActivity() {
                 toast.show()
             }
         }
+    }
+
+    /**
+     * Start Event Participation
+     */
+    fun startEvent(){
+        val intent = Intent(this@ViewEventActivity, CourseParticipationActivity::class.java).apply {}
+        intent.putExtra("EVENT_ID", event.eventId)
+        startActivity(intent)
     }
 
     /**

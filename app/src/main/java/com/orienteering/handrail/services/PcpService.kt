@@ -1,6 +1,9 @@
 package com.orienteering.handrail.services
 
+import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.classes.ParticipantControlPerformance
+import com.orienteering.handrail.classes.PerformanceUploadRequest
+import com.orienteering.handrail.classes.RoutePoint
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import io.reactivex.Observable
 import retrofit2.Call
@@ -11,11 +14,9 @@ import retrofit2.http.Path
 
 interface PcpService {
 
-    @POST("participants/{id}/pcps")
-    fun create(@Path("id") participantId : Int?, @Body pcp: ParticipantControlPerformance): Call<StatusResponseEntity<ParticipantControlPerformance>>
 
-    @POST("participants/{id}/pcpsmany")
-    fun createMany(@Path("id") participantId : Int?, @Body pcps :List<ParticipantControlPerformance>): Call<StatusResponseEntity<List<ParticipantControlPerformance>>>
+    @POST("events/{eventId}/users/{userId}/pcps")
+    fun create(@Path("eventId") eventId : Int, @Path("userId") userId : Long, @Body request: PerformanceUploadRequest): Call<StatusResponseEntity<Participant>?>
 
     @GET("pcps/{id}")
     fun read(@Path("id") pcpID : Int) : Observable<ParticipantControlPerformance>

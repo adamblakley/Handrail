@@ -2,6 +2,7 @@ package com.orienteering.handrail.controllers
 
 import com.orienteering.handrail.classes.Event
 import com.orienteering.handrail.classes.Participant
+import com.orienteering.handrail.classes.PerformanceResponse
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.ParticipantService
 import com.orienteering.handrail.services.ServiceFactory
@@ -48,8 +49,27 @@ class ParticipantController {
         call.enqueue(callback)
     }
 
+    /**
+     * Remove participant from participant service controller
+     *
+     * @param eventId
+     * @param userId
+     * @param callback
+     */
     fun removeParticipant(eventId: Int, userId: Long,callback: Callback<StatusResponseEntity<Event>>){
         val call = participantService.removeParticipant(eventId,userId)
+        call.enqueue(callback)
+    }
+
+    /**
+     * retrieve performance response from participant service controller
+     *
+     * @param eventId
+     * @param userId
+     * @param callback
+     */
+    fun getParticipantPerformance(eventId: Int, userId: Long,callback: Callback<StatusResponseEntity<PerformanceResponse>>){
+        val call = participantService.getPerformance(eventId,userId)
         call.enqueue(callback)
     }
 

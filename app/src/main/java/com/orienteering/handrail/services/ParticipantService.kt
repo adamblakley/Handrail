@@ -2,6 +2,7 @@ package com.orienteering.handrail.services
 
 import com.orienteering.handrail.classes.Event
 import com.orienteering.handrail.classes.Participant;
+import com.orienteering.handrail.classes.PerformanceResponse
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import io.reactivex.Observable
 import retrofit2.Call
@@ -28,4 +29,7 @@ interface ParticipantService {
 
     @PUT("/events/{id}/removeparticipant")
     fun removeParticipant(@Path("id") eventId: Int, @Body userId: Long): Call<StatusResponseEntity<Event>>
+
+    @GET("/events/{eventId}/users/{userId}/performances")
+    fun getPerformance(@Path("eventId") eventId: Int, @Path("userId") userId: Long) : Call<StatusResponseEntity<PerformanceResponse>>
 }

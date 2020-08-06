@@ -1,6 +1,9 @@
 package com.orienteering.handrail.controllers
 
+import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.classes.ParticipantControlPerformance
+import com.orienteering.handrail.classes.PerformanceUploadRequest
+import com.orienteering.handrail.classes.RoutePoint
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.PcpService
 import com.orienteering.handrail.services.ServiceFactory
@@ -18,8 +21,8 @@ class PcpController {
     /**
      * Function to call service method to upload upload pcps
      */
-    fun create(participantId : Int?, pcps : List<ParticipantControlPerformance>, callback : Callback<StatusResponseEntity<List<ParticipantControlPerformance>>?>){
-        val call = pcpService.createMany(participantId,pcps)
+    fun create(eventId : Int, userId: Long, request : PerformanceUploadRequest, callback : Callback<StatusResponseEntity<Participant>?>){
+        val call = pcpService.create(eventId,userId,request)
         call.enqueue(callback)
     }
 }

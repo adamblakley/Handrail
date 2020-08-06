@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
+import android.widget.Toast
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,10 +27,6 @@ import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.controllers.PcpController
 import com.orienteering.handrail.controllers.RoutePointController
 import com.orienteering.handrail.httprequests.*
-import com.orienteering.handrail.services.EventService
-import com.orienteering.handrail.services.PcpService
-import com.orienteering.handrail.services.RoutePointService
-import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.utilities.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -55,75 +52,9 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     // pcp controller to manage service requests
     val pcpController:PcpController = PcpController()
 
+
     // route point controller to manage service requests
     val routePointController: RoutePointController = RoutePointController()
-
-    // manage response of getEvents
-    val getEventsCallback = object : Callback<Event>{
-        override fun onFailure(call: Call<Event>, t: Throwable) {
-            Log.e(TAG, "Failure getting event")
-        }
-
-        override fun onResponse(
-            call: Call<Event>,
-            response: Response<Event>
-        ) {
-            Log.e(TAG, "Success getting event")
-            val eventgot: Event? = response.body()
-            if (eventgot != null) {
-
-                for (participant in eventgot.participants){
-                    if (participant.participantUser.userId?.equals(3)!!){
-                        myParticipant=participant;
-                        myParticipant.startTime = System.currentTimeMillis()
-                    }
-                }
-
-                for (control in eventgot.eventCourse.courseControls){
-                    if (control.controlPosition==0){
-                        myControl = control
-                    }
-                }
-
-                event = eventgot
-                Log.e(TAG,event.toString())
-                for (control in event.eventCourse.courseControls){
-                    control.createLatLng()
-                }
-            }
-            addNextControl()
-        }
-    }
-
-    // manage response of upload performance
-    val uploadParticipantControlPerformanceCallback = object : Callback<StatusResponseEntity<List<ParticipantControlPerformance>>?> {
-
-        override fun onFailure(call: Call<StatusResponseEntity<List<ParticipantControlPerformance>>?>, t: Throwable) {
-            Log.e(TAG,"Failure adding pcps")
-        }
-
-        override fun onResponse(
-            call: Call<StatusResponseEntity<List<ParticipantControlPerformance>>?>,
-            response: Response<StatusResponseEntity<List<ParticipantControlPerformance>>?>
-        ) {
-            Log.e(TAG,"Success adding pcps")
-        }
-    }
-
-    // manage reponse of upload route points
-    val uploadRoutePointsCallback = object : Callback<StatusResponseEntity<List<RoutePoint>>?> {
-
-        override fun onFailure(call: Call<StatusResponseEntity<List<RoutePoint>>?>, t: Throwable) {
-            Log.e(TAG,"Failure adding RoutePoints")
-        }
-
-        override fun onResponse(
-            call: Call<StatusResponseEntity<List<RoutePoint>>?>,
-            response: Response<StatusResponseEntity<List<RoutePoint>>?>
-        ) {
-            Log.e(TAG,"Success adding RoutePoints")
-        }
-    }
 
     // google map view
     private lateinit var courseMap: GoogleMap
@@ -163,11 +94,82 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     //Last Location
     private lateinit var lastLocation: Location
 
-    //current participant
-    lateinit var myParticipant : Participant
+    // participant startTime
+    var startTime : Long = 0
+    // participant performances
+    var participantControlPerformances = mutableListOf<ParticipantControlPerformance>()
+    // participant route points
+    var participantRoutePoints = mutableListOf<RoutePoint>()
 
     // geofence performance calculator
     val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+
+    // manage response of getEvents
+    val getEventsCallback = object : Callback<Event>{
+        override fun onFailure(call: Call<Event>, t: Throwable) {
+            Log.e(TAG, "Failure getting event")
+        }
+
+        override fun onResponse(
+            call: Call<Event>,
+            response: Response<Event>
+        ) {
+            Log.e(TAG, "Success getting event")
+            val eventgot: Event? = response.body()
+            if (eventgot != null) {
+
+                startTime = System.currentTimeMillis()
+
+                for (control in eventgot.eventCourse.courseControls){
+                    if (control.controlPosition==0){
+                        myControl = control
+                    }
+                }
+                event = eventgot
+                Log.e(TAG,event.toString())
+                for (control in event.eventCourse.courseControls){
+                    control.createLatLng()
+                }
+            }
+            addNextControl()
+        }
+    }
+
+    // manage response of upload performance
+    val uploadParticipantControlPerformanceCallback = object : Callback<StatusResponseEntity<Participant>?> {
+
+        override fun onFailure(call: Call<StatusResponseEntity<Participant>?>, t: Throwable) {
+            Log.e(TAG,"Failure adding pcps")
+            val toast = Toast.makeText(this@CourseParticipationActivity,"Service Currently Unavailable, Please contact an Admin.",Toast.LENGTH_SHORT)
+            toast.show()
+        }
+
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Participant>?>,
+            response: Response<StatusResponseEntity<Participant>?>
+        ) {
+            if (response.isSuccessful){
+                val participant : Participant? = response.body()?.entity
+                Log.e(TAG,"Success adding performance")
+                val toast = Toast.makeText(this@CourseParticipationActivity,"Performance Recorded",Toast.LENGTH_SHORT)
+                toast.show()
+                val intentResults = Intent(this@CourseParticipationActivity, ViewPerformanceActivity::class.java).apply { }
+
+                if (participant != null) {
+                    intentResults.putExtra("EVENT_ID", event.eventId)
+                    startActivity(intentResults)
+                }
+
+            } else {
+                Log.e(TAG,"Failure adding performance")
+                val toast = Toast.makeText(this@CourseParticipationActivity,"Service Currently Unavailable",Toast.LENGTH_SHORT)
+                toast.show()
+            }
+
+        }
+    }
+
+
 
     /**
      * Companion object, contains permission request codes
@@ -220,11 +222,8 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
                 override fun onLocationResult(p0: LocationResult) {
                     super.onLocationResult(p0)
                     lastLocation = p0.lastLocation
-                    val routePoint = RoutePoint(myParticipant.routePoints.size,lastLocation.latitude,lastLocation.longitude)
-                    myParticipant.routePoints.add(routePoint)
-                    for (rp in myParticipant.routePoints){
-                        Log.e(TAG,rp.toString())
-                    }
+                    val routePoint = RoutePoint(participantRoutePoints.size,lastLocation.latitude,lastLocation.longitude)
+                    participantRoutePoints.add(routePoint)
                 }
             }
 
@@ -253,7 +252,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         uploadResultsButton?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 uploadParticipantControlPerformances()
-                uploadRoutePoints()
             }
         })
     }
@@ -387,8 +385,8 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private fun addPerformance(){
 
-        val participantPerformance = ParticipantControlPerformance(System.currentTimeMillis()- myParticipant.startTime!!, myControl)
-        myParticipant.participantControlPerformances.add(participantPerformance)
+        val participantPerformance = ParticipantControlPerformance(System.currentTimeMillis() - startTime, myControl)
+        participantControlPerformances.add(participantPerformance)
 
         updateList(participantPerformance.controlTime)
 
@@ -456,13 +454,9 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     fun uploadParticipantControlPerformances(){
-       pcpController.create(myParticipant.participantId,myParticipant.participantControlPerformances,uploadParticipantControlPerformanceCallback)
+        val performanceUploadRequest : PerformanceUploadRequest = PerformanceUploadRequest(startTime,participantControlPerformances,participantRoutePoints)
+        pcpController.create(event.eventId!!,App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),performanceUploadRequest, uploadParticipantControlPerformanceCallback)
     }
-
-    fun uploadRoutePoints(){
-        routePointController.create(myParticipant.participantId,myParticipant.routePoints,uploadRoutePointsCallback)
-    }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

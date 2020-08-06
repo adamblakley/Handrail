@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
+import com.orienteering.handrail.classes.Control
 import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
@@ -74,7 +75,7 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 addRoutes(participants)
                 routesMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapUtilities.determineNESW(mapUtilities.getAllParticipantRoutePoints(participants)),100))
-                addMarkers()
+                //addMarkers()
                 initRecyclerView()
             }
         }
@@ -136,8 +137,14 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * add control markers
      */
-    private fun addMarkers(){
-
+    private fun addMarkers(controls : List<Control>){
+        for (control in controls){
+            val markerOptions = MarkerOptions().position(control.controlLatLng)
+            // add marker name
+            markerOptions.title(control.controlName)
+            // add marker to map
+            routesMap.addMarker(markerOptions)
+        }
     }
 
     /**
