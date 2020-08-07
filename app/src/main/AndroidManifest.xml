@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.ViewPerformanceActivity"></activity>
+        <activity android:name=".activities.EventHistory"></activity>
+        <activity android:name=".activities.ViewPerformanceActivity" />
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".activities.WelcomeActivity">
             <intent-filter>
@@ -41,7 +42,6 @@
         <activity android:name=".activities.ResultsListActivity" />
         <activity android:name=".activities.ViewEventActivity" />
         <activity android:name=".activities.CreateEventActivity" />
-        <activity android:name=".activities.CourseActivity" />
         <activity android:name=".activities.EventsActivity" />
         <activity android:name=".activities.CoursesActivity" />
         <!--
@@ -64,7 +64,7 @@
             android:label="@string/title_activity_course_participation" />
         <activity
             android:name=".activities.HomeActivity"
-            android:label="Handrail"></activity>
+            android:label="Handrail" />
 
         <receiver
             android:name=".utilities.GeofenceBroadcastReceiver"

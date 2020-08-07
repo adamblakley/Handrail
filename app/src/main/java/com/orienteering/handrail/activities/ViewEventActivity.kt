@@ -478,7 +478,7 @@ class ViewEventActivity : AppCompatActivity() {
         var userIsParticipant : Boolean = false
         if (!event.participants.isEmpty()) {
             for (participant in event.participants) {
-                if (participant.participantUser.userId?.equals(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0))!!) {
+                if (participant.participantUser.userId?.equals(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0))!! && participant.participantControlPerformances.isEmpty()) {
                     userIsParticipant = true
                 }
             }

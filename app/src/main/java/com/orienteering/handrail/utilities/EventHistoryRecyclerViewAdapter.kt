@@ -13,31 +13,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.ViewEventActivity
+import com.orienteering.handrail.activities.ViewPerformanceActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class EventsRecyclerViewAdapter(eventNames : MutableList<String>, eventNotes: MutableList<String>, eventImages: MutableList<String>, eventIds : List<Int?>, context: Context) : RecyclerView.Adapter<EventsRecyclerViewAdapter.ViewHolder>() {
+class EventHistoryRecyclerViewAdapter(eventNames : MutableList<String>, eventImages: MutableList<String>, eventIds : List<Int?>, context: Context): RecyclerView.Adapter<EventHistoryRecyclerViewAdapter.ViewHolder>() {
 
     private val TAG : String = "ERVAdapter"
 
     var eventNames = mutableListOf<String>()
-    var eventNotes = mutableListOf<String>()
     var eventImages = mutableListOf<String>()
     var eventIds = mutableListOf<Int>()
     var context : Context
 
-
-
     init {
         this.eventNames = eventNames
-        this.eventNotes = eventNotes
         this.eventImages = eventImages
         this.eventIds = eventIds as MutableList<Int>
         this.context = context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_event_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_event_history_item,parent,false)
         val viewHolder = ViewHolder(view)
         return viewHolder
     }
@@ -49,50 +45,46 @@ class EventsRecyclerViewAdapter(eventNames : MutableList<String>, eventNotes: Mu
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.e(TAG,"onBindViewHolder: Called")
 
-        val options : RequestOptions  = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(
+            R.mipmap.ic_launcher_round)
 
         if (eventImages.size>=1){
             Glide.with(context)
                 .asBitmap()
                 .load(eventImages.get(position))
                 .apply(options)
-                .into(holder.eventimage)
+                .into(holder.image)
         }
 
-        holder.eventName.text = eventNames[position]
-        holder.eventNote.text = eventNotes[position]
-        holder.eventButton.setOnClickListener(object : View.OnClickListener {
+        holder.imageName.text = eventNames[position]
+        holder.viewButton.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(view: View?) {
                 Log.e(TAG,"onClick : clicked ${eventNames[position]}")
 
-                val intent = Intent(context, ViewEventActivity::class.java).apply {}
+                val intent = Intent(context, ViewPerformanceActivity::class.java).apply {}
 
                 intent.putExtra("EVENT_ID", eventIds[position])
 
                 view?.context?.startActivity(intent)
-
             }
         })
     }
-
 
     /**
      *     View Holder holds widgets in memory of each item
      */
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-        var eventimage : CircleImageView
-        var eventName : TextView
-        var eventNote : TextView
-        var eventButton : Button
+        var image : CircleImageView
+        var imageName : TextView
+        var viewButton : Button
         var parentLayout : RelativeLayout
 
         init{
-            eventimage = itemView.findViewById(R.id.imageCircle_event_item_image)
-            eventName = itemView.findViewById(R.id.textView_event_item_name)
-            eventNote = itemView.findViewById(R.id.textView_event_item_note)
-            eventButton = itemView.findViewById(R.id.button_event_item_open)
+            image = itemView.findViewById(R.id.imageCircle_event_history_image)
+            imageName = itemView.findViewById(R.id.textView_event_history_name)
+            viewButton = itemView.findViewById(R.id.button_event_history_view)
             parentLayout = itemView.findViewById(R.id.parent_layout)
         }
 

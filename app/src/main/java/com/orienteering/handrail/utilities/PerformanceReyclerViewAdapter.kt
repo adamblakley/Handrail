@@ -15,12 +15,12 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.ViewEventActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, controlPositions : MutableList<String>, controlNames: MutableList<String>, performanceTimes: MutableList<String>, context: Context) : RecyclerView.Adapter<PerformanceReyclerViewAdapter.ViewHolder>() {
+class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, controlPositions : MutableList<Int>, controlNames: MutableList<String>, performanceTimes: MutableList<String>, context: Context) : RecyclerView.Adapter<PerformanceReyclerViewAdapter.ViewHolder>() {
 
     private val TAG = "PerformanceRVA"
 
     var controlImages = mutableListOf<String>()
-    var controlPositions = mutableListOf<String>()
+    var controlPositions = mutableListOf<Int>()
     var controlNames = mutableListOf<String>()
     var performanceTimes = mutableListOf<String>()
     var performanceDistance = mutableListOf<Float>()
@@ -36,7 +36,7 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_results_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_performance_item,parent,false)
         val viewHolder = ViewHolder(view)
         return viewHolder
     }
@@ -57,18 +57,12 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
                 .into(holder.image)
         }
 
-        holder.name.text=participantNames[position]
-        holder.time.text=participantTimes[position]
-        holder.position.text=participantPositions[position].toString()
+        holder.name.text=controlNames[position]
+        holder.time.text=performanceTimes[position]
+        holder.position.text=controlPositions[position].toString()
         holder.parentLayout.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
-                Log.e(TAG,"onClick : clicked ${participantNames[position]}")
 
-                val intent = Intent(context, ViewEventActivity::class.java).apply {}
-
-                intent.putExtra("PARTICIPANT_ID", participantIds[position])
-
-                view?.context?.startActivity(intent)
             }
         })
 
@@ -86,18 +80,12 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
         var parentLayout : RelativeLayout
 
         init{
-            image = itemView.findViewById(R.id.results_image)
-            name = itemView.findViewById(R.id.results_name)
-            time = itemView.findViewById(R.id.results_time)
-            position = itemView.findViewById(R.id.results_position)
+            image = itemView.findViewById(R.id.imageView_performance_control)
+            name = itemView.findViewById(R.id.textView_performance_control_name)
+            time = itemView.findViewById(R.id.textView_performance_control_time)
+            position = itemView.findViewById(R.id.textView_performance_control_position)
             parentLayout = itemView.findViewById(R.id.parent_layout)
         }
 
     }
-
-    override fun onBindViewHolder(holder: RecyclerViewAdapter.ViewHolder, position: Int) {
-        TODO("Not yet implemented")
-    }
-
-
 }

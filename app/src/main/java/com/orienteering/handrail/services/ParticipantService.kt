@@ -30,6 +30,6 @@ interface ParticipantService {
     @PUT("/events/{id}/removeparticipant")
     fun removeParticipant(@Path("id") eventId: Int, @Body userId: Long): Call<StatusResponseEntity<Event>>
 
-    @GET("/events/{eventId}/users/{userId}/performances")
-    fun getPerformance(@Path("eventId") eventId: Int, @Path("userId") userId: Long) : Call<StatusResponseEntity<PerformanceResponse>>
+    @GET("/events/{eventId}/users/{userId}/participants")
+    fun getPerformance(@Path("eventId") eventId: Int, @Path("userId") userId: Long) : Call<StatusResponseEntity<Participant>>
 }

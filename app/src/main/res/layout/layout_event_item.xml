@@ -4,7 +4,7 @@
     android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageCircle_course_item_image"
+        android:id="@+id/imageCircle_event_item_image"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignParentStart="true"
@@ -17,19 +17,30 @@
         android:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:id="@+id/textView_course_item_name"
+        android:id="@+id/textView_event_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="25dp"
-        android:layout_toRightOf="@id/imageCircle_course_item_image"
-        android:text="Course"
+        android:layout_toRightOf="@id/imageCircle_event_item_image"
+        android:text="Event"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/textView_event_item_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_event_item_name"
+        android:layout_toRightOf="@id/imageCircle_event_item_image"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="10dp"
+        android:text="No Description"
+        android:textSize="12sp" />
+
     <Button
-        android:id="@+id/button_course_item_open"
+        android:id="@+id/button_event_item_open"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -39,8 +50,8 @@
         android:layout_marginLeft="85dp"
         android:layout_marginEnd="35dp"
         android:layout_marginRight="35dp"
-        android:layout_toEndOf="@+id/textView_course_item_name"
-        android:layout_toRightOf="@+id/textView_course_item_name"
+        android:layout_toEndOf="@+id/textView_event_item_name"
+        android:layout_toRightOf="@+id/textView_event_item_name"
         android:text="Open" />
 
 

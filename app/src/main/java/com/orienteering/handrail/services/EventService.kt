@@ -24,6 +24,9 @@ interface EventService {
     @GET("events")
     fun readAll(): Call<StatusResponseEntity<List<Event>>>
 
+    @GET("users/{id}/events/history")
+    fun readAllByUserHistory (@Path("id") id : Long): Call<StatusResponseEntity<List<Event>>>
+
     @DELETE("events{id}/delete")
     fun deleteEvent(@Path("id") id : Int?) : Call<StatusResponseEntity<Boolean>>
 

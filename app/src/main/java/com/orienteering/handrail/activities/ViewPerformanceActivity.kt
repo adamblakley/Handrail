@@ -12,10 +12,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Control
-import com.orienteering.handrail.classes.Event
-import com.orienteering.handrail.classes.PerformanceResponse
-import com.orienteering.handrail.classes.RoutePoint
+import com.orienteering.handrail.classes.*
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.*
@@ -28,16 +25,11 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     // TAG for log
     val TAG = "ViewPerformanceActivity"
 
-    lateinit var participantPerformance : PerformanceResponse
+    lateinit var participant : Participant
     // participant id passed as intent extra
     var eventId : Int? = null
-    //participant time
-    var mTime = mutableListOf<String>()
-    // image urls for controls
-    var mImageUrls = mutableListOf<String>()
-    // distance ran between controls
-    var mDistance = mutableListOf<String>()
-    // recycler view for performances
+    // course controls
+    var controls = mutableListOf<Control>()
     lateinit var recyclerView : RecyclerView
 
     // google map view
@@ -54,19 +46,23 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     private val runningQOrLater = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
 
     // manage response of getEvents
-    val getPerformanceCallback = object : Callback<StatusResponseEntity<PerformanceResponse>> {
-        override fun onFailure(call: Call<StatusResponseEntity<PerformanceResponse>>, t: Throwable) {
+    val getParticipantCallback = object : Callback<StatusResponseEntity<Participant>> {
+        override fun onFailure(call: Call<StatusResponseEntity<Participant>>, t: Throwable) {
             Log.e(TAG, "Failure getting performance")
         }
         override fun onResponse(
-            call: Call<StatusResponseEntity<PerformanceResponse>>,
-            response: Response<StatusResponseEntity<PerformanceResponse>>
+            call: Call<StatusResponseEntity<Participant>>,
+            response: Response<StatusResponseEntity<Participant>>
         ) {
             if (response.isSuccessful){
                 Log.e(TAG, "Success getting performance")
-                participantPerformance = response.body()?.entity!!
-                addMarkers(participantPerformance.controls)
-                addRoute(participantPerformance.routePoints)
+                participant = response.body()?.entity!!
+                for (performance in participant.participantControlPerformances){
+                    performance.pcpControl.createLatLng()
+                    controls.add(performance.pcpControl)
+                }
+                addMarkers(controls)
+                addRoute(participant.routePoints)
                 initRecyclerView()
             } else {
                 Log.e(TAG, "Failure getting performance")
@@ -77,14 +73,16 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_performance)
-        val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_route_results) as SupportMapFragment
-
-        getParticipantPerformance()
+        val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_route_performance) as SupportMapFragment
 
         if(intent.extras!=null) {
             mapCourseFragment.getMapAsync(this)
             eventId = intent.getSerializableExtra("EVENT_ID") as Int
         }
+
+        getParticipantPerformance()
+
+
     }
 
     /**
@@ -130,7 +128,7 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
      *
      */
     fun getParticipantPerformance(){
-        participantController.getParticipantPerformance(eventId!!, App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0), getPerformanceCallback)
+        participantController.getParticipant(eventId!!,(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0)),getParticipantCallback)
     }
 
     /**
@@ -147,6 +145,7 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
         for (routePoint in routePoints){
             var route : MutableList<LatLng> = mutableListOf()
             for (routePoint in routePoints){
+                routePoint.createLatLng()
                 route.add(routePoint.latlng)
             }
 
@@ -176,13 +175,37 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     /**
+     *
      * initialises recycler view of participants
      */
     private fun initRecyclerView(){
+        // control names
+        var controlNames = mutableListOf<String>()
+        // control positions
+        var controlPositions = mutableListOf<Int>()
+        // image urls for controls
+        var imageUrls = mutableListOf<String>()
+        // participant time
+        var times = mutableListOf<String>()
+        // distance ran between controls
+        var distances = mutableListOf<Float>()
+        // recycler view for performances
+
+        for (control in controls){
+            if (control.controlPhotograph!=null){
+                imageUrls.add(control.controlPhotograph.photoPath)
+            }
+            controlPositions.add(control.controlPosition!!)
+            controlNames.add(control.controlName!!)
+        }
+
+        for (performance in participant.participantControlPerformances){
+            times.add(geofencePerformanceCalculator.convertMilliToMinutes(performance.controlTime))
+        }
+
         Log.e(TAG,"initReyclerView")
         recyclerView = findViewById(R.id.rv_route_performance)
-        val mIdsToList = mIds.toList()
-        val adapter = ResultsRecylcerViewAdapter(mNames,mTime,mImageUrls,mIdsToList,mPosition,this)
+        val adapter = PerformanceReyclerViewAdapter(imageUrls,controlPositions,controlNames,times,this)
         recyclerView.adapter=adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }

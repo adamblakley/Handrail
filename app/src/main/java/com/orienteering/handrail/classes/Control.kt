@@ -14,6 +14,7 @@ class Control(controlName : String, controlNote : String, controlLatitude : Doub
     var controlLongitude : Double? = null
     var controlLatLng: LatLng
     var controlAltitude: Double? = null
+    lateinit var controlPhotograph: Photograph
 
     init {
         this.controlLatitude = controlLatitude

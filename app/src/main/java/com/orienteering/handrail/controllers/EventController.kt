@@ -60,6 +60,11 @@ class EventController {
         call.enqueue(callback)
     }
 
+    fun retreiveByUserHistory(id : Long, callback: Callback<StatusResponseEntity<List<Event>>>){
+        val call = eventService.readAllByUserHistory(id)
+        call.enqueue(callback)
+    }
+
     /**
      * update event status
      *

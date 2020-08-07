@@ -68,7 +68,7 @@ class ParticipantController {
      * @param userId
      * @param callback
      */
-    fun getParticipantPerformance(eventId: Int, userId: Long,callback: Callback<StatusResponseEntity<PerformanceResponse>>){
+    fun getParticipant(eventId: Int, userId: Long,callback: Callback<StatusResponseEntity<Participant>>){
         val call = participantService.getPerformance(eventId,userId)
         call.enqueue(callback)
     }

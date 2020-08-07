@@ -29,5 +29,5 @@ interface CourseService {
     fun readAll(): Call<List<Course>>
 
     @GET("users/{id}/courses")
-    fun readAllByUser(@Path("id")userID : Long): Call<List<Course>>
+    fun readAllByUser(@Path("id")userID : Long): Call<StatusResponseEntity<List<Course>?>>
 }

@@ -130,17 +130,17 @@ class CreateEventActivity : AppCompatActivity() {
     }
 
     // callback to manage course request response
-    val getCoursesCallback = object : retrofit2.Callback<List<Course>?> {
-        override fun onFailure(call: Call<List<Course>?>, t: Throwable) {
+    val getCoursesCallback = object : retrofit2.Callback<StatusResponseEntity<List<Course>?>> {
+        override fun onFailure(call: Call<StatusResponseEntity<List<Course>?>>, t: Throwable) {
             Log.e(TAG, "Failure getting courses")
         }
         override fun onResponse(
-            call: Call<List<Course>?>,
-            response: Response<List<Course>?>
+            call: Call<StatusResponseEntity<List<Course>?>>,
+            response: Response<StatusResponseEntity<List<Course>?>>
         ) {
             Log.e(TAG, "Success getting courses")
             val courses = mutableListOf<Course>()
-            val coursegot: List<Course>? = response.body()
+            val coursegot: List<Course>? = response.body()?.entity
             if (coursegot != null) {
                 for (course in coursegot) {
                     courses.add(course)

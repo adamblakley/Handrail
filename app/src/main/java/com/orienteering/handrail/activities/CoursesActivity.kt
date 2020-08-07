@@ -5,24 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.GoogleMap
-import com.orienteering.handrail.*
+import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Course
 import com.orienteering.handrail.controllers.CourseController
-import com.orienteering.handrail.services.CourseService
-import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.utilities.CoursesRecyclerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class CoursesActivity : AppCompatActivity() {
-
-    // Class TAG
-    val TAG : String = "CourseActivity"
-
-    // Google Map view
-    private lateinit var courseMap: GoogleMap
 
     // Course Controller
     lateinit var courseController: CourseController
@@ -46,7 +37,6 @@ class CoursesActivity : AppCompatActivity() {
         }
     }
 
-
     var mNames = mutableListOf<String>()
     var mNotes = mutableListOf<String>()
     var mIds = mutableListOf<Int?>()
@@ -57,21 +47,12 @@ class CoursesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_courses)
 
         this.courseController= CourseController()
-        initImageBitmaps()
-    }
-
-
-    private fun initImageBitmaps(){
-        Log.e(TAG,"Prepping bitmaps")
         getCourses()
     }
 
     private fun initRecyclerView(){
-        Log.e(TAG,"initReyclerView")
         val recyclerView : RecyclerView = findViewById(R.id.rv_courses)
-        val mIdsToList = mIds.toList()
-        val adapter = CoursesRecyclerViewAdapter(mNames,mNotes,mImageUrls,mIdsToList,this)
-        Log.e(TAG,"$mNames")
+        val adapter = CoursesRecyclerViewAdapter(mNames,mImageUrls,mIds,this)
         recyclerView.adapter=adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
