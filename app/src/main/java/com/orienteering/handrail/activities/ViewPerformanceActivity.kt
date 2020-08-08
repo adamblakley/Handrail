@@ -104,7 +104,7 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setUpMap() {
 
         Log.e(TAG,"Setting Up Map")
-        performanceMap.isMyLocationEnabled = true
+        performanceMap.isMyLocationEnabled = false
         performanceMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
 
         if(PermissionManager.checkPermission(this,this@ViewPerformanceActivity,

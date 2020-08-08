@@ -8,6 +8,7 @@ class Course(courseControls: List<Control>, courseName : String )  : Serializabl
 
     val courseId : Int? = null
     var courseName : String
+    var courseNote : String? = null
     lateinit var courseDate : String
     var courseControls = mutableListOf<Control>()
 

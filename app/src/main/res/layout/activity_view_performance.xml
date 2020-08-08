@@ -28,7 +28,12 @@
             android:id="@+id/textView_position_performance"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:text="Position Unavailable: Event Ongoing" />
+            android:text="Position Unavailable: Event Ongoing"
+            android:gravity="center"
+            android:scrollHorizontally="true"
+            android:ellipsize="end"
+            android:textSize="20sp"
+            android:singleLine="true" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_route_performance"

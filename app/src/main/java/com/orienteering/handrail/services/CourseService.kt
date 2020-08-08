@@ -23,7 +23,7 @@ interface CourseService {
     ) : Call<StatusResponseEntity<Course>>
 
     @GET("courses/{id}")
-    fun read(@Path("id") courseID : Int) : Call<Course>
+    fun read(@Path("id") courseID : Int) : Call<StatusResponseEntity<Course>>
 
     @GET("courses")
     fun readAll(): Call<List<Course>>

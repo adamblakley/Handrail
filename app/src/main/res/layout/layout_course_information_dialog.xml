@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp">
+
+
+    <TextView
+        android:id="@+id/textView_course_info_name"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="25dp"
+        android:text="No Name Available"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView_course_info_note"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/textView_course_info_name"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="10dp"
+        android:scrollbars="vertical"
+        android:text="No Note Available" />
+
+    <TextView
+        android:id="@+id/textView_course_info_altitude"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_course_info_note"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="10dp"
+        android:text="No Average Altitude Available"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView_course_info_distance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_course_info_altitude"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="10dp"
+        android:text="No Total Distance Available"
+        android:textSize="20sp" />
+
+</RelativeLayout>

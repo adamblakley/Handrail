@@ -116,7 +116,7 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setUpMap() {
 
         Log.e(TAG,"Setting Up Map")
-        routesMap.isMyLocationEnabled = true
+        routesMap.isMyLocationEnabled = false
         routesMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
 
         if(PermissionManager.checkPermission(this,this@ViewTopRoutesActivity,

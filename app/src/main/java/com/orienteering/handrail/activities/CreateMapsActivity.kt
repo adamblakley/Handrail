@@ -40,9 +40,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnPolylineClickListener, GoogleMap.OnPolygonClickListener,
-    ExampleDialogListener, EventDialogListener {
+class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnPolygonClickListener, ExampleDialogListener, EventDialogListener {
 
 
     /**
@@ -148,8 +146,7 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
         setContentView(com.orienteering.handrail.R.layout.activity_maps)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        mapFragment = supportFragmentManager
-            .findFragmentById(com.orienteering.handrail.R.id.map_course_create) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_course_create) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         //create fusedLocationClient
@@ -314,7 +311,6 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
         markerDialog.show(mapFragment.childFragmentManager, "ViewMarkerDialog")
 
         return false
-
     }
 
     override fun onPolylineClick(p0: Polyline?) {

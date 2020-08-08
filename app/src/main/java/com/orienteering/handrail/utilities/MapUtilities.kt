@@ -3,6 +3,7 @@ package com.orienteering.handrail.utilities
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.orienteering.handrail.classes.Control
 import com.orienteering.handrail.classes.Participant
 
 class MapUtilities {
@@ -30,13 +31,49 @@ class MapUtilities {
     }
 
     fun getAllParticipantRoutePoints(participants: List<Participant>) : MutableList<LatLng> {
-        var allLatLngs : MutableList<LatLng> = mutableListOf()
+        var allLatLngs : MutableList<LatLng> = mutableListOf<LatLng>()
         for (participant in participants){
             for (routePoint in participant.routePoints){
                 allLatLngs.add(routePoint.latlng)
             }
         }
         return allLatLngs
+    }
+
+    fun getAllControlPoints(controls : List<Control>) : MutableList<LatLng>{
+        var allLatLngs : MutableList<LatLng> = mutableListOf()
+        for (control in controls){
+            control.createLatLng()
+            allLatLngs.add(control.controlLatLng)
+        }
+        return allLatLngs
+    }
+
+    fun calculateTotalDistance(latlngs : MutableList<LatLng>) : Double {
+        val radius: Int = 6371
+        var totalDistance : Double = 0.0
+
+        for (position in 0..latlngs.size-2){
+
+            val latDistance = Math.toRadians(latlngs[position+1].latitude - latlngs[position].latitude)
+            val lngDistance = Math.toRadians(latlngs[position+1].longitude - latlngs[position].longitude)
+
+            val a: Double = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                    Math.cos(Math.toRadians(latlngs[position].latitude)) * Math.cos(
+                Math.toRadians(
+                    latlngs[position+1].latitude
+                )
+            ) *
+                    Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2)
+
+            val c: Double = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+            var calculatedDistance: Double = radius * c * 1000
+
+            calculatedDistance = Math.pow(calculatedDistance, 2.0) + Math.pow(0.0, 2.0)
+            totalDistance+=Math.sqrt(calculatedDistance)
+        }
+
+        return totalDistance
     }
 
 }
