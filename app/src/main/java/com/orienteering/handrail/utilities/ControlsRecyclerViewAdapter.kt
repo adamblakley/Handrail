@@ -22,11 +22,20 @@ class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Cont
     private val TAG : String = "ControlRVAdapter"
 
     var controls : MutableList<Control> = mutableListOf<Control>()
+    var imagePaths : Array<String?>
     var context : Context
 
     init {
         this.context = context
         this.controls=controls
+        this.imagePaths = arrayOfNulls(controls.size)
+
+        for(control in controls){
+            if (control.isControlPhotographInitialised()){
+                imagePaths.set(controls.indexOf(control),control.controlPhotograph.photoPath)
+            }
+        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,7 +55,7 @@ class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Cont
             Glide.with(context)
                 .asBitmap()
                 .apply(options)
-                .load(controls.get(position).controlPhotograph.photoPath)
+                .load(imagePaths[position])
                 .into(holder.controlImage)
         }
         holder.controlPosition.text = controls.get(position).controlPosition.toString()

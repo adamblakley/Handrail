@@ -369,12 +369,12 @@ class ViewEventActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 
         val dateformatted = sdf.parse(event.eventDate)
-        Log.e(TAG, "$dateformatted")
+
         val dateFormatter = SimpleDateFormat("dd-MM-YYYY")
         val timeFormatter = SimpleDateFormat("HH:mm")
 
         val date: String = dateFormatter.format(dateformatted)
-        Log.e(TAG, "$date")
+
         val time: String = timeFormatter.format(dateformatted)
 
         eventDateTextView.text = date

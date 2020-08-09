@@ -25,6 +25,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var buttonCreateEvent: Button
     lateinit var buttonEventHistory: Button
     lateinit var buttonViewCourses: Button
+    lateinit var buttonEditProfile: Button
     lateinit var buttonLogout: Button
 
 
@@ -38,6 +39,7 @@ class HomeActivity : AppCompatActivity() {
         buttonCreateEvent = findViewById<Button>(R.id.btn_create_event)
         buttonEventHistory = findViewById<Button>(R.id.btn_view_performances)
         buttonViewCourses = findViewById<Button>(R.id.btn_view_courses)
+        buttonEditProfile = findViewById(R.id.btn_edit_profile)
         buttonLogout = findViewById<Button>(R.id.btn_logout)
 
 
@@ -63,19 +65,7 @@ class HomeActivity : AppCompatActivity() {
             }
         })
 
-        buttonLogout?.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
 
-                val sharedPreferences = App.sharedPreferences
-                val sharedPreferencesEditor = sharedPreferences.edit()
-                sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
-                sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
-                sharedPreferencesEditor.remove(App.SharedPreferencesUserId).commit()
-                val intent = Intent(this@HomeActivity, WelcomeActivity::class.java).apply {}
-                startActivity(intent)
-            }
-
-        })
 
         buttonEventHistory?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -92,6 +82,29 @@ class HomeActivity : AppCompatActivity() {
             }
 
         })
+
+        buttonEditProfile?.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                val intent = Intent(this@HomeActivity, EditProfileActivity::class.java).apply {}
+                startActivity(intent)
+            }
+
+        })
+
+        buttonLogout?.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+
+                val sharedPreferences = App.sharedPreferences
+                val sharedPreferencesEditor = sharedPreferences.edit()
+                sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
+                sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
+                sharedPreferencesEditor.remove(App.SharedPreferencesUserId).commit()
+                val intent = Intent(this@HomeActivity, WelcomeActivity::class.java).apply {}
+                startActivity(intent)
+            }
+
+        })
+
     }
 }
 

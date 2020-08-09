@@ -2,14 +2,16 @@ package com.orienteering.handrail.classes
 
 import com.google.android.gms.maps.model.LatLng
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.*
 
-class Control(controlName : String, controlNote : String, controlLatitude : Double, controlLongitude : Double, controlAltitude : Double)  : Serializable {
+class Control(controlName : String, controlNote : String, controlLatitude : Double, controlLongitude : Double, controlAltitude : Double, controlTime : Date)  : Serializable {
 
     var controlId : Int? = null
     var controlPosition : Int? = null
     var controlName: String
     var controlNote : String
-    var controlTime : Long? = null
+    var controlTime : String
     var controlLatitude : Double? = null
     var controlLongitude : Double? = null
     var controlLatLng: LatLng
@@ -22,9 +24,12 @@ class Control(controlName : String, controlNote : String, controlLatitude : Doub
         this.controlName = controlName
         this.controlNote = controlNote
         this.controlLatLng = LatLng(controlLatitude,controlLongitude)
-        this.controlAltitude=controlAltitude
         this.controlAltitude = controlAltitude
+        val sdf2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+        this.controlTime = sdf2.format(controlTime)
     }
+
+    fun isControlPhotographInitialised() = ::controlPhotograph.isInitialized
 
     fun createLatLng(){
         this.controlLatLng = controlLongitude?.let { controlLatitude?.let { it1 -> LatLng(it1, it) } }!!

@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.CourseActivity"></activity>
+        <activity android:name=".activities.EditProfileActivity"></activity>
+        <activity android:name=".activities.CourseActivity" />
         <activity android:name=".activities.EventHistory" />
         <activity android:name=".activities.ViewPerformanceActivity" />
         <activity android:name=".activities.SignupActivity" />

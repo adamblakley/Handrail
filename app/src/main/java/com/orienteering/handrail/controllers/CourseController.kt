@@ -36,4 +36,8 @@ class CourseController {
         call.enqueue(callback)
     }
 
+    fun deleteCourse(id : Int, callback: Callback<StatusResponseEntity<Boolean>>){
+        val call = courseService.deleteCourse(id)
+        call.enqueue(callback)
+    }
 }

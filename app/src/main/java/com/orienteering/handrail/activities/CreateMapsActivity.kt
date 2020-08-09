@@ -359,12 +359,14 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
      * Save placed marker details to course variable
      */
     fun createControl(name: String, note: String) {
+        val calendar = java.util.Calendar.getInstance()
+        val date = calendar.time
         val control = Control(
             name,
             note,
             potentialLatLng.latitude,
             potentialLatLng.longitude,
-            potentialAltitude
+            potentialAltitude, date
         )
         controlsForCourse.add(control)
         control.controlPosition = controlsForCourse.size

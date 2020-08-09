@@ -23,11 +23,14 @@ interface CourseService {
     ) : Call<StatusResponseEntity<Course>>
 
     @GET("courses/{id}")
-    fun read(@Path("id") courseID : Int) : Call<StatusResponseEntity<Course>>
+    fun read(@Path("id") courseId : Int) : Call<StatusResponseEntity<Course>>
 
     @GET("courses")
     fun readAll(): Call<List<Course>>
 
     @GET("users/{id}/courses")
     fun readAllByUser(@Path("id")userID : Long): Call<StatusResponseEntity<List<Course>?>>
+
+    @PUT("courses/{id}/delete")
+    fun deleteCourse(@Path("id") courseId : Int) : Call<StatusResponseEntity<Boolean>>
 }

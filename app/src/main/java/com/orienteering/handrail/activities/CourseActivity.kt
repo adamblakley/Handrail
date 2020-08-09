@@ -1,12 +1,16 @@
 package com.orienteering.handrail.activities
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -55,6 +59,7 @@ class CourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
     // participant controller to manage participant services
     val courseController = CourseController()
 
+
     // check if running Q or later
     // additional permission required if so
     private val runningQOrLater = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
@@ -62,7 +67,9 @@ class CourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
     // manage response of getEvents
     val getCourseCallback = object : Callback<StatusResponseEntity<Course>> {
         override fun onFailure(call: Call<StatusResponseEntity<Course>>, t: Throwable) {
-            Log.e(TAG, "Failure getting performance")
+            Log.e(TAG, "Failure Connecting To Service")
+            val toast = Toast.makeText(this@CourseActivity,"Error: Unable to connect to service",Toast.LENGTH_SHORT)
+            toast.show()
         }
         override fun onResponse(
             call: Call<StatusResponseEntity<Course>>,
@@ -84,6 +91,34 @@ class CourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
                 initRecyclerView()
             } else {
                 Log.e(TAG, "Failure getting course")
+                val toast = Toast.makeText(this@CourseActivity,"Error: Unable to retrieve Course information",Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+    }
+
+    // manage response of getEvents
+    val deleteCourseCallback = object : Callback<StatusResponseEntity<Boolean>> {
+        override fun onFailure(call: Call<StatusResponseEntity<Boolean>>, t: Throwable) {
+            Log.e(TAG, "Failure Connecting To Service")
+            val toast = Toast.makeText(this@CourseActivity,"Error: Unable to connect to service",Toast.LENGTH_SHORT)
+            toast.show()
+        }
+        override fun onResponse(
+            call: Call<StatusResponseEntity<Boolean>>,
+            response: Response<StatusResponseEntity<Boolean>>
+        ) {
+            if (response.isSuccessful){
+                Log.e(TAG, "Success deleting course")
+                val toast = Toast.makeText(this@CourseActivity,"Course successfully deleted",Toast.LENGTH_SHORT)
+                toast.show()
+
+                val intent : Intent = Intent(this@CourseActivity,CoursesActivity::class.java)
+                startActivity(intent)
+            } else {
+                Log.e(TAG, "Failure deleting course")
+                val toast = Toast.makeText(this@CourseActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT)
+                toast.show()
             }
         }
     }
@@ -145,18 +180,21 @@ class CourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
         }
 
         buttonExport.setOnClickListener() {
-
+            buildGPXRequest()
         }
 
         buttonDelete.setOnClickListener() {
-
+            courseController.deleteCourse(courseId!!,deleteCourseCallback)
         }
     }
 
     fun displayControlDialog(control : Control){
         val nameOfControl: String? = control.controlName
         var positionOfControl: Int? = control.controlPosition
-        var imagePathOfControl: String? = control.controlPhotograph.photoPath
+        var imagePathOfControl: String? = null
+        if (control.isControlPhotographInitialised()){
+            imagePathOfControl=control.controlPhotograph.photoPath
+        }
         var NoteOfControl: String? = control.controlNote
 
         val markerDialog : ViewMarkerCourseControlDialog = ViewMarkerCourseControlDialog(nameOfControl, NoteOfControl, positionOfControl, imagePathOfControl)
@@ -205,6 +243,24 @@ class CourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
      */
     fun getCourse(){
         courseController.retrieve(courseId!!,getCourseCallback)
+    }
+
+    /**
+     * Check build version
+     * Request GPX Build with GPXBuilder
+     */
+    fun buildGPXRequest(){
+        // utilities to build gpx file on request
+        val gpxBuilder = GPXBuilder(this@CourseActivity)
+
+        // check build version
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            gpxBuilder.buildGPX(course.courseControls)
+        } else {
+            Log.e(TAG,"GPX File Build Device Incompatible")
+            val toast = Toast.makeText(this@CourseActivity,"Error: Incompatible device",Toast.LENGTH_SHORT)
+            toast.show()
+        }
     }
 
     /**

@@ -4,50 +4,77 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.orienteering.handrail.utilities.App.AppCompanion.context
 import com.orienteering.handrail.classes.Control
 import java.io.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.util.*
 
-class GPXBuilder(context : Context, controls :MutableList<Control>)  {
+/**
+ * GPX File Writer to handle file writing of GPX File
+ *
+ * @constructor
+ *
+ * @param context
+ */
+class GPXBuilder(context : Context)  {
 
-    val controls : MutableList<Control> = controls
+    // Context used in creation of file directory
+    var context : Context = context
 
+    /**
+     * Check external storage permissions
+     * @return
+     */
     fun checkExternalStoragePermission() : Boolean{
-
         val state : String = Environment.getExternalStorageState()
-        if (Environment.MEDIA_MOUNTED.equals(state)){
-            return true
-        } else {
-            return false
-        }
+        return Environment.MEDIA_MOUNTED.equals(state)
     }
 
+    /**
+     * Build a GPX file according to list of control objects
+     * Use www.topograpfix.com schema
+     * @param controls
+     */
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    fun buildGPX(){
+    fun buildGPX(controls :MutableList<Control>){
 
         val permission = checkExternalStoragePermission()
-
+        val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
         Log.e("FileWriter","Permission check = $permission")
-
-        val header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n"
-        val name = "<name>" + "MyControls" + "</name><trkseg>\n";
-        var segments = ""
-        val df: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+        val fileName = "$timeStamp.gpx"
+        val gpxHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Handrail\" version=\"1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n"
+        val gpxName = "<name>" + "My Controls $timeStamp" + "</name><trkseg>\n";
+        var controlSegments = ""
 
         for (control in controls){
-            segments += "<trkpt lat=\"" + control.controlLatitude + "\" lon=\"" + control.controlLongitude + "\">" +
-                    //"<time>" + df.format(control.time) + "</time>" +
+            val formattedDate : String = control.controlTime.substring(0,23)+'Z'
+            controlSegments += "<trkpt lat=\"" + control.controlLatitude + "\" lon=\"" + control.controlLongitude + "\">" +
+                    "<time>" + formattedDate + "</time>" +
                     "</trkpt>\n"
         }
 
-        val footer = "</trkseg></trk></gpx>"
+        val gpxfooter = "</trkseg></trk></gpx>"
 
+        saveGPX(fileName,gpxHeader,gpxName,controlSegments,gpxfooter)
+    }
+
+    /**
+     * Save GPX File
+     *
+     * @param fileName
+     * @param gpxHeader
+     * @param gpxName
+     * @param controlSegments
+     * @param gpxFooter
+     */
+    fun saveGPX(fileName : String, gpxHeader : String, gpxName : String, controlSegments : String, gpxFooter : String){
         try{
             val folder : File? = context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-            var file : File = File(folder, "example.gpx")
+            var file : File = File(folder, fileName)
 
             if (!file.exists()){
                 file.createNewFile()
@@ -56,31 +83,31 @@ class GPXBuilder(context : Context, controls :MutableList<Control>)  {
                 Log.e("filewriter", "file exists")
             }
 
-            val fileWriter : FileWriter = FileWriter(file)
-            val bufferedWriter : BufferedWriter = BufferedWriter(fileWriter)
-
             val fileOutputSteam = FileOutputStream(file)
-
-
 
             if (fileOutputSteam != null) {
 
-                fileOutputSteam.write(header.toByteArray())
-                fileOutputSteam.write(name.toByteArray())
-                fileOutputSteam.write(segments.toByteArray())
-                fileOutputSteam.write(footer.toByteArray())
+                fileOutputSteam.write(gpxHeader.toByteArray())
+                fileOutputSteam.write(gpxName.toByteArray())
+                fileOutputSteam.write(controlSegments.toByteArray())
+                fileOutputSteam.write(gpxFooter.toByteArray())
 
-                Log.e("FileWriter","Saved example.gpx")
+                Log.e("FileWriter","Saved $fileName")
+                val toast = Toast.makeText(context,"File Saved as $fileName",Toast.LENGTH_SHORT)
+                toast.show()
             } else {
                 Log.e("FileWriter", "Problem with writing content")
+                val toast = Toast.makeText(context,"Error: Problem creating file",Toast.LENGTH_SHORT)
+                toast.show()
             }
 
-            Log.e("Filereader","Reading text = ${file.readText()}")
+            Log.e("FileWriter","Reading text = ${file.readText()}")
 
         } catch (e : IOException){
-            Log.e("Filewriter","Problem writing file")
+            Log.e("FileWriter","Problem writing file")
             e.printStackTrace()
+            val toast = Toast.makeText(context,"Error: Problem creating file",Toast.LENGTH_SHORT)
+            toast.show()
         }
-
     }
 }
