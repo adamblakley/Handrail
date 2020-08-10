@@ -211,8 +211,8 @@ class SignupActivity : AppCompatActivity() {
             editTextBio.setError("Enter a Bio")
             inputsOk=false
         }
-        if (editTextPassword.text.toString().trim().length<=0){
-            editTextPassword.setError("Enter a password")
+        if (editTextPassword.text.toString().trim().length<8||editTextPassword.text.toString().trim().length>16){
+            editTextPassword.setError("Enter a password of 8 to 16 characters")
             inputsOk=false
         } else {
             if (!editTextConfirmPassword.text.toString().equals(editTextPassword.text.toString())){

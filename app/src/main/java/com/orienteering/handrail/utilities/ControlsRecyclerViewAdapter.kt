@@ -1,7 +1,6 @@
 package com.orienteering.handrail.utilities
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.CourseActivity
-import com.orienteering.handrail.activities.CoursesActivity
 import com.orienteering.handrail.classes.Control
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -32,7 +30,14 @@ class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Cont
 
         for(control in controls){
             if (control.isControlPhotographInitialised()){
-                imagePaths.set(controls.indexOf(control),control.controlPhotograph.photoPath)
+
+                for (photo in control.controlPhotographs){
+                    if (photo.active!!){
+                        imagePaths.set(controls.indexOf(control),photo.photoPath)
+                    }
+                }
+
+
             }
         }
 

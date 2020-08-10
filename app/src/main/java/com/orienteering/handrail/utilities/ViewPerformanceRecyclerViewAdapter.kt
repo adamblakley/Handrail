@@ -1,7 +1,6 @@
 package com.orienteering.handrail.utilities
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.ViewEventActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, controlPositions : MutableList<Int>, controlNames: MutableList<String>, performanceTimes: MutableList<String>, context: Context) : RecyclerView.Adapter<PerformanceReyclerViewAdapter.ViewHolder>() {
+class ViewPerformanceRecyclerViewAdapter(controlImages : MutableList<String>, controlPositions : MutableList<Int>, controlNames: MutableList<String>, performanceTimes: MutableList<String>, controlAltitudes: MutableList<Double>, context: Context) : RecyclerView.Adapter<ViewPerformanceRecyclerViewAdapter.ViewHolder>() {
 
     private val TAG = "PerformanceRVA"
 
@@ -23,6 +21,7 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
     var controlPositions = mutableListOf<Int>()
     var controlNames = mutableListOf<String>()
     var performanceTimes = mutableListOf<String>()
+    var controlAltitudes = mutableListOf<Double>()
     var performanceDistance = mutableListOf<Float>()
     var context : Context
 
@@ -31,6 +30,7 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
         this.controlPositions=controlPositions
         this.controlNames=controlNames
         this.performanceTimes=performanceTimes
+        this.controlAltitudes= controlAltitudes
         this.performanceDistance=performanceDistance
         this.context = context
     }
@@ -41,10 +41,9 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
         return viewHolder
     }
 
-    override fun getItemCount(): Int {
-        return controlPositions.size
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
-
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.e(TAG,"onBindViewHolder: Called")
@@ -58,7 +57,8 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
         }
 
         holder.name.text=controlNames[position]
-        holder.time.text=performanceTimes[position]
+        holder.time.text=("Time: "+performanceTimes[position])
+        holder.altitude.text=("Altitude Metres  %.2f".format(controlAltitudes[position]))
         holder.position.text=controlPositions[position].toString()
         holder.parentLayout.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
@@ -76,6 +76,7 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
         var image : CircleImageView
         var name : TextView
         var time : TextView
+        var altitude : TextView
         var position : TextView
         var parentLayout : RelativeLayout
 
@@ -83,9 +84,14 @@ class PerformanceReyclerViewAdapter(controlImages : MutableList<String>, control
             image = itemView.findViewById(R.id.imageView_performance_control)
             name = itemView.findViewById(R.id.textView_performance_control_name)
             time = itemView.findViewById(R.id.textView_performance_control_time)
+            altitude = itemView.findViewById(R.id.textView_performance_control_altitude)
             position = itemView.findViewById(R.id.textView_performance_control_position)
             parentLayout = itemView.findViewById(R.id.parent_layout)
         }
 
+    }
+
+    override fun getItemCount(): Int {
+        return controlNames.size
     }
 }

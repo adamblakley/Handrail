@@ -14,7 +14,7 @@ class Event(eventName: String, eventCourse: Course, eventDate: String, eventNote
     var eventNote : String
     lateinit var participants : List<Participant>
     lateinit var eventStatus : Integer
-    lateinit var eventPhotograph: Photograph
+    lateinit var eventPhotographs: List<Photograph>
 
     init{
         this.eventName = eventName
@@ -27,7 +27,7 @@ class Event(eventName: String, eventCourse: Course, eventDate: String, eventNote
     }
 
     override fun toString(): String {
-        return "Event(eventId=$eventId, eventName='$eventName', eventCreated='$eventCreated', eventOrganiser=$eventOrganiser, eventCourse=$eventCourse, eventDate='$eventDate', eventNote='$eventNote', participants=$participants, eventStatus=$eventStatus, eventPhotograph=$eventPhotograph)"
+        return "Event(eventId=$eventId, eventName='$eventName', eventCreated='$eventCreated', eventOrganiser=$eventOrganiser, eventCourse=$eventCourse, eventDate='$eventDate', eventNote='$eventNote', participants=$participants, eventStatus=$eventStatus, eventPhotograph=$eventPhotographs)"
     }
 
 

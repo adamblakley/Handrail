@@ -1,5 +1,6 @@
 package com.orienteering.handrail.controllers
 
+import com.orienteering.handrail.classes.PasswordUpdateRequest
 import com.orienteering.handrail.classes.User
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.ServiceFactory
@@ -35,19 +36,41 @@ class UserController {
         call.enqueue(callback)
     }
 
+
     /**
      * Function to call service method to update user
+     *
+     * @param userId
+     * @param user
+     * @param callback
      */
     fun update(userId: Long,user : User, callback : Callback<StatusResponseEntity<User>?>){
         val call = userService.update(userId,user)
         call.enqueue(callback)
     }
 
+
     /**
      * Function to call service method to update user
+     *
+     * @param userId
+     * @param user
+     * @param file
+     * @param callback
      */
     fun update(userId: Long,user : User, file : MultipartBody.Part?, callback : Callback<StatusResponseEntity<User>?>){
         val call = userService.update(userId,user,file)
+        call.enqueue(callback)
+    }
+
+    /**
+     * Function to callservice method to update user password
+     * @param userId
+     * @param passwordUpdateRequest
+     * @param callback
+     */
+    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, callback: Callback<StatusResponseEntity<User>?>){
+        val call = userService.updatePassword(userId,passwordUpdateRequest)
         call.enqueue(callback)
     }
 }

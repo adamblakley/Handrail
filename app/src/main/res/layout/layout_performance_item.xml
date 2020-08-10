@@ -19,7 +19,11 @@
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/imageView_performance_control"
         android:text="0"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/textView_performance_control_name"
@@ -30,7 +34,11 @@
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/textView_performance_control_position"
         android:text="Name"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/textView_performance_control_time"
@@ -43,19 +51,27 @@
         android:layout_marginLeft="0dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/textView_performance_control_position"
-        android:text="Time" />
+        android:text="Time:"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"
+        />
 
     <TextView
-        android:id="@+id/textView_performance_control_distance"
+        android:id="@+id/textView_performance_control_altitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView_performance_control_name"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="0dp"
+        android:layout_marginStart="65dp"
+        android:layout_marginLeft="65dp"
         android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/textView_performance_control_time"
         android:layout_toRightOf="@+id/textView_performance_control_time"
-        android:text="Distance" />
+        android:text="Altitude:"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end" />
 
 
 </RelativeLayout>

@@ -12,7 +12,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Participant
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
-import com.orienteering.handrail.utilities.ResultsRecylcerViewAdapter
+import com.orienteering.handrail.utilities.PerformanceRecyclerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -60,8 +60,18 @@ class ResultsListActivity : AppCompatActivity() {
                     mTime.add(geofencePerformanceCalculator.convertMilliToMinutes(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime))
                     mPosition.add(participants.indexOf(participant)+1)
                     mIds.add(participant.participantId)
-                    mImageUrls.add("dummy")
-                    Log.e(TAG,"participant = $participant")
+
+                    if (participant.participantUser.isUserPhotographInitialised()){
+                        for (photo in participant.participantUser.userPhotographs){
+                            if (photo.active==true){
+                                mImageUrls.add(photo.photoPath)
+                            }
+                        }
+
+                    }
+                        mImageUrls.add("dummy")
+
+
                 }
             }
             createButtons()
@@ -108,7 +118,7 @@ class ResultsListActivity : AppCompatActivity() {
         Log.e(TAG,"initReyclerView")
         val recyclerView : RecyclerView = findViewById(R.id.rv_results)
         val mIdsToList = mIds.toList()
-        val adapter = ResultsRecylcerViewAdapter(mNames,mTime,mImageUrls,mIdsToList,mPosition,this)
+        val adapter = PerformanceRecyclerViewAdapter(mNames,mTime,mImageUrls,mIdsToList,mPosition,this)
         Log.e(TAG,"$mNames")
         recyclerView.adapter=adapter
         recyclerView.layoutManager = LinearLayoutManager(this)

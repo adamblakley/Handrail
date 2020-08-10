@@ -1,6 +1,5 @@
 package com.orienteering.handrail.activities
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -10,7 +9,6 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -21,7 +19,6 @@ import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.Control
 import com.orienteering.handrail.classes.Course
-import com.orienteering.handrail.classes.RoutePoint
 import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.dialogs.ViewCourseInfoDialog
 import com.orienteering.handrail.dialogs.ViewMarkerCourseControlDialog
@@ -193,7 +190,13 @@ class CourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
         var positionOfControl: Int? = control.controlPosition
         var imagePathOfControl: String? = null
         if (control.isControlPhotographInitialised()){
-            imagePathOfControl=control.controlPhotograph.photoPath
+
+            for (photo in control.controlPhotographs){
+                if (photo.active!!){
+                    imagePathOfControl=photo.photoPath
+                }
+            }
+
         }
         var NoteOfControl: String? = control.controlNote
 

@@ -32,6 +32,8 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // event id passed as intent extra
     var eventIdPassed : Int = 0
+    // list of all controls
+    var controls = mutableListOf<Control>()
     // participant names
     var mNames = mutableListOf<String>()
     //participant time
@@ -67,15 +69,31 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
                     mTime.add(geofencePerformanceCalculator.convertMilliToMinutes(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime))
                     mPosition.add(participants.indexOf(participant)+1)
                     mIds.add(participant.participantId)
-                    mImageUrls.add("dummy")
 
+                    if (participant.participantUser.isUserPhotographInitialised()){
+                        for (photo in participant.participantUser.userPhotographs){
+                            if (photo.active==true){
+                                mImageUrls.add(photo.photoPath)
+                                break
+                            }
+                        }
+                    }
+                    mImageUrls.add("dummy")
                     for (routePoint in participant.routePoints){
                         routePoint.createLatLng()
                     }
                 }
                 addRoutes(participants)
+
+                for (pcp in participants.get(0).participantControlPerformances){
+                    controls.add(pcp.pcpControl)
+                }
+
+                if (controls.size>0){
+                    addMarkers(controls)
+                }
+
                 routesMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapUtilities.determineNESW(mapUtilities.getAllParticipantRoutePoints(participants)),100))
-                //addMarkers()
                 initRecyclerView()
             }
         }
@@ -139,6 +157,7 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private fun addMarkers(controls : List<Control>){
         for (control in controls){
+            control.createLatLng()
             val markerOptions = MarkerOptions().position(control.controlLatLng)
             // add marker name
             markerOptions.title(control.controlName)

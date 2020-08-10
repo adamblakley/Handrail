@@ -52,7 +52,12 @@ class EventsActivity : AppCompatActivity() {
                         mNames.add(event.eventName)
                         mNotes.add(event.eventNote)
                         mIds.add(event.eventId)
-                        mImageUrls.add(event.eventPhotograph.photoPath)
+
+                        for (photo in event.eventPhotographs){
+                            if (photo.active!!){
+                                mImageUrls.add(photo.photoPath)
+                            }
+                        }
                     }
                     initRecyclerView()
                 } else {

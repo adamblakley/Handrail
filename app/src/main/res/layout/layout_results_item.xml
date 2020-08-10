@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parent_layout"
-    android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:id="@+id/results_image"
         android:src="@mipmap/ic_launcher"
+        app:civ_border_width="2dp"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -29,6 +33,10 @@
         android:layout_marginLeft="30dp"
         android:layout_marginTop="10dp"
         android:textSize="20sp"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"
         />
 
     <TextView
@@ -37,9 +45,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/results_name"
         android:layout_toRightOf="@id/results_position"
-        android:text="35.21"
+        android:text="Time: "
         android:layout_marginLeft="30dp"
         android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"
         />
 
 </RelativeLayout>

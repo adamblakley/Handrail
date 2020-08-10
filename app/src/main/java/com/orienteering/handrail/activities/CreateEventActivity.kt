@@ -7,7 +7,6 @@ import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -20,6 +19,9 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.gms.common.util.IOUtils
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.*
 import com.orienteering.handrail.controllers.CourseController
@@ -35,7 +37,8 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.File
+import java.io.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -70,7 +73,7 @@ class CreateEventActivity : AppCompatActivity() {
     // Image capture codes and uri for image selection
     private val IMAGE_CAPTURE_CODE = 1001
     private val PICK_IMAGE_CODE = 1002
-    var image_uri: Uri? = null
+    var imageUri: Uri? = null
 
     // image view for event image
     lateinit var eventImageView : ImageView
@@ -204,7 +207,7 @@ class CreateEventActivity : AppCompatActivity() {
                         PermissionManager.MULTIPLE_REQUEST_CODES
                     )
                 ) {
-                    image_uri=imageSelect.selectImage()
+                    imageUri=imageSelect.selectImage()
                 }
             }
         })
@@ -302,6 +305,16 @@ class CreateEventActivity : AppCompatActivity() {
         })
     }
 
+    fun updateBitMap() {
+        val options: RequestOptions =
+            RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        Glide.with(this)
+            .asBitmap()
+            .load(imageUri)
+            .apply(options)
+            .into(eventImageView)
+    }
+
     /**
      * function to retrieve courses
      */
@@ -335,7 +348,7 @@ class CreateEventActivity : AppCompatActivity() {
             buttonSelectCourse?.setError("Please select a course")
             inputsOk = false
         }
-        if (image_uri==null){
+        if (imageUri==null){
             buttonUpdatePhoto?.setError("Please select a photo")
         }
         return inputsOk
@@ -345,7 +358,7 @@ class CreateEventActivity : AppCompatActivity() {
      * function to call service to upload event
      */
     fun createEvent(){
-        val imageMultipartBodyPart : MultipartBody.Part? = image_uri?.let { createImageMultipartBody(it) }
+        val imageMultipartBodyPart : MultipartBody.Part? = imageUri?.let { createImageMultipartBody(it) }
         val eventDateString = "$eventDate $eventTime"
         if (eventName!=null && eventDescription!=null){
             val event = Event(eventName.toString(),eventcourse,eventDateString,eventDescription.toString())
@@ -365,6 +378,28 @@ class CreateEventActivity : AppCompatActivity() {
      *
     */
     fun createImageMultipartBody(fileUri : Uri) : MultipartBody.Part{
+        if (fileUri.toString()[0].equals('c')) {
+            Log.e(TAG,"I START WITH C")
+            var inputStream: InputStream? = contentResolver.openInputStream(fileUri)
+            var file = File(fileUri.toString())
+            try {
+                val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
+                var cachedFile: File = File(cacheDir, "JPEG_${timeStamp}.jpg")
+                try {
+                    var outputStream: OutputStream = FileOutputStream(cachedFile)
+                    IOUtils.copyStream(inputStream, outputStream)
+                } catch (f: FileNotFoundException) {
+                    Log.e(TAG, f.printStackTrace().toString())
+                } catch (i: IOException) {
+                    Log.e(TAG, i.printStackTrace().toString())
+                }
+                val requestBody: RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() }, cachedFile)
+                val body: MultipartBody.Part = MultipartBody.Part.createFormData("file", cachedFile.name, requestBody)
+                return body
+            } catch (i: IOException) {
+                Log.e(TAG, i.printStackTrace().toString())
+            }
+        }
         var file = File(imageSelect.getImagePath(fileUri))
         val requestBody : RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() },file)
         val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
@@ -385,11 +420,11 @@ class CreateEventActivity : AppCompatActivity() {
             when (requestCode) {
                 1001 -> {
                     Log.e(TAG, "Request 1001")
-                    if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (resultCode == Activity.RESULT_OK) {
                         Log.e(TAG, "Result ok, data not null")
-                        val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
-                        imageview_create_event.setImageBitmap(selectedImage)
-                        image_uri = data.data
+                        imageUri = imageSelect.tempImageUri
+
+                        updateBitMap()
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")
                     }
@@ -400,31 +435,10 @@ class CreateEventActivity : AppCompatActivity() {
 
                     Log.e(TAG, "Request 1002")
                     if (resultCode == Activity.RESULT_OK && data != null) {
-                        Log.e(TAG,"result ok and data doesn't equal null")
-                        val selectedImage: Uri? = data.data
-                        image_uri = data.data
-                        var filePathColumn = arrayOf<String>(MediaStore.Images.Media.DATA)
-                        if (selectedImage != null) {
-                            val cursor: Cursor? = contentResolver.query(
-                                selectedImage,
-                                filePathColumn,
-                                null,
-                                null,
-                                null
-                            )
-                            if (cursor != null) {
-                                cursor.moveToFirst()
 
-                                val columnIndex = cursor.getColumnIndex(filePathColumn[0])
-                                val picturePath: String = cursor.getString(columnIndex)
-                                imageview_create_event.setImageBitmap(
-                                    BitmapFactory.decodeFile(
-                                        picturePath
-                                    )
-                                )
-                                cursor.close()
-                            }
-                        }
+                        val imageUri = data.data
+
+                        updateBitMap()
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.orienteering.handrail.services
 
+import com.orienteering.handrail.classes.PasswordUpdateRequest
 import com.orienteering.handrail.classes.User
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import io.reactivex.Observable
@@ -24,5 +25,8 @@ interface UserService {
     @PUT("users/{id}/update")
     @Multipart
     fun update(@Path("id") userId : Long, @Part("user") user : User, @Part file : MultipartBody.Part?) : Call<StatusResponseEntity<User>>
+
+    @PUT("users/{id}/update/password")
+    fun updatePassword(@Path("id") userId: Long, @Body passwordUpdateRequest: PasswordUpdateRequest) : Call<StatusResponseEntity<User>>
 
 }

@@ -3,34 +3,29 @@ package com.orienteering.handrail.activities
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.gms.common.util.IOUtils
 import com.orienteering.handrail.R
 import com.orienteering.handrail.classes.User
 import com.orienteering.handrail.controllers.UserController
-import com.orienteering.handrail.httprequests.SignupRequest
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
 import com.orienteering.handrail.utilities.ImageSelect
 import com.orienteering.handrail.utilities.PermissionManager
-import kotlinx.android.synthetic.main.activity_create_event.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.File
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -255,6 +250,13 @@ class EditProfileActivity : AppCompatActivity() {
                 }
             }
         })
+
+        buttonChangePassword?.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                val intent : Intent = Intent(this@EditProfileActivity,PasswordActivity::class.java)
+                startActivity(intent)
+            }
+        })
     }
 
     /**
@@ -262,6 +264,28 @@ class EditProfileActivity : AppCompatActivity() {
      *
      */
     fun createImageMultipartBody(fileUri : Uri) : MultipartBody.Part{
+        if (fileUri.toString()[0].equals('c')) {
+            Log.e(TAG,"I START WITH C")
+            var inputStream: InputStream? = contentResolver.openInputStream(fileUri)
+            var file = File(fileUri.toString())
+            try {
+                val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
+                var cachedFile: File = File(cacheDir, "JPEG_${timeStamp}.jpg")
+                try {
+                    var outputStream: OutputStream = FileOutputStream(cachedFile)
+                    IOUtils.copyStream(inputStream, outputStream)
+                } catch (f: FileNotFoundException) {
+                    Log.e(TAG, f.printStackTrace().toString())
+                } catch (i: IOException) {
+                    Log.e(TAG, i.printStackTrace().toString())
+                }
+                val requestBody: RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() }, cachedFile)
+                val body: MultipartBody.Part = MultipartBody.Part.createFormData("file", cachedFile.name, requestBody)
+                return body
+            } catch (i: IOException) {
+                Log.e(TAG, i.printStackTrace().toString())
+            }
+        }
         var file = File(imageSelect.getImagePath(fileUri))
         val requestBody : RequestBody = RequestBody.create(contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() },file)
         val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
@@ -320,11 +344,17 @@ class EditProfileActivity : AppCompatActivity() {
     fun initBitMap(){
         val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
         if (user.isUserPhotographInitialised()){
-            Glide.with(this)
-                .asBitmap()
-                .load(user.userPhotograph.photoPath)
-                .apply(options)
-                .into(profileImageView)
+            if (user.userPhotographs.isNotEmpty()){
+                for (photo in user.userPhotographs){
+                    if (photo.active!!){
+                        Glide.with(this)
+                            .asBitmap()
+                            .load(photo.photoPath)
+                            .apply(options)
+                            .into(profileImageView)
+                    }
+                }
+            }
         }
     }
 
@@ -382,7 +412,6 @@ class EditProfileActivity : AppCompatActivity() {
                     1001 -> {
                         Log.e(TAG, "Request 1001")
                         if (resultCode == Activity.RESULT_OK) {
-                            Log.e(TAG, "Result ok, data not null")
 
                             imageUri = imageSelect.tempImageUri
 
@@ -398,8 +427,7 @@ class EditProfileActivity : AppCompatActivity() {
 
                         Log.e(TAG, "Request 1002")
                         if (resultCode == Activity.RESULT_OK && data != null) {
-                            Log.e(TAG, "result ok and data doesn't equal null")
-                            val selectedImage: Uri? = data.data
+
                             imageUri = data.data
 
                             updateBitMap()

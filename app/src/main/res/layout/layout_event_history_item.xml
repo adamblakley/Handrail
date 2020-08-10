@@ -19,6 +19,10 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:textSize="25sp"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"
         />
 
     <Button
@@ -32,7 +36,7 @@
         android:layout_marginLeft="72dp"
         android:layout_marginEnd="35dp"
         android:layout_marginRight="35dp"
-        android:layout_toEndOf="@+id/image_name"
+        android:layout_toEndOf="@+id/textView_event_history_name"
         android:layout_toRightOf="@+id/textView_event_history_name"
         android:text="View"
         android:textSize="14sp" />

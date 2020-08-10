@@ -1,6 +1,5 @@
 package com.orienteering.handrail.utilities
 
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.orienteering.handrail.classes.Control
@@ -40,6 +39,14 @@ class MapUtilities {
         return allLatLngs
     }
 
+    fun getAllParticipantRoutePoints(participant:Participant) : MutableList<LatLng> {
+        var allLatLngs : MutableList<LatLng> = mutableListOf<LatLng>()
+        for (routePoint in participant.routePoints){
+            allLatLngs.add(routePoint.latlng)
+        }
+        return allLatLngs
+    }
+
     fun getAllControlPoints(controls : List<Control>) : MutableList<LatLng>{
         var allLatLngs : MutableList<LatLng> = mutableListOf()
         for (control in controls){
@@ -47,6 +54,30 @@ class MapUtilities {
             allLatLngs.add(control.controlLatLng)
         }
         return allLatLngs
+    }
+
+    fun calculateTotalDistance(firstLatLng : LatLng, secondLatLng: LatLng) : Double {
+        val radius: Int = 6371
+        var totalDistance : Double = 0.0
+
+            val latDistance = Math.toRadians(secondLatLng.latitude - firstLatLng.latitude)
+            val lngDistance = Math.toRadians(secondLatLng.longitude - firstLatLng.longitude)
+
+            val a: Double = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                    Math.cos(Math.toRadians(firstLatLng.latitude)) * Math.cos(
+                Math.toRadians(
+                    secondLatLng.latitude
+                )
+            ) *
+                    Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2)
+
+            val c: Double = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+            var calculatedDistance: Double = radius * c * 1000
+
+            calculatedDistance = Math.pow(calculatedDistance, 2.0) + Math.pow(0.0, 2.0)
+            totalDistance+=Math.sqrt(calculatedDistance)
+
+        return totalDistance
     }
 
     fun calculateTotalDistance(latlngs : MutableList<LatLng>) : Double {
@@ -75,5 +106,6 @@ class MapUtilities {
 
         return totalDistance
     }
+
 
 }

@@ -16,7 +16,7 @@ class Control(controlName : String, controlNote : String, controlLatitude : Doub
     var controlLongitude : Double? = null
     var controlLatLng: LatLng
     var controlAltitude: Double? = null
-    lateinit var controlPhotograph: Photograph
+    lateinit var controlPhotographs: List<Photograph>
 
     init {
         this.controlLatitude = controlLatitude
@@ -29,7 +29,7 @@ class Control(controlName : String, controlNote : String, controlLatitude : Doub
         this.controlTime = sdf2.format(controlTime)
     }
 
-    fun isControlPhotographInitialised() = ::controlPhotograph.isInitialized
+    fun isControlPhotographInitialised() = ::controlPhotographs.isInitialized
 
     fun createLatLng(){
         this.controlLatLng = controlLongitude?.let { controlLatitude?.let { it1 -> LatLng(it1, it) } }!!

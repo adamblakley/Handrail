@@ -4,6 +4,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -30,8 +31,12 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     var eventId : Int? = null
     // course controls
     var controls = mutableListOf<Control>()
+    // all altitudes of controls
+    var altitudes = mutableListOf<Double>()
+    // recycler view for control list
     lateinit var recyclerView : RecyclerView
-
+    // text view for total distance
+    lateinit var textViewDistance : TextView
     // google map view
     private lateinit var performanceMap: GoogleMap
     // geofence performance calculator to convert performance times
@@ -60,10 +65,23 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
                 for (performance in participant.participantControlPerformances){
                     performance.pcpControl.createLatLng()
                     controls.add(performance.pcpControl)
+                    performance.pcpControl.controlAltitude?.let { altitudes.add(it) }
                 }
                 addMarkers(controls)
                 addRoute(participant.routePoints)
                 initRecyclerView()
+
+                var listRoutePointLatLng = mutableListOf<LatLng>()
+                for (routePoint in participant.routePoints){
+                    routePoint.createLatLng()
+                    listRoutePointLatLng.add(routePoint.latlng)
+                }
+
+                textViewDistance.text = "Total Distance Metres: %.2f".format(mapUtilities.calculateTotalDistance(listRoutePointLatLng))
+                //Update to LatLngBounds. Define Method to calculate SW and NE corners
+                var latLng = LatLng(54.574647, -5.957871)
+                performanceMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapUtilities.determineNESW(mapUtilities.getAllParticipantRoutePoints(participant)),100))
+
             } else {
                 Log.e(TAG, "Failure getting performance")
             }
@@ -82,7 +100,6 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
 
         getParticipantPerformance()
 
-
     }
 
     /**
@@ -96,13 +113,13 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
         performanceMap.uiSettings.setMyLocationButtonEnabled(false)
         performanceMap.uiSettings.setAllGesturesEnabled(false)
         setUpMap()
+        createTextView()
     }
 
     /**
      * Setup map and request permissions
      */
     private fun setUpMap() {
-
         Log.e(TAG,"Setting Up Map")
         performanceMap.isMyLocationEnabled = false
         performanceMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
@@ -110,17 +127,19 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
         if(PermissionManager.checkPermission(this,this@ViewPerformanceActivity,
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
         )
-
             if (runningQOrLater) {
                 PermissionManager.checkPermission(this,this@ViewPerformanceActivity,
                     arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
                     PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
             }
+    }
 
-        //Update to LatLngBounds. Define Method to calculate SW and NE corners
-        var latLng = LatLng(54.574647, -5.957871)
-        performanceMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-        Log.e(TAG,"Animating Camera to location")
+    /**
+     * Sets up textviews in view
+     *
+     */
+    fun createTextView(){
+        textViewDistance = findViewById(R.id.textView_distance_performance)
     }
 
     /**
@@ -192,9 +211,13 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
         // recycler view for performances
 
         for (control in controls){
-            if (control.controlPhotograph!=null){
-                imageUrls.add(control.controlPhotograph.photoPath)
+
+            for (photo in control.controlPhotographs){
+                if(photo.active!!){
+                    imageUrls.add(photo.photoPath)
+                }
             }
+
             controlPositions.add(control.controlPosition!!)
             controlNames.add(control.controlName!!)
         }
@@ -205,7 +228,7 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
 
         Log.e(TAG,"initReyclerView")
         recyclerView = findViewById(R.id.rv_route_performance)
-        val adapter = PerformanceReyclerViewAdapter(imageUrls,controlPositions,controlNames,times,this)
+        val adapter = ViewPerformanceRecyclerViewAdapter(imageUrls,controlPositions,controlNames,times,altitudes,this)
         recyclerView.adapter=adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }

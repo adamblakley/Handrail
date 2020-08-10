@@ -5,13 +5,16 @@
     <EditText
         android:id="@+id/edittext_event_name"
         android:layout_width="match_parent"
+        android:maxLength="30"
         android:layout_height="wrap_content"
-        android:hint="Event Name"
+        android:hint="Course Name"
+
         android:inputType="text" />
 
     <EditText
         android:id="@+id/edittext_event_note"
-        android:hint="Event Description"
+        android:hint="Course Description"
+        android:maxLength="200"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/edittext_event_name"

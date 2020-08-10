@@ -386,12 +386,15 @@ class ViewEventActivity : AppCompatActivity() {
      */
     private fun setupImage(){
         val options : RequestOptions  = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
-        if (event.eventPhotograph.photoPath.isNotEmpty()){
-            Glide.with(this)
-                .asBitmap()
-                .load(event.eventPhotograph.photoPath)
-                .apply(options)
-                .into(eventImageImageView)
+
+        for (photo in event.eventPhotographs){
+            if (photo.active!!){
+                Glide.with(this)
+                    .asBitmap()
+                    .load(photo.photoPath)
+                    .apply(options)
+                    .into(eventImageImageView)
+            }
         }
     }
 

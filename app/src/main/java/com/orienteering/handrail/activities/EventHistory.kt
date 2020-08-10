@@ -12,7 +12,6 @@ import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
 import com.orienteering.handrail.utilities.EventHistoryRecyclerViewAdapter
-import com.orienteering.handrail.utilities.EventsRecyclerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,7 +48,14 @@ class EventHistory : AppCompatActivity() {
                         mNames.add(event.eventName)
                         mNotes.add(event.eventNote)
                         mIds.add(event.eventId)
-                        mImageUrls.add(event.eventPhotograph.photoPath)
+
+                        for (photo in event.eventPhotographs){
+                            if (photo.active!!){
+                                mImageUrls.add(photo.photoPath)
+                            }
+                        }
+
+
                     }
                     initRecyclerView()
                 } else {

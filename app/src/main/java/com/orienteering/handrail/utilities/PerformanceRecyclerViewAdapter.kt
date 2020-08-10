@@ -13,18 +13,19 @@ import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ResultsRecylcerViewAdapter(
+class PerformanceRecyclerViewAdapter(
     participantNames: MutableList<String>,
     participantTimes: MutableList<String>,
     participantImages: MutableList<String>,
     participantIds: List<Int?>,
-    participantPositions: MutableList<Int>, context: Context ) : RecyclerView.Adapter<ResultsRecylcerViewAdapter.ViewHolder>() {
+    participantPositions: MutableList<Int>, context: Context ) : RecyclerView.Adapter<PerformanceRecyclerViewAdapter.ViewHolder>() {
 
-    private val TAG : String = "ResultsAdapter"
+    private val TAG : String = "PerformanceAdapter"
 
     var participantNames = mutableListOf<String>()
     var participantTimes = mutableListOf<String>()
     var participantImages = mutableListOf<String>()
+
     var participantIds = mutableListOf<Int>()
     var participantPositions = mutableListOf<Int>()
     var context : Context
@@ -33,6 +34,7 @@ class ResultsRecylcerViewAdapter(
         this.participantNames = participantNames
         this.participantTimes = participantTimes
         this.participantImages = participantImages
+
         this.participantIds = participantIds as MutableList<Int>
         this.participantPositions = participantPositions
         this.context = context
@@ -52,7 +54,8 @@ class ResultsRecylcerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(
+            R.mipmap.ic_launcher_round)
         if (participantImages.size>=1){
             Glide.with(context)
                 .asBitmap()
@@ -70,7 +73,7 @@ class ResultsRecylcerViewAdapter(
         }
 
         holder.name.text=participantNames[position]
-        holder.time.text=("Time: "+participantTimes[position])
+        holder.time.append(participantTimes[position])
         holder.position.text=participantPositions[position].toString()
         holder.parentLayout.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
@@ -100,6 +103,4 @@ class ResultsRecylcerViewAdapter(
         }
 
     }
-
-
 }

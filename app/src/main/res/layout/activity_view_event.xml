@@ -23,12 +23,17 @@
 
     <TextView
         android:id="@+id/textView_event_name_view_event"
-        android:layout_width="62dp"
-        android:layout_height="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
         android:layout_marginTop="16dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:textSize="20sp"
+        android:singleLine="true"
         app:layout_constraintTop_toBottomOf="@+id/imageview_event_photo_view_event" />
 
     <ScrollView
@@ -53,6 +58,11 @@
                 android:text="TextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:textSize="17sp"
+                android:inputType="textMultiLine"
+                android:gravity="top"
+                android:maxLines="8"
+                android:maxLength="200"
                 app:layout_constraintTop_toBottomOf="@+id/textView_event_name_view_event"></TextView>
         </LinearLayout>
     </ScrollView>
@@ -61,8 +71,9 @@
         android:id="@+id/textView_event_date_event_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:layout_marginTop="30dp"
+        android:textSize="30sp"
+        android:text="Date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView_event_note_view_event" />
@@ -71,8 +82,9 @@
         android:id="@+id/textView_event_time_event_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="30sp"
         android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:text="Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_event_date_event_view" />
