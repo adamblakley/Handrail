@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.common.util.IOUtils
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.User
+import com.orienteering.handrail.models.User
 import com.orienteering.handrail.controllers.UserController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App

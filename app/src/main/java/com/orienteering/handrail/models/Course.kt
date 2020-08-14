@@ -1,8 +1,6 @@
-package com.orienteering.handrail.classes
+package com.orienteering.handrail.models
 
 import java.io.Serializable
-import java.text.SimpleDateFormat
-import java.util.*
 
 class Course(courseControls: List<Control>, courseName : String )  : Serializable {
 

@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Event
+import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App

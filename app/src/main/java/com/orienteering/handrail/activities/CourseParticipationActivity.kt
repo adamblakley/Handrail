@@ -22,7 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.orienteering.handrail.classes.*
+import com.orienteering.handrail.models.*
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.controllers.PcpController
 import com.orienteering.handrail.controllers.RoutePointController
@@ -105,17 +105,17 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     val geofencePerformanceCalculator = GeofencePerformanceCalculator()
 
     // manage response of getEvents
-    val getEventsCallback = object : Callback<Event>{
-        override fun onFailure(call: Call<Event>, t: Throwable) {
+    val getEventsCallback = object : Callback<StatusResponseEntity<Event>>{
+        override fun onFailure(call: Call<StatusResponseEntity<Event>>, t: Throwable) {
             Log.e(TAG, "Failure getting event")
         }
 
         override fun onResponse(
-            call: Call<Event>,
-            response: Response<Event>
+            call: Call<StatusResponseEntity<Event>>,
+            response: Response<StatusResponseEntity<Event>>
         ) {
             Log.e(TAG, "Success getting event")
-            val eventgot: Event? = response.body()
+            val eventgot: Event? = response.body()?.entity
             if (eventgot != null) {
 
                 startTime = System.currentTimeMillis()

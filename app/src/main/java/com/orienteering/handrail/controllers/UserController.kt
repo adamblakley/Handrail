@@ -1,7 +1,7 @@
 package com.orienteering.handrail.controllers
 
-import com.orienteering.handrail.classes.PasswordUpdateRequest
-import com.orienteering.handrail.classes.User
+import com.orienteering.handrail.models.PasswordUpdateRequest
+import com.orienteering.handrail.models.User
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.services.UserService

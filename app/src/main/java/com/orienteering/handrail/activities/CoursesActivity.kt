@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Course
+import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
@@ -21,14 +21,14 @@ class CoursesActivity : AppCompatActivity() {
     // Course Controller
     lateinit var courseController: CourseController
 
-    private val callback = object: Callback<StatusResponseEntity<List<Course>?>> {
-        override fun onFailure(call: Call<StatusResponseEntity<List<Course>?>>, t: Throwable) {
+    private val callback = object: Callback<StatusResponseEntity<List<Course>>> {
+        override fun onFailure(call: Call<StatusResponseEntity<List<Course>>>, t: Throwable) {
             Log.e(TAG, "Failure connecting to service")
             val toast = Toast.makeText(this@CoursesActivity,"Service Unavailable",Toast.LENGTH_SHORT)
             toast.show()
         }
 
-        override fun onResponse(call: Call<StatusResponseEntity<List<Course>?>>, response: Response<StatusResponseEntity<List<Course>?>>) {
+        override fun onResponse(call: Call<StatusResponseEntity<List<Course>>>, response: Response<StatusResponseEntity<List<Course>>>) {
 
             if (response.isSuccessful){
                 Log.e(TAG, "Success getting courses")

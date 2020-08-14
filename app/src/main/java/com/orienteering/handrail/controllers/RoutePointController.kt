@@ -1,6 +1,6 @@
 package com.orienteering.handrail.controllers
 
-import com.orienteering.handrail.classes.RoutePoint
+import com.orienteering.handrail.models.RoutePoint
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.RoutePointService
 import com.orienteering.handrail.services.ServiceFactory

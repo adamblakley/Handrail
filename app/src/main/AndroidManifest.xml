@@ -27,12 +27,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.PasswordActivity"></activity>
+        <activity android:name=".signup.SignupActivity"></activity>
+        <activity android:name=".login.LoginActivity" />
+        <activity android:name=".events_history.EventsHistoryActivity" />
+        <activity android:name=".courses.CoursesActivity" />
+        <activity android:name=".activities.PasswordActivity" />
         <activity android:name=".activities.EditProfileActivity" />
         <activity android:name=".activities.CourseActivity" />
         <activity android:name=".activities.EventHistory" />
         <activity android:name=".activities.ViewPerformanceActivity" />
         <activity android:name=".activities.SignupActivity" />
+        <activity android:name=".events.EventsActivity" />
+        <activity android:name=".event.EventActivity" />
         <activity android:name=".activities.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,7 +51,6 @@
         <activity android:name=".activities.ResultsListActivity" />
         <activity android:name=".activities.ViewEventActivity" />
         <activity android:name=".activities.CreateEventActivity" />
-        <activity android:name=".activities.EventsActivity" />
         <activity android:name=".activities.CoursesActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

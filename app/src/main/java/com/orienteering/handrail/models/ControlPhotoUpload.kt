@@ -1,4 +1,4 @@
-package com.orienteering.handrail.classes
+package com.orienteering.handrail.models
 
 import retrofit2.http.Multipart
 

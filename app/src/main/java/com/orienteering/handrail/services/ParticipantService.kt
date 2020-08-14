@@ -1,8 +1,7 @@
 package com.orienteering.handrail.services
 
-import com.orienteering.handrail.classes.Event
-import com.orienteering.handrail.classes.Participant;
-import com.orienteering.handrail.classes.PerformanceResponse
+import com.orienteering.handrail.models.Event
+import com.orienteering.handrail.models.Participant;
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import io.reactivex.Observable
 import retrofit2.Call
@@ -16,16 +15,16 @@ interface ParticipantService {
     fun createMany(@Path("id")eventId : Int?, @Body participant :List<Participant>): Call<StatusResponseEntity<List<Participant>>>
 
     @GET("participants/{id}")
-    fun read(@Path("id") participantId : Int) : Observable<Participant>
+    fun read(@Path("id") participantId : Int) : Call<StatusResponseEntity<Participant>>
 
     @GET("participants")
-    fun readAll(): Call<List<Participant>>
+    fun readAll(): Call<StatusResponseEntity<List<Participant>>>
 
     @GET("events/{id}/participants/top5")
-    fun readTop5Participants(@Path("id") eventId : Int) : Call<List<Participant>>
+    fun readTop5Participants(@Path("id") eventId : Int) : Call<StatusResponseEntity<List<Participant>>>
 
     @GET("events/{id}/participants")
-    fun readEventParticipants(@Path("id") eventId : Int) : Call<List<Participant>>
+    fun readEventParticipants(@Path("id") eventId : Int) : Call<StatusResponseEntity<List<Participant>>>
 
     @PUT("/events/{id}/removeparticipant")
     fun removeParticipant(@Path("id") eventId: Int, @Body userId: Long): Call<StatusResponseEntity<Event>>

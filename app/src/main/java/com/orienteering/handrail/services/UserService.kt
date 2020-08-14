@@ -1,9 +1,8 @@
 package com.orienteering.handrail.services
 
-import com.orienteering.handrail.classes.PasswordUpdateRequest
-import com.orienteering.handrail.classes.User
+import com.orienteering.handrail.models.PasswordUpdateRequest
+import com.orienteering.handrail.models.User
 import com.orienteering.handrail.httprequests.StatusResponseEntity
-import io.reactivex.Observable
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*

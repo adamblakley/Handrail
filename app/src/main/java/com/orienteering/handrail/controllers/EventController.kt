@@ -1,14 +1,11 @@
 package com.orienteering.handrail.controllers
 
-import android.util.Log
-import com.orienteering.handrail.classes.Event
+import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.services.EventService
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import okhttp3.MultipartBody
-import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Response
 
 /**
  * Controller controls event request services
@@ -55,7 +52,7 @@ class EventController {
      * @param id
      * @param callback
      */
-    fun retreiveByID(id : Int, callback: Callback<Event>){
+    fun retreiveByID(id : Int, callback: Callback<StatusResponseEntity<Event>>){
         val call = eventService.read(id)
         call.enqueue(callback)
     }

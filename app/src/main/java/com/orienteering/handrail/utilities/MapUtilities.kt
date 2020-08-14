@@ -2,8 +2,8 @@ package com.orienteering.handrail.utilities
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.orienteering.handrail.classes.Control
-import com.orienteering.handrail.classes.Participant
+import com.orienteering.handrail.models.Control
+import com.orienteering.handrail.models.Participant
 
 class MapUtilities {
 

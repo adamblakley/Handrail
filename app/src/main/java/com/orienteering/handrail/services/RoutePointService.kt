@@ -1,6 +1,6 @@
 package com.orienteering.handrail.services
 
-import com.orienteering.handrail.classes.RoutePoint
+import com.orienteering.handrail.models.RoutePoint
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import io.reactivex.Observable
 import retrofit2.Call

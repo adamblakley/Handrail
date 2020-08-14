@@ -6,10 +6,8 @@ import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import com.orienteering.handrail.utilities.App.AppCompanion.context
-import com.orienteering.handrail.classes.Control
+import com.orienteering.handrail.models.Control
 import java.io.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 

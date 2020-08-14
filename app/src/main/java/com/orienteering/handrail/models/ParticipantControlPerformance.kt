@@ -1,4 +1,4 @@
-package com.orienteering.handrail.classes
+package com.orienteering.handrail.models
 
 class ParticipantControlPerformance(controlTime : Long, control : Control) {
 

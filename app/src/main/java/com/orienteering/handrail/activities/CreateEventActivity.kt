@@ -6,13 +6,10 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.content.Intent
-import android.database.Cursor
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -23,7 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.common.util.IOUtils
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.*
+import com.orienteering.handrail.models.*
 import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
@@ -133,13 +130,13 @@ class CreateEventActivity : AppCompatActivity() {
     }
 
     // callback to manage course request response
-    val getCoursesCallback = object : retrofit2.Callback<StatusResponseEntity<List<Course>?>> {
-        override fun onFailure(call: Call<StatusResponseEntity<List<Course>?>>, t: Throwable) {
+    val getCoursesCallback = object : retrofit2.Callback<StatusResponseEntity<List<Course>>> {
+        override fun onFailure(call: Call<StatusResponseEntity<List<Course>>>, t: Throwable) {
             Log.e(TAG, "Failure getting courses")
         }
         override fun onResponse(
-            call: Call<StatusResponseEntity<List<Course>?>>,
-            response: Response<StatusResponseEntity<List<Course>?>>
+            call: Call<StatusResponseEntity<List<Course>>>,
+            response: Response<StatusResponseEntity<List<Course>>>
         ) {
             Log.e(TAG, "Success getting courses")
             val courses = mutableListOf<Course>()

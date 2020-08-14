@@ -1,15 +1,9 @@
 package com.orienteering.handrail.utilities
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import android.location.Location
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.maps.model.LatLng
-import com.orienteering.handrail.classes.Control
-import com.orienteering.handrail.classes.Course
-import com.orienteering.handrail.classes.Event
-import com.orienteering.handrail.classes.User
 import kotlin.collections.ArrayList
 
 

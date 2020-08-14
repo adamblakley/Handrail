@@ -1,8 +1,7 @@
 package com.orienteering.handrail.controllers
 
-import com.orienteering.handrail.classes.Event
-import com.orienteering.handrail.classes.Participant
-import com.orienteering.handrail.classes.PerformanceResponse
+import com.orienteering.handrail.models.Event
+import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.ParticipantService
 import com.orienteering.handrail.services.ServiceFactory
@@ -32,7 +31,7 @@ class ParticipantController {
      * @param eventId
      * @param callback
      */
-    fun getParticipants(eventId : Int, callback: Callback<List<Participant>>){
+    fun getParticipants(eventId : Int, callback: Callback<StatusResponseEntity<List<Participant>>>){
         val call = participantService.readEventParticipants(eventId)
         call.enqueue(callback)
     }

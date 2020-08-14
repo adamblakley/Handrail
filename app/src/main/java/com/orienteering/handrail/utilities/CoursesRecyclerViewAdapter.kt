@@ -43,7 +43,6 @@ class CoursesRecyclerViewAdapter(courseNames : MutableList<String>, courseImages
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.e(TAG,"onBindViewHolder: Called")
         val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
         if (courseImages.size>=1){
             Glide.with(context)

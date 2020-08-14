@@ -1,4 +1,4 @@
-package com.orienteering.handrail.classes
+package com.orienteering.handrail.models
 
 /**
  * Holds Route Point and Performances for upload to service

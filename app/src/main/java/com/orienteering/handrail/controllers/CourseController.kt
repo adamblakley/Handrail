@@ -1,6 +1,6 @@
 package com.orienteering.handrail.controllers
 
-import com.orienteering.handrail.classes.Course
+import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.services.CourseService
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.httprequests.StatusResponseEntity
@@ -26,12 +26,8 @@ class CourseController {
         call.enqueue(callback)
     }
 
-    fun retreiveAll(callback: Callback<List<Course>>) {
-        val call = courseService.readAll()
-        call.enqueue(callback)
-    }
 
-    fun retrieveAllByUser(userId: Long, callback: Callback<StatusResponseEntity<List<Course>?>>){
+    fun retrieveAllByUser(userId: Long, callback: Callback<StatusResponseEntity<List<Course>>>){
         val call = courseService.readAllByUser(userId)
         call.enqueue(callback)
     }

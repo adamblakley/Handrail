@@ -1,4 +1,4 @@
-package com.orienteering.handrail.classes
+package com.orienteering.handrail.models
 
 import com.google.android.gms.maps.model.LatLng
 

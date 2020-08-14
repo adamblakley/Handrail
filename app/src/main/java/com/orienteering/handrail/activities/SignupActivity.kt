@@ -4,15 +4,11 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.User
 import com.orienteering.handrail.controllers.SignupController
-import com.orienteering.handrail.httprequests.LoginResponse
 import com.orienteering.handrail.httprequests.SignupRequest
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import retrofit2.Call

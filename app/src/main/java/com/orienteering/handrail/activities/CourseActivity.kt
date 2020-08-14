@@ -17,8 +17,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Control
-import com.orienteering.handrail.classes.Course
+import com.orienteering.handrail.models.Control
+import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.dialogs.ViewCourseInfoDialog
 import com.orienteering.handrail.dialogs.ViewMarkerCourseControlDialog

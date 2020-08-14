@@ -2,9 +2,7 @@ package com.orienteering.handrail.utilities
 
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng
-import com.orienteering.handrail.classes.Participant
-import java.text.DecimalFormat
-import java.util.concurrent.TimeUnit
+import com.orienteering.handrail.models.Participant
 
 class GeofencePerformanceCalculator {
 

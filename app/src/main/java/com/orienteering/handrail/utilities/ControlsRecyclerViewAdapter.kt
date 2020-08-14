@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.CourseActivity
-import com.orienteering.handrail.classes.Control
+import com.orienteering.handrail.models.Control
 import de.hdodenhof.circleimageview.CircleImageView
 
 class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Context) : RecyclerView.Adapter<ControlsRecyclerViewAdapter.ViewHolder>() {

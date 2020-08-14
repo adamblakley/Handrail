@@ -9,8 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.PasswordUpdateRequest
-import com.orienteering.handrail.classes.User
+import com.orienteering.handrail.models.PasswordUpdateRequest
+import com.orienteering.handrail.models.User
 import com.orienteering.handrail.controllers.UserController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App

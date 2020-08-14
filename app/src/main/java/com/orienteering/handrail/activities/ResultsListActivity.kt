@@ -9,8 +9,9 @@ import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Participant
+import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.controllers.ParticipantController
+import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
 import com.orienteering.handrail.utilities.PerformanceRecyclerViewAdapter
 import retrofit2.Call
@@ -47,13 +48,13 @@ class ResultsListActivity : AppCompatActivity() {
     val participantController : ParticipantController = ParticipantController()
 
     //participant callback to manage response of get participants service
-    val getParticipantsCallback = object : Callback<List<Participant>> {
-        override fun onFailure(call: Call<List<Participant>?>, t: Throwable) {
+    val getParticipantsCallback = object : Callback<StatusResponseEntity<List<Participant>>> {
+        override fun onFailure(call: Call<StatusResponseEntity<List<Participant>>>, t: Throwable) {
             Log.e(TAG, "Failure getting participants")
         }
-        override fun onResponse(call: Call<List<Participant>?>, response: Response<List<Participant>>) {
+        override fun onResponse(call: Call<StatusResponseEntity<List<Participant>>>, response: Response<StatusResponseEntity<List<Participant>>>) {
             Log.e(TAG, "Success getting participants")
-            val participants: List<Participant>? = response.body()
+            val participants: List<Participant>? = response.body()?.entity
             if (participants != null) {
                 for (participant in participants){
                     mNames.add(participant.participantUser.userFirstName)

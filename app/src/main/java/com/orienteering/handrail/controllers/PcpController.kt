@@ -1,9 +1,7 @@
 package com.orienteering.handrail.controllers
 
-import com.orienteering.handrail.classes.Participant
-import com.orienteering.handrail.classes.ParticipantControlPerformance
-import com.orienteering.handrail.classes.PerformanceUploadRequest
-import com.orienteering.handrail.classes.RoutePoint
+import com.orienteering.handrail.models.Participant
+import com.orienteering.handrail.models.PerformanceUploadRequest
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.services.PcpService
 import com.orienteering.handrail.services.ServiceFactory

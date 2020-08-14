@@ -3,19 +3,14 @@ package com.orienteering.handrail.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.orienteering.handrail.*
-import com.orienteering.handrail.classes.Control
-import com.orienteering.handrail.classes.Course
-import com.orienteering.handrail.classes.User
-import com.orienteering.handrail.services.*
+import com.orienteering.handrail.courses.CoursesActivity
+import com.orienteering.handrail.events.EventsActivity
+import com.orienteering.handrail.events_history.EventsHistoryActivity
 import com.orienteering.handrail.utilities.App
-import retrofit2.Call
-import retrofit2.Response
 
 
 class HomeActivity : AppCompatActivity() {
@@ -69,7 +64,7 @@ class HomeActivity : AppCompatActivity() {
 
         buttonEventHistory?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@HomeActivity, EventHistory::class.java).apply {}
+                val intent = Intent(this@HomeActivity, EventsHistoryActivity::class.java).apply {}
                 startActivity(intent)
             }
 

@@ -12,7 +12,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.classes.Event
+import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
@@ -63,8 +63,8 @@ class ViewEventActivity : AppCompatActivity() {
     val participantController : ParticipantController = ParticipantController()
 
     // handle event callback, success/failure of retrieval of getEvent
-    private val getEventCallback = object : Callback<Event> {
-        override fun onFailure(call: Call<Event>, t: Throwable) {
+    private val getEventCallback = object : Callback<StatusResponseEntity<Event>> {
+        override fun onFailure(call: Call<StatusResponseEntity<Event>>, t: Throwable) {
             Log.e(TAG, "Failure getting event")
             val toast = Toast.makeText(
                 this@ViewEventActivity,
@@ -74,11 +74,11 @@ class ViewEventActivity : AppCompatActivity() {
             toast.show()
         }
 
-        override fun onResponse(call: Call<Event>, response: Response<Event>) {
+        override fun onResponse(call: Call<StatusResponseEntity<Event>>, response: Response<StatusResponseEntity<Event>>) {
             if (response.isSuccessful) {
                 Log.e(TAG, "Success getting event")
                 if (response.body() != null) {
-                    event = response.body()!!
+                    event = response.body()!!.entity!!
                     fillEventInformation()
                     if (event.eventOrganiser.userId == App.sharedPreferences.getLong(
                             App.SharedPreferencesUserId,
@@ -192,7 +192,7 @@ class ViewEventActivity : AppCompatActivity() {
         }
     }
 
-    // callback for remove participant
+    // callback for update event
     val updateEventStatusCallback = object : Callback<StatusResponseEntity<Event>> {
         override fun onFailure(
             call: Call<StatusResponseEntity<Event>>,
@@ -444,6 +444,8 @@ class ViewEventActivity : AppCompatActivity() {
         intent.putExtra("EVENT_ID", event.eventId)
         startActivity(intent)
     }
+
+
 
     /**
      * Setup view buttons for organiser to manage event status

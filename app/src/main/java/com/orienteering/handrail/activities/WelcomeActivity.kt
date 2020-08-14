@@ -8,8 +8,9 @@ import android.view.View
 import android.widget.Button
 import com.orienteering.handrail.R
 import com.orienteering.handrail.controllers.LoginController
-import com.orienteering.handrail.httprequests.LoginResponse
 import com.orienteering.handrail.httprequests.StatusResponseEntity
+import com.orienteering.handrail.login.LoginActivity
+import com.orienteering.handrail.signup.SignupActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

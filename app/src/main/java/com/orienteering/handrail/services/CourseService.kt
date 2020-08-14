@@ -1,10 +1,8 @@
 package com.orienteering.handrail.services
 
-import com.orienteering.handrail.classes.Course
-import com.orienteering.handrail.classes.MultiFilesUploadRequest
+import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -29,7 +27,7 @@ interface CourseService {
     fun readAll(): Call<List<Course>>
 
     @GET("users/{id}/courses")
-    fun readAllByUser(@Path("id")userID : Long): Call<StatusResponseEntity<List<Course>?>>
+    fun readAllByUser(@Path("id")userID : Long): Call<StatusResponseEntity<List<Course>>>
 
     @PUT("courses/{id}/delete")
     fun deleteCourse(@Path("id") courseId : Int) : Call<StatusResponseEntity<Boolean>>

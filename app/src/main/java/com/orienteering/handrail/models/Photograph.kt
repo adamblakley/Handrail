@@ -1,6 +1,4 @@
-package com.orienteering.handrail.classes
-
-import kotlin.properties.Delegates
+package com.orienteering.handrail.models
 
 class Photograph {
 
