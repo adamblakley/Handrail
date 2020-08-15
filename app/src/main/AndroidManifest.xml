@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".create_event.CreateEventActivity"></activity>
+        <activity android:name=".course.ICourseActivity"></activity>
+        <activity android:name=".create_event.CreateEventActivity" />
         <activity android:name=".edit_profile.EditProfileActivity" />
         <activity android:name=".signup.SignupActivity" />
         <activity android:name=".login.LoginActivity" />

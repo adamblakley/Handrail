@@ -1,7 +1,5 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.course
 
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,20 +10,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.CourseActivity
 import com.orienteering.handrail.models.Control
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Context) : RecyclerView.Adapter<ControlsRecyclerViewAdapter.ViewHolder>() {
-    private val TAG : String = "ControlRVAdapter"
+class CourseAdapter(controls : List<Control>) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
+
 
     var controls : MutableList<Control> = mutableListOf<Control>()
     var imagePaths : Array<String?>
-    var context : Context
+
 
     init {
-        this.context = context
-        this.controls=controls
+
+        this.controls= controls as MutableList<Control>
         this.imagePaths = arrayOfNulls(controls.size)
 
         for(control in controls){
@@ -36,27 +33,19 @@ class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Cont
                         imagePaths.set(controls.indexOf(control),photo.photoPath)
                     }
                 }
-
-
             }
         }
-
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_control_item,parent,false)
-        val viewHolder = ViewHolder(view)
-        return viewHolder
+        return CourseViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return controls.size
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
         val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
         if (controls.size>=1){
-            Glide.with(context)
+            Glide.with(holder.itemView.context)
                 .asBitmap()
                 .apply(options)
                 .load(imagePaths[position])
@@ -67,32 +56,34 @@ class ControlsRecyclerViewAdapter(controls : MutableList<Control>, context: Cont
         holder.controlButton.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(view: View?) {
-                if (context is CourseActivity){
-                    (context as CourseActivity).displayControlDialog(controls[position])
+                if (holder.itemView.context is ICourseActivity){
+                    (holder.itemView.context as ICourseActivity).coursePresenter.controlInformation(controls[position].controlName)
                 }
             }
         })
     }
 
 
-    /**
-     *     View Holder holds widgets in memory of each item
-     */
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    override fun getItemCount(): Int {
+        return controls.size
+    }
 
-        var controlImage : CircleImageView
-        var controlPosition : TextView
-        var controlName : TextView
-        var controlButton : Button
-        var parentLayout : RelativeLayout
+    class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        init{
+        var controlImage: CircleImageView
+        var controlPosition: TextView
+        var controlName: TextView
+        var controlButton: Button
+        var parentLayout: RelativeLayout
+
+
+        init {
             controlImage = itemView.findViewById(R.id.imageCircle_control_item_image)
             controlPosition = itemView.findViewById(R.id.textView_control_item_position)
             controlName = itemView.findViewById(R.id.textView_control_item_name)
             controlButton = itemView.findViewById(R.id.button_control_item_info)
             parentLayout = itemView.findViewById(R.id.parent_layout)
         }
-
     }
 }
+

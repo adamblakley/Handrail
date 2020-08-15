@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.CourseActivity
+import com.orienteering.handrail.course.ICourseActivity
 import com.orienteering.handrail.models.Course
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -51,7 +51,7 @@ class CoursesAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<Cour
 
             override fun onClick(view: View?) {
 
-                val intent = Intent(holder.itemView.context, CourseActivity::class.java).apply {}
+                val intent = Intent(holder.itemView.context, ICourseActivity::class.java).apply {}
                 intent.putExtra("COURSE_ID", courseList[position].courseId)
                 view?.context?.startActivity(intent)
 
