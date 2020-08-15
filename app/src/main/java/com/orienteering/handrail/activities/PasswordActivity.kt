@@ -12,6 +12,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.models.PasswordUpdateRequest
 import com.orienteering.handrail.models.User
 import com.orienteering.handrail.controllers.UserController
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
 import retrofit2.Call
@@ -40,21 +41,22 @@ class PasswordActivity : AppCompatActivity() {
     /**
      * callback handle password update
      */
-    val updatePasswordCallback = object : Callback<StatusResponseEntity<User>?> {
-        override fun onFailure(call: Call<StatusResponseEntity<User>?>, t: Throwable) {
+    val updatePasswordCallback = object : Callback<StatusResponseEntity<Boolean>> {
+        override fun onFailure(call: Call<StatusResponseEntity<Boolean>>, t: Throwable) {
             Log.e(TAG, "Failure connecting to service")
             Log.e(TAG,"Error: Service Currently Unavailable")
             val toast : Toast = Toast.makeText(this@PasswordActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT)
             toast.show()
         }
         override fun onResponse(
-            call: Call<StatusResponseEntity<User>?>,
-            response: Response<StatusResponseEntity<User>?>
+            call: Call<StatusResponseEntity<Boolean>>,
+            response: Response<StatusResponseEntity<Boolean>>
         ) {
             if (response.isSuccessful){
                 Log.e(TAG,"Success Updating Password")
                 val toast : Toast = Toast.makeText(this@PasswordActivity,"Successfully Updated.",Toast.LENGTH_SHORT)
-                val intent : Intent = Intent(this@PasswordActivity,HomeActivity::class.java)
+                val intent : Intent = Intent(this@PasswordActivity,
+                    HomeActivity::class.java)
                 startActivity(intent)
                 toast.show()
             } else  if (response.code()==401){

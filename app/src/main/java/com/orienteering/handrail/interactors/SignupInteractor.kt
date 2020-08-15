@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.SignupRequest
 import com.orienteering.handrail.services.ServiceFactory
 import com.orienteering.handrail.services.SignupService
@@ -32,7 +32,10 @@ class SignupInteractor {
      */
     fun signup(signupRequest: SignupRequest, onFinishedListener: IOnFinishedListener<Boolean>){
         val call = signupService.signup(signupRequest)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 

@@ -1,6 +1,6 @@
 package com.orienteering.handrail.events
 
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.EventInteractor
@@ -50,7 +50,8 @@ class EventsEventsPerformer(eventsView: IEventsContract.IEventsView, eventIntera
  * @param eventsEventsPerformer
  * @param eventsView
  */
-class GetEventsOnFinishedListener(eventsEventsPerformer : IEventsContract.IEventsPerformer, eventsView : IEventsContract.IEventsView) : IOnFinishedListener<List<Event>>{
+class GetEventsOnFinishedListener(eventsEventsPerformer : IEventsContract.IEventsPerformer, eventsView : IEventsContract.IEventsView) :
+    IOnFinishedListener<List<Event>> {
     // Events view
     private var eventsView : IEventsContract.IEventsView
     // Events presenter

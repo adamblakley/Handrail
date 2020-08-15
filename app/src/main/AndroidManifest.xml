@@ -27,11 +27,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".signup.SignupActivity"></activity>
+        <activity android:name=".create_event.CreateEventActivity"></activity>
+        <activity android:name=".edit_profile.EditProfileActivity" />
+        <activity android:name=".signup.SignupActivity" />
         <activity android:name=".login.LoginActivity" />
         <activity android:name=".events_history.EventsHistoryActivity" />
         <activity android:name=".courses.CoursesActivity" />
-        <activity android:name=".activities.PasswordActivity" />
+        <activity android:name=".welcome.WelcomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".password_update.PasswordUpdateActivity" />
         <activity android:name=".activities.EditProfileActivity" />
         <activity android:name=".activities.CourseActivity" />
         <activity android:name=".activities.EventHistory" />
@@ -39,13 +48,7 @@
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".events.EventsActivity" />
         <activity android:name=".event.EventActivity" />
-        <activity android:name=".activities.WelcomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".activities.WelcomeActivity" />
         <activity android:name=".activities.LoginActivity" />
         <activity android:name=".activities.ViewTopRoutesActivity" />
         <activity android:name=".activities.ResultsListActivity" />
@@ -71,7 +74,7 @@
             android:name=".activities.CourseParticipationActivity"
             android:label="@string/title_activity_course_participation" />
         <activity
-            android:name=".activities.HomeActivity"
+            android:name=".home_menu.HomeActivity"
             android:label="Handrail" />
 
         <receiver

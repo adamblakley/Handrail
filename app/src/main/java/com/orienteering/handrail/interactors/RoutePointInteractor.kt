@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.models.RoutePoint
 import com.orienteering.handrail.services.RoutePointService
 import com.orienteering.handrail.services.ServiceFactory
@@ -33,7 +33,10 @@ class RoutePointInteractor {
      */
     fun create(participantId : Int?, routePoints : List<RoutePoint>, onFinishedListener: IOnFinishedListener<List<RoutePoint>>){
         val call = routePointService.createMany(participantId,routePoints)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 }

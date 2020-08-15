@@ -21,11 +21,11 @@ interface UserService {
     @PUT("users/{id}/update")
     fun update(@Path("id") userId : Long, @Body user : User) : Call<StatusResponseEntity<User>>
 
-    @PUT("users/{id}/update")
+    @POST("users/{id}/update")
     @Multipart
     fun update(@Path("id") userId : Long, @Part("user") user : User, @Part file : MultipartBody.Part?) : Call<StatusResponseEntity<User>>
 
     @PUT("users/{id}/update/password")
-    fun updatePassword(@Path("id") userId: Long, @Body passwordUpdateRequest: PasswordUpdateRequest) : Call<StatusResponseEntity<User>>
+    fun updatePassword(@Path("id") userId: Long, @Body passwordUpdateRequest: PasswordUpdateRequest) : Call<StatusResponseEntity<Boolean>>
 
 }

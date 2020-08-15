@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.LoginRequest
 import com.orienteering.handrail.httprequests.LoginResponse
 import com.orienteering.handrail.services.LoginService
@@ -30,7 +30,10 @@ class LoginInteractor {
      */
     fun login(loginRequest: LoginRequest, onFinishedListener: IOnFinishedListener<LoginResponse>){
         val call = loginService.login(loginRequest)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 

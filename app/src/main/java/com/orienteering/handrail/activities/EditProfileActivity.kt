@@ -15,7 +15,9 @@ import com.google.android.gms.common.util.IOUtils
 import com.orienteering.handrail.R
 import com.orienteering.handrail.models.User
 import com.orienteering.handrail.controllers.UserController
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.httprequests.StatusResponseEntity
+import com.orienteering.handrail.password_update.PasswordUpdateActivity
 import com.orienteering.handrail.utilities.App
 import com.orienteering.handrail.utilities.ImageSelect
 import com.orienteering.handrail.utilities.PermissionManager
@@ -145,7 +147,8 @@ class EditProfileActivity : AppCompatActivity() {
             if (response.isSuccessful){
                 Log.e(TAG,"Success Updating User")
                 val toast : Toast = Toast.makeText(this@EditProfileActivity,"Successfully Updated.",Toast.LENGTH_SHORT)
-                val intent : Intent = Intent(this@EditProfileActivity,HomeActivity::class.java)
+                val intent : Intent = Intent(this@EditProfileActivity,
+                    HomeActivity::class.java)
                 startActivity(intent)
                 toast.show()
             } else  if (response.code()==206){
@@ -253,7 +256,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         buttonChangePassword?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent : Intent = Intent(this@EditProfileActivity,PasswordActivity::class.java)
+                val intent : Intent = Intent(this@EditProfileActivity, PasswordUpdateActivity::class.java)
                 startActivity(intent)
             }
         })

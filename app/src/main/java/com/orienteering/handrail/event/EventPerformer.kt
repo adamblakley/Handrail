@@ -1,7 +1,7 @@
 package com.orienteering.handrail.event
 
 import android.util.Log
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.models.Event;
 import com.orienteering.handrail.interactors.EventInteractor
@@ -74,7 +74,8 @@ class EventPerformer(eventId : Int, eventView : IEventContract.IEventView, event
     }
 }
 
-class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) : IOnFinishedListener<Event> {
+class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+    IOnFinishedListener<Event> {
 
     lateinit var event : Event
     private var eventView : IEventContract.IEventView
@@ -144,7 +145,8 @@ class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer
     }
 }
 
-class JoinEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) : IOnFinishedListener<Event> {
+class JoinEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+    IOnFinishedListener<Event> {
 
     private var eventView : IEventContract.IEventView
     private var eventPerformer : IEventContract.IEventPerformer
@@ -174,7 +176,8 @@ class JoinEventOnFinishedListener(eventPerformer : IEventContract.IEventPerforme
     }
 }
 
-class UpdateEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) : IOnFinishedListener<Event> {
+class UpdateEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+    IOnFinishedListener<Event> {
 
     private var eventView : IEventContract.IEventView
     private var eventPerformer : IEventContract.IEventPerformer
@@ -205,7 +208,8 @@ class UpdateEventOnFinishedListener(eventPerformer : IEventContract.IEventPerfor
     }
 }
 
-class LeaveEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) : IOnFinishedListener<Event> {
+class LeaveEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+    IOnFinishedListener<Event> {
 
     private var eventView : IEventContract.IEventView
     private var eventPerformer : IEventContract.IEventPerformer
@@ -235,7 +239,8 @@ class LeaveEventOnFinishedListener(eventPerformer : IEventContract.IEventPerform
     }
 }
 
-class DeleteEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) : IOnFinishedListener<Boolean> {
+class DeleteEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+    IOnFinishedListener<Boolean> {
 
     private var eventView : IEventContract.IEventView
     private var eventPerformer : IEventContract.IEventPerformer

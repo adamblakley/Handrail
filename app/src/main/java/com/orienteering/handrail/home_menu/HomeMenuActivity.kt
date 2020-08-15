@@ -1,4 +1,4 @@
-package com.orienteering.handrail.activities
+package com.orienteering.handrail.home_menu
 
 
 import android.content.Intent
@@ -7,6 +7,10 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.orienteering.handrail.*
+import com.orienteering.handrail.activities.CreateEventActivity
+import com.orienteering.handrail.activities.CreateMapsActivity
+import com.orienteering.handrail.activities.EditProfileActivity
+import com.orienteering.handrail.activities.WelcomeActivity
 import com.orienteering.handrail.courses.CoursesActivity
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.events_history.EventsHistoryActivity
@@ -55,7 +59,7 @@ class HomeActivity : AppCompatActivity() {
 
         buttonCreateEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@HomeActivity, CreateEventActivity::class.java).apply {}
+                val intent = Intent(this@HomeActivity, com.orienteering.handrail.create_event.CreateEventActivity::class.java).apply {}
                 startActivity(intent)
             }
         })
@@ -80,7 +84,7 @@ class HomeActivity : AppCompatActivity() {
 
         buttonEditProfile?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@HomeActivity, EditProfileActivity::class.java).apply {}
+                val intent = Intent(this@HomeActivity, com.orienteering.handrail.edit_profile.EditProfileActivity::class.java).apply {}
                 startActivity(intent)
             }
 

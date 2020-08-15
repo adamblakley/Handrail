@@ -69,7 +69,7 @@ class UserController {
      * @param passwordUpdateRequest
      * @param callback
      */
-    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, callback: Callback<StatusResponseEntity<User>?>){
+    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, callback: Callback<StatusResponseEntity<Boolean>>){
         val call = userService.updatePassword(userId,passwordUpdateRequest)
         call.enqueue(callback)
     }

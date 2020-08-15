@@ -1,6 +1,6 @@
 package com.orienteering.handrail.events_history
 
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Event
@@ -40,7 +40,8 @@ class EventsHistoryPerformer(eventsHistoryView : IEventsHistoryContract.IEventsH
  * @param eventsPresenter
  * @param eventsView
  */
-class GetEventsHistoryOnFinishedListener(eventsHistoryPerformer : IEventsHistoryContract.IEventsHistoryPresenter ,eventsView : IEventsHistoryContract.IEventsHistoryView) : IOnFinishedListener<List<Event>>{
+class GetEventsHistoryOnFinishedListener(eventsHistoryPerformer : IEventsHistoryContract.IEventsHistoryPresenter ,eventsView : IEventsHistoryContract.IEventsHistoryView) :
+    IOnFinishedListener<List<Event>> {
     // Events view
     private var eventsHistoryView :  IEventsHistoryContract.IEventsHistoryView
     // Events presenter

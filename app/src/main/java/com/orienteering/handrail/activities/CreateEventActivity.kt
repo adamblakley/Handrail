@@ -74,7 +74,6 @@ class CreateEventActivity : AppCompatActivity() {
 
     // image view for event image
     lateinit var eventImageView : ImageView
-
     // edit text for name
     lateinit var editTextEventName : EditText
     // edit text for description
@@ -433,7 +432,7 @@ class CreateEventActivity : AppCompatActivity() {
                     Log.e(TAG, "Request 1002")
                     if (resultCode == Activity.RESULT_OK && data != null) {
 
-                        val imageUri = data.data
+                        imageUri = data.data
 
                         updateBitMap()
                     }

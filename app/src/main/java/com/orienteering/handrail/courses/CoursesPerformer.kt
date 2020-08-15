@@ -1,6 +1,6 @@
 package com.orienteering.handrail.courses
 
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Course
@@ -41,13 +41,11 @@ class CoursesPerformer(coursesView : ICoursesContract.ICoursesView, courseIntera
 /**
  * Listener handles interactor responses
  *
- * @constructor
- *
- *
  * @param eventsPresenter
  * @param eventsView
  */
-class GetCoursesOnFinishedListener(coursePerformer : ICoursesContract.ICoursesPerformer, coursesView : ICoursesContract.ICoursesView) : IOnFinishedListener<List<Course>>{
+class GetCoursesOnFinishedListener(coursePerformer : ICoursesContract.ICoursesPerformer, coursesView : ICoursesContract.ICoursesView) :
+    IOnFinishedListener<List<Course>> {
     // Events view
     private var coursesView : ICoursesContract.ICoursesView
     // Events presenter

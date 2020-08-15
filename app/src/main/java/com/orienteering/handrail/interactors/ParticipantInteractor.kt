@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.models.Participant
@@ -35,7 +35,10 @@ class ParticipantInteractor {
      */
     fun getParticipants(eventId : Int, onFinishedListener: IOnFinishedListener<List<Participant>>){
         val call : Call<StatusResponseEntity<List<Participant>>> = participantService.readEventParticipants(eventId)
-        val customCallback : CustomCallback<List<Participant>> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<List<Participant>> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -48,7 +51,10 @@ class ParticipantInteractor {
      */
     fun createParticipant(eventId: Int, userId : Long, onFinishedListener: IOnFinishedListener<Event>){
         val call : Call<StatusResponseEntity<Event>> = participantService.create(eventId, userId)
-        val customCallback : CustomCallback<Event> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Event> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -61,7 +67,10 @@ class ParticipantInteractor {
      */
     fun removeParticipant(eventId: Int, userId: Long,onFinishedListener: IOnFinishedListener<Event>){
         val call = participantService.removeParticipant(eventId,userId)
-        val customCallback : CustomCallback<Event> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Event> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -74,7 +83,10 @@ class ParticipantInteractor {
      */
     fun getParticipant(eventId: Int, userId: Long,onFinishedListener: IOnFinishedListener<Participant>){
         val call = participantService.getPerformance(eventId,userId)
-        val customCallback : CustomCallback<Participant> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Participant> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 }

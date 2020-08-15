@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.models.PasswordUpdateRequest
 import com.orienteering.handrail.models.User
 import com.orienteering.handrail.services.ServiceFactory
@@ -33,7 +33,10 @@ class UserInteractor {
      */
     fun read(userId: Long,onFinishedListener: IOnFinishedListener<User>){
         val call = userService.read(userId)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -47,7 +50,10 @@ class UserInteractor {
      */
     fun update(userId: Long, user : User, onFinishedListener: IOnFinishedListener<User>){
         val call = userService.update(userId,user)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -62,7 +68,10 @@ class UserInteractor {
      */
     fun update(userId: Long, user : User, file : MultipartBody.Part?, onFinishedListener: IOnFinishedListener<User>){
         val call = userService.update(userId,user,file)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -73,7 +82,7 @@ class UserInteractor {
      * @param passwordUpdateRequest
      * @param onFinishedListener
      */
-    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, onFinishedListener: IOnFinishedListener<User>){
+    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, onFinishedListener: IOnFinishedListener<Boolean>){
         val call = userService.updatePassword(userId,passwordUpdateRequest)
         val customCallback = CustomCallback(onFinishedListener)
         call.enqueue(customCallback)

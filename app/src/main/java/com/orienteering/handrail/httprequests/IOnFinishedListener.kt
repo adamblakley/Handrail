@@ -1,6 +1,5 @@
-package com.orienteering.handrail
+package com.orienteering.handrail.httprequests
 
-import com.orienteering.handrail.httprequests.StatusResponseEntity
 import retrofit2.Response
 
 interface IOnFinishedListener<T> {

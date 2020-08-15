@@ -1,8 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import android.util.Log
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.models.Event;
 import com.orienteering.handrail.httprequests.StatusResponseEntity;
 import com.orienteering.handrail.services.EventService;
@@ -28,7 +27,10 @@ class EventInteractor {
      */
     fun getAllEvents(onFinishedListener: IOnFinishedListener<List<Event>>) {
         val call: Call<StatusResponseEntity<List<Event>>> = eventService.readAll()
-        val customCallback : CustomCallback<List<Event>> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<List<Event>> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -53,7 +55,10 @@ class EventInteractor {
      */
     fun retreiveByID(id : Int, onFinishedListener: IOnFinishedListener<Event>){
         val call = eventService.read(id)
-        val customCallback : CustomCallback<Event> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Event> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -65,7 +70,10 @@ class EventInteractor {
      */
     fun retreiveByUserHistory(id : Long, onFinishedListener: IOnFinishedListener<List<Event>>){
         val call = eventService.readAllByUserHistory(id)
-        val customCallback : CustomCallback<List<Event>> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<List<Event>> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -77,7 +85,10 @@ class EventInteractor {
      */
     fun updateStatus(id : Int, onFinishedListener: IOnFinishedListener<Event>){
         val call = eventService.updateStatus(id)
-        val customCallback : CustomCallback<Event> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Event> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -90,7 +101,10 @@ class EventInteractor {
      */
     fun deleteEvent(id : Int, onFinishedListener: IOnFinishedListener<Boolean>){
         val call = eventService.deleteEvent(id)
-        val customCallback : CustomCallback<Boolean> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Boolean> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 }

@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.services.CourseService
 import com.orienteering.handrail.services.ServiceFactory
@@ -35,7 +35,10 @@ class CourseInteractor {
      */
     fun uploadCourse(id : Long, course : Course, files : Array<MultipartBody.Part?>, onFinishedListener: IOnFinishedListener<Course>){
         val call = courseService.createWPhoto(id,course,files)
-        val customCallback : CustomCallback<Course> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Course> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -47,7 +50,10 @@ class CourseInteractor {
      */
     fun retrieve(id : Int, onFinishedListener: IOnFinishedListener<Course>){
         val call = courseService.read(id)
-        val customCallback : CustomCallback<Course> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Course> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -60,7 +66,10 @@ class CourseInteractor {
      */
     fun retrieveAllByUser(userId: Long, onFinishedListener: IOnFinishedListener<List<Course>>){
         val call = courseService.readAllByUser(userId)
-        val customCallback : CustomCallback<List<Course>> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<List<Course>> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 
@@ -72,7 +81,10 @@ class CourseInteractor {
      */
     fun deleteCourse(id : Int, onFinishedListener: IOnFinishedListener<Boolean>){
         val call = courseService.deleteCourse(id)
-        val customCallback : CustomCallback<Boolean> = CustomCallback(onFinishedListener)
+        val customCallback : CustomCallback<Boolean> =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 

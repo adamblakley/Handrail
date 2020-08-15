@@ -1,6 +1,6 @@
 package com.orienteering.handrail.login
 
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.LoginRequest
 import com.orienteering.handrail.httprequests.LoginResponse
 import com.orienteering.handrail.httprequests.StatusResponseEntity
@@ -40,7 +40,8 @@ class LoginPerformer(loginView : ILoginContract.ILoginView, loginInteractor: Log
     }
 }
 
-class LoginOnFinishedListener(loginPerformer : ILoginContract.ILoginPerformer, loginView: ILoginContract.ILoginView) : IOnFinishedListener<LoginResponse> {
+class LoginOnFinishedListener(loginPerformer : ILoginContract.ILoginPerformer, loginView: ILoginContract.ILoginView) :
+    IOnFinishedListener<LoginResponse> {
 
     private var loginView : ILoginContract.ILoginView
     private var loginPerformer : ILoginContract.ILoginPerformer

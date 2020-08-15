@@ -1,7 +1,7 @@
 package com.orienteering.handrail.interactors
 
-import com.orienteering.handrail.CustomCallback
-import com.orienteering.handrail.IOnFinishedListener
+import com.orienteering.handrail.httprequests.CustomCallback
+import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.models.PerformanceUploadRequest
 import com.orienteering.handrail.services.PcpService
@@ -35,7 +35,10 @@ class PCPInteractor {
      */
     fun create(eventId : Int, userId: Long, request : PerformanceUploadRequest, onFinishedListener: IOnFinishedListener<Participant>){
         val call = pcpService.create(eventId,userId,request)
-        val customCallback = CustomCallback(onFinishedListener)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
         call.enqueue(customCallback)
     }
 

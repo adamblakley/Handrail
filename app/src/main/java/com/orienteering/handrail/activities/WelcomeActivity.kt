@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import com.orienteering.handrail.R
 import com.orienteering.handrail.controllers.LoginController
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.login.LoginActivity
 import com.orienteering.handrail.signup.SignupActivity

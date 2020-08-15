@@ -1,6 +1,5 @@
 package com.orienteering.handrail.activities
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +13,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.orienteering.handrail.R
 import com.orienteering.handrail.controllers.LoginController
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.httprequests.LoginRequest
 import com.orienteering.handrail.httprequests.LoginResponse
 import com.orienteering.handrail.httprequests.StatusResponseEntity

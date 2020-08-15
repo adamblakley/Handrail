@@ -1,17 +1,20 @@
 package com.orienteering.handrail.signup
 
+import com.orienteering.handrail.httprequests.SignupRequest
+
 interface ISignupContract {
 
     interface ISignupPerformer{
         fun onDestroy()
-        fun requestDataFromServer(email : String, password : String)
-        fun insertSharedPreferences(authToken : String, tokenType : String,userId : Long)
+        fun postDataToServer(signupRequest: SignupRequest)
     }
 
     interface ISignupView{
+        fun validateFields() : Boolean
+        fun emailInUse()
         fun onResponseFailure(throwable : Throwable)
         fun onResponseError()
-        fun startHomeMenuActivity()
+        fun startLoginActivity()
         fun createEditText()
         fun createButtons()
         fun makeToast(message : String)

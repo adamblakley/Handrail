@@ -1,7 +1,6 @@
 package com.orienteering.handrail.services
 
 import com.orienteering.handrail.httprequests.AuthenticationInterceptor
-import com.orienteering.handrail.utilities.App
 import okhttp3.*
 import okhttp3.CipherSuite.Companion.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256
 import okhttp3.CipherSuite.Companion.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256

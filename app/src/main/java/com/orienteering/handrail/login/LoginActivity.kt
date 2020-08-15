@@ -5,13 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.HomeActivity
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.interactors.LoginInteractor
 
 class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
