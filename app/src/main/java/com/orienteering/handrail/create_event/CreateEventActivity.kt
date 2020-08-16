@@ -214,23 +214,23 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     fun checkFields() : Boolean{
         var inputsOk = true
         if(eventName?.trim()?.isEmpty()!!){
-            editText_event_name_create.setError("Enter an Event name")
+            editText_event_name_create.error = "Enter an Event name"
             inputsOk = false
         }
         if(eventDescription?.trim()?.isEmpty()!!){
-            editText_event_description_create.setError("Enter an Event description")
+            editText_event_description_create.error = "Enter an Event description"
             inputsOk = false
         }
         if(eventDate.trim().isEmpty()){
-            textViewEventDate.setError("Please enter a valid date")
+            textViewEventDate.error = "Please enter a valid date"
             inputsOk = false
         }
         if (eventTime.trim().isEmpty()){
-            textViewEventTime.setError("Please enter a valid time")
+            textViewEventTime.error = "Please enter a valid time"
             inputsOk = false
         }
         if (textViewEventCourse.text.trim().isEmpty()){
-            buttonSelectCourse?.setError("Please select a course")
+            buttonSelectCourse?.error = "Please select a course"
             inputsOk = false
         }
         return inputsOk

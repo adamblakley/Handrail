@@ -62,17 +62,16 @@ class ResultsListActivity : AppCompatActivity() {
                     mPosition.add(participants.indexOf(participant)+1)
                     mIds.add(participant.participantId)
 
-                    if (participant.participantUser.isUserPhotographInitialised()){
-                        for (photo in participant.participantUser.userPhotographs){
+                    if (participant.participantUser.userPhotographs?.size!! >=1){
+                        for (photo in participant.participantUser.userPhotographs!!){
                             if (photo.active==true){
                                 mImageUrls.add(photo.photoPath)
                             }
                         }
 
-                    }
+                    } else {
                         mImageUrls.add("dummy")
-
-
+                    }
                 }
             }
             createButtons()
@@ -132,7 +131,3 @@ class ResultsListActivity : AppCompatActivity() {
         participantController.getParticipants(eventIdPassed,getParticipantsCallback)
     }
 }
-
-
-
-

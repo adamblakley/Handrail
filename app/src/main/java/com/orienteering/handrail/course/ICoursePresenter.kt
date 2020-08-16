@@ -3,6 +3,7 @@ package com.orienteering.handrail.course
 import android.content.Context
 import android.os.Build
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.CourseInteractor
@@ -98,14 +99,22 @@ class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, 
         courseView.showControlInformation(nameOfControl,noteOfControl,positionOfControl,imagePathOfControl)
     }
 
-    override fun provideBounds() {
-        TODO("Not yet implemented")
+    fun provideBounds(controls : List<Control>) : LatLngBounds {
+        val mapUtilities = MapUtilities()
+        var controlLatLngs = mutableListOf<LatLng>()
+        for (control in controls){
+            control.createLatLng()
+            controlLatLngs.add(control.controlLatLng)
+        }
+        val bounds : LatLngBounds = mapUtilities.determineNESW(controlLatLngs)
+        return bounds
     }
 
     override fun getRoute(controls: List<Control>) {
         val mapUtilities = MapUtilities()
         var allControlPoints = mapUtilities.getAllControlPoints(controls)
-        courseView.showRoute(allControlPoints)
+        val bounds = provideBounds(controls)
+        courseView.showRoute(allControlPoints,bounds)
     }
 
     /**

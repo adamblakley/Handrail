@@ -16,7 +16,7 @@ import com.orienteering.handrail.course.ICourseActivity
 import com.orienteering.handrail.models.Course
 import de.hdodenhof.circleimageview.CircleImageView
 
-class CoursesAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<CoursesAdapter.CoursesViewHolder>(){
+class ResultsAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<ResultsAdapter.CoursesViewHolder>(){
 
     val TAG = "EventsAdapter"
     var courseList : ArrayList<Course>

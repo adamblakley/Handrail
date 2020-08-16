@@ -18,7 +18,7 @@ class User(userEmail : String, userFirstName : String, userLastName : String, us
 
     var userType : Int? = null
 
-    lateinit var userPhotographs: List<Photograph>
+    var userPhotographs: List<Photograph>? = null
 
     init{
         this.userEmail=userEmail
@@ -28,7 +28,6 @@ class User(userEmail : String, userFirstName : String, userLastName : String, us
         this.userBio = userBio
     }
 
-    fun isUserPhotographInitialised() = ::userPhotographs.isInitialized
 
     override fun toString(): String {
         return "User(userId=$userId, userEmail='$userEmail', userFirstName='$userFirstName', userLastName='$userLastName', userDOB='$userDob', userBio='$userBio')"

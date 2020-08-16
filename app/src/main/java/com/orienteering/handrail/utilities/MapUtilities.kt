@@ -33,6 +33,7 @@ class MapUtilities {
         var allLatLngs : MutableList<LatLng> = mutableListOf<LatLng>()
         for (participant in participants){
             for (routePoint in participant.routePoints){
+                routePoint.createLatLng()
                 allLatLngs.add(routePoint.latlng)
             }
         }
@@ -42,6 +43,7 @@ class MapUtilities {
     fun getAllParticipantRoutePoints(participant:Participant) : MutableList<LatLng> {
         var allLatLngs : MutableList<LatLng> = mutableListOf<LatLng>()
         for (routePoint in participant.routePoints){
+            routePoint.createLatLng()
             allLatLngs.add(routePoint.latlng)
         }
         return allLatLngs

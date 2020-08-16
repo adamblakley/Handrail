@@ -79,7 +79,6 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 textViewDistance.text = "Total Distance Metres: %.2f".format(mapUtilities.calculateTotalDistance(listRoutePointLatLng))
                 //Update to LatLngBounds. Define Method to calculate SW and NE corners
-                var latLng = LatLng(54.574647, -5.957871)
                 performanceMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapUtilities.determineNESW(mapUtilities.getAllParticipantRoutePoints(participant)),100))
 
             } else {

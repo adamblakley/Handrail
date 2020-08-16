@@ -12,9 +12,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.CourseParticipationActivity
+import com.orienteering.handrail.activities.ResultsListActivity
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.interactors.ParticipantInteractor
+import com.orienteering.handrail.results.ResultsActivity
 
 /**
  * Event Activity handles view for Event.
@@ -223,7 +225,7 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     }
 
     override fun startEventResultsActivity(eventId : Int){
-        val intent = Intent(this@EventActivity, CourseParticipationActivity::class.java).apply {}
+        val intent = Intent(this@EventActivity, ResultsActivity::class.java).apply {}
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
     }

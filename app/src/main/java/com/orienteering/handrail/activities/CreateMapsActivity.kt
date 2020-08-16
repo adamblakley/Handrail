@@ -252,13 +252,7 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
      * Request fine location, find current location and locate device
      */
     private fun setUpMap() {
-        if (PermissionManager.checkPermission(
-                this,
-                this@CreateMapsActivity,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                PermissionManager.LOCATION_PERMISSION_REQUEST_CODE
-            )
-        ) {
+        if (PermissionManager.checkPermission(this, this@CreateMapsActivity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
             map.isMyLocationEnabled = true
             map.mapType = GoogleMap.MAP_TYPE_TERRAIN
 
@@ -287,7 +281,6 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
                 }
             }
         }
-
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {

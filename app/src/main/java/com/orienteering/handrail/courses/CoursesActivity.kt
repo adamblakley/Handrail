@@ -29,7 +29,7 @@ class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
     }
 
     override fun fillRecyclerView(coursesList: ArrayList<Course>) {
-        val coursesAdapter : CoursesAdapter = CoursesAdapter(coursesList)
+        val coursesAdapter : ResultsAdapter = ResultsAdapter(coursesList)
         recyclerView.adapter = coursesAdapter
     }
 

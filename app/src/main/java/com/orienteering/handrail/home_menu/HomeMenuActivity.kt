@@ -12,6 +12,7 @@ import com.orienteering.handrail.activities.CreateMapsActivity
 import com.orienteering.handrail.activities.EditProfileActivity
 import com.orienteering.handrail.activities.WelcomeActivity
 import com.orienteering.handrail.courses.CoursesActivity
+import com.orienteering.handrail.create_course.CreateCourseActivity
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.events_history.EventsHistoryActivity
 import com.orienteering.handrail.utilities.App
@@ -44,7 +45,7 @@ class HomeActivity : AppCompatActivity() {
 
         buttonCreateCourse?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@HomeActivity, CreateMapsActivity::class.java).apply {}
+                val intent = Intent(this@HomeActivity, CreateCourseActivity::class.java).apply {}
                 startActivity(intent)
             }
 

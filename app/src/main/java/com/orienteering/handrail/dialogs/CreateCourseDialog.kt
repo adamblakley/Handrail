@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDialogFragment
 import com.orienteering.handrail.R
 import java.lang.ClassCastException
@@ -34,8 +35,16 @@ class CreateCourseDialog : AppCompatDialogFragment() {
 
                     val courseName : String = edittextCourseName.text.toString()
                     val courseNote : String = edittextCourseNote.text.toString()
-                    listener.applyEventText(courseName,courseNote)
 
+                if (courseName.trim().length<=0){
+                    edittextCourseName.error="Please enter a course name"
+                    Toast.makeText(context,"Please enter a course name and note", Toast.LENGTH_SHORT).show()
+                } else if(courseNote.trim().length<=0){
+                    edittextCourseNote.error="Please enter a course note"
+                    Toast.makeText(context,"Please enter a course name and note",Toast.LENGTH_SHORT).show()
+                } else {
+                    listener.applyEventText(courseName,courseNote)
+                }
             })
 
         edittextCourseName = view.findViewById<EditText>(R.id.edittext_event_name)

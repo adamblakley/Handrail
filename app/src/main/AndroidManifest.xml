@@ -27,7 +27,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".course.ICourseActivity"></activity>
+        <activity android:name=".create_course.CreateCourseActivity"></activity>
+        <activity android:name=".toproutes.TopRoutesActivity" />
+        <activity android:name=".performance.PerformanceActivity" />
+        <activity android:name=".course.ICourseActivity" />
         <activity android:name=".create_event.CreateEventActivity" />
         <activity android:name=".edit_profile.EditProfileActivity" />
         <activity android:name=".signup.SignupActivity" />
@@ -53,6 +56,7 @@
         <activity android:name=".activities.LoginActivity" />
         <activity android:name=".activities.ViewTopRoutesActivity" />
         <activity android:name=".activities.ResultsListActivity" />
+        <activity android:name=".results.ResultsActivity" />
         <activity android:name=".activities.ViewEventActivity" />
         <activity android:name=".activities.CreateEventActivity" />
         <activity android:name=".activities.CoursesActivity" />

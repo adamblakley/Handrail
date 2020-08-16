@@ -346,9 +346,9 @@ class EditProfileActivity : AppCompatActivity() {
      */
     fun initBitMap(){
         val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
-        if (user.isUserPhotographInitialised()){
-            if (user.userPhotographs.isNotEmpty()){
-                for (photo in user.userPhotographs){
+        if (user.userPhotographs?.size!! >=1){
+            if (user.userPhotographs!!.isNotEmpty()){
+                for (photo in user.userPhotographs!!){
                     if (photo.active!!){
                         Glide.with(this)
                             .asBitmap()

@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.ViewPerformanceActivity
 import com.orienteering.handrail.models.Event
+import com.orienteering.handrail.performance.PerformanceActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
 class EventsHistoryAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<EventsHistoryAdapter.EventsHistoryViewHolder>()  {
@@ -62,7 +63,7 @@ class EventsHistoryAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter
         holder.viewButton.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(view: View?) {
-                val intent = Intent(holder.itemView.context, ViewPerformanceActivity::class.java).apply {}
+                val intent = Intent(holder.itemView.context, PerformanceActivity::class.java).apply {}
                 intent.putExtra("EVENT_ID", eventsList[position].eventId)
                 view?.context?.startActivity(intent)
             }

@@ -5,10 +5,10 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDialogFragment
 import java.lang.ClassCastException
 
@@ -28,7 +28,16 @@ class CreateControlDialog : AppCompatDialogFragment() {
             .setPositiveButton("Create",DialogInterface.OnClickListener(){ dialogInterface: DialogInterface, i: Int ->
                 val username : String = edittextControlName.text.toString()
                 val note : String = edittextControlNote.text.toString()
-                listener.applyText(username,note)
+
+                if (username.trim().length<=0){
+                    edittextControlName.error="Please enter a control name"
+                    Toast.makeText(context,"Please enter a name and note",Toast.LENGTH_SHORT).show()
+                } else if(note.trim().length<=0){
+                    edittextControlName.error="Please enter a control note"
+                    Toast.makeText(context,"Please enter a name and note",Toast.LENGTH_SHORT).show()
+                } else {
+                    listener.applyText(username,note)
+                }
             })
 
         edittextControlName = view.findViewById<EditText>(com.orienteering.handrail.R.id.edittext_control_name)

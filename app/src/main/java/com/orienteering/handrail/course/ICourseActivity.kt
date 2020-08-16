@@ -143,9 +143,9 @@ class ICourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRe
     /**
      * add polyline routes
      */
-    override fun showRoute(routePoints : List<LatLng>){
+    override fun showRoute(routePoints : List<LatLng>, bounds : LatLngBounds){
 
-        courseMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapUtilities.determineNESW(routePoints as MutableList<LatLng>),200))
+        courseMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,200))
 
         val pattern: MutableList<PatternItem> = mutableListOf()
         pattern.add(Dot())
@@ -164,7 +164,6 @@ class ICourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRe
     }
 
     override fun addControls(controlsNameLatLng : Map<String,LatLng>) {
-        Log.e("TAG","I@VE BEEN HIT")
         for ((key,value) in controlsNameLatLng){
             Log.e("TAG","$key,$value")
             val markerOptions = MarkerOptions().position(value).title(key)

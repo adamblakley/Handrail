@@ -102,7 +102,7 @@ class GetEditUserOnFinishedListener(editProfilePerformer : IEditProfileContract.
 
                 editProfileView.fillInformation(user.userFirstName,user.userLastName,user.userEmail,user.userBio,date)
 
-                for (photo in user.userPhotographs){
+                for (photo in user.userPhotographs!!){
                     if (photo.active==true){
                         editProfileView.setupImage(photo.photoPath)
                         break
