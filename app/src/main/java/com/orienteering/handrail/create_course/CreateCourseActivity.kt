@@ -38,6 +38,9 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     lateinit var btnAddMarker : Button
     // save course
     lateinit var btnSaveCourse : Button
+    // pattern of polyline
+    lateinit var pattern : MutableList<PatternItem>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -50,7 +53,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
         )
         performer = CreateCoursePerformer(this,CourseInteractor(),imageSelect)
         performer.createLocationRequest()
-
+        definePattern()
         createButtons()
     }
 
@@ -76,6 +79,13 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
             performer.saveLatLng()
         }
         btnSaveCourse.setOnClickListener() { openSaveEventDialog() }
+    }
+
+    fun definePattern(){
+        pattern.add(Dot())
+        pattern.add(Gap(10F))
+        pattern.add(Dash(20F))
+        pattern.add(Gap(10F))
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
@@ -157,17 +167,29 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
         return this
     }
 
-    override fun animateMapCamera(currentLatlng: LatLng) {
+    /**
+     * Responsible for updating the map display upon receipt of latitude and longitude values from the presenter
+     * @param currentLatlng
+     * @param routePoints
+     */
+    override fun updateDisplay(currentLatlng: LatLng, routePoints: List<LatLng>) {
+        animateMapCamera(currentLatlng)
+        addMapPolyline(routePoints)
+    }
+
+    /**
+     * calls the animateCamera method of the Map object. centering the map on the new latitude and longitude
+     * @param currentLatlng
+     */
+    fun animateMapCamera(currentLatlng: LatLng) {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatlng, 15f))
     }
 
-    override fun addMapPolyline(routePoints: List<LatLng>) {
-        val pattern: MutableList<PatternItem> = mutableListOf()
-        pattern.add(Dot())
-        pattern.add(Gap(20F))
-        pattern.add(Dash(30F))
-        pattern.add(Gap(20F))
-
+    /**
+     * creates a polyline fresh from a new list of LatLng provided by the presenter class, adding the pattern defined in the definePatter() method
+     * @param routePoints
+     */
+    fun addMapPolyline(routePoints: List<LatLng>) {
         map.addPolyline(
             PolylineOptions()
                 .addAll(routePoints)

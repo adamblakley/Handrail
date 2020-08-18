@@ -2,10 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_courses"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    </LinearLayout>
 
+    <Button
+        android:id="@+id/button_create_course_courses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#673AB7"
+        android:text="Create a course"
+        android:textColor="#FFFFFF" />
 </LinearLayout>

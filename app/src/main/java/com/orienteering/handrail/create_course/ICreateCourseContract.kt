@@ -22,8 +22,7 @@ interface ICreateCourseContract {
     interface ICreateCourseView{
         fun returnContext() : Context
         fun returnActivity() : Activity
-        fun animateMapCamera(currentLatlng : LatLng)
-        fun addMapPolyline(routePoints : List<LatLng>)
+        fun updateDisplay(currentLatlng : LatLng,routePoints : List<LatLng>)
         fun addMapControl(name: String, note: String, currentLatLng: LatLng)
         fun onResponseError()
         fun onResponseFailure()

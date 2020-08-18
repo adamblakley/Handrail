@@ -42,7 +42,7 @@ class CheckLoginOnFinishedListener(welcomeView : IWelcomeContract.IWelcomeView, 
             if (response.body()?.entity != null) {
                 if (response.body()?.entity==true){
                     welcomeView.onResponseSuccess()
-                } else if (response.code()==403) {
+                } else if (response.code()==401) {
                     welcomeView?.onResponseError()
                 }
             } else {

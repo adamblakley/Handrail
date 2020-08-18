@@ -30,20 +30,10 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
     var imageSelect : ImageSelect
     // create image files
     var multipartBodyFactory : MultipartBodyFactory
-    // Fused Location Prover Client Variable
-    private var fusedLocationClient: FusedLocationProviderClient
-    // location request and updated location state
-    // store parameters for requests to fused location provider (determining level of accuracy)
-    private lateinit var locationRequest: LocationRequest
-    // location update state
-    private var locationUpdateState = false
-    // Last Location
-    private lateinit var lastLocation: Location
     // potential control latlng
     var potentialLatLng: LatLng = LatLng(0.0, 0.0)
     // potential control altitude
     var potentialAltitude: Double = 0.0
-
     // hashmap for image files
     var fileUris: HashMap<Int, Uri> = HashMap()
 
@@ -57,19 +47,9 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         this.courseInteractor = courseInteractor
         this.createCourseView = createCourseView
         this.postCoursetOnFinishedListener = PostCourseOnFinishedListener(this,createCourseView)
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(createCourseView.returnContext())
         this.imageSelect=imageSelect
-        this.multipartBodyFactory =
-            MultipartBodyFactory(
-                imageSelect
-            )
-        this.locationPerfomer=
-            LocationPerformer(
-                this,
-                createCourseView.returnContext(),
-                createCourseView.returnActivity()
-            )
-        // fused location provider invokes the LocationCallback.onLocationResult() method. Incoming argument contains a  Locaiton obkect containing location's lat and lng
+        this.multipartBodyFactory = MultipartBodyFactory(imageSelect)
+        this.locationPerfomer= LocationPerformer(this, createCourseView.returnContext(), createCourseView.returnActivity())
     }
 
     /**
@@ -147,11 +127,7 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
     }
 
     override fun getCourseLength(): Boolean {
-        if (controlsForCourse.size>0){
-            return true
-        } else {
-            return false
-        }
+        return controlsForCourse.size>0
     }
 
     override fun getControlInformation(nameOfControl: String) {
@@ -181,8 +157,8 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
             createCourseView.onLocationUpdateFailure()
         }
         listOfRoutePoints.add(potentialLatLng)
-        createCourseView.animateMapCamera(potentialLatLng)
-        createCourseView.addMapPolyline(listOfRoutePoints)
+
+        createCourseView.updateDisplay(potentialLatLng,listOfRoutePoints)
     }
 
     override fun startLocationUpdatesFailure() {

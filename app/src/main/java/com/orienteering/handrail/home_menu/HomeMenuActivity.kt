@@ -7,9 +7,6 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.orienteering.handrail.*
-import com.orienteering.handrail.activities.CreateEventActivity
-import com.orienteering.handrail.activities.CreateMapsActivity
-import com.orienteering.handrail.activities.EditProfileActivity
 import com.orienteering.handrail.activities.WelcomeActivity
 import com.orienteering.handrail.courses.CoursesActivity
 import com.orienteering.handrail.create_course.CreateCourseActivity
@@ -20,7 +17,6 @@ import com.orienteering.handrail.utilities.App
 
 class HomeActivity : AppCompatActivity() {
 
-    lateinit var buttonCreateCourse: Button
     lateinit var buttonCompete: Button
     lateinit var buttonCreateEvent: Button
     lateinit var buttonEventHistory: Button
@@ -34,22 +30,12 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_menu)
 
-        buttonCreateCourse = findViewById<Button>(R.id.btn_create_course)
         buttonCompete = findViewById<Button>(R.id.btn_compete_event)
         buttonCreateEvent = findViewById<Button>(R.id.btn_create_event)
         buttonEventHistory = findViewById<Button>(R.id.btn_view_performances)
         buttonViewCourses = findViewById<Button>(R.id.btn_view_courses)
         buttonEditProfile = findViewById(R.id.btn_edit_profile)
         buttonLogout = findViewById<Button>(R.id.btn_logout)
-
-
-        buttonCreateCourse?.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                val intent = Intent(this@HomeActivity, CreateCourseActivity::class.java).apply {}
-                startActivity(intent)
-            }
-
-        })
 
         buttonCompete?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
