@@ -13,9 +13,9 @@ import com.orienteering.handrail.models.Control
 import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
-import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
-import com.orienteering.handrail.utilities.MapUtilities
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.map_utilities.MapUtilities
+import com.orienteering.handrail.permissions.PermissionManager
 import com.orienteering.handrail.utilities.ResultsRecylcerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -46,7 +46,8 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
     //participant image urls
     var mImageUrls = mutableListOf<String>()
     // geofence performance calculator to convert performance times
-    val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+    val geofencePerformanceCalculator =
+        GeofencePerformanceCalculator()
     // map utilities such as camera and movement
     val mapUtilities = MapUtilities()
 
@@ -139,12 +140,14 @@ class ViewTopRoutesActivity : AppCompatActivity(), OnMapReadyCallback {
         routesMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
 
         if(PermissionManager.checkPermission(this,this@ViewTopRoutesActivity,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
         )
 
             if (runningQOrLater) {
                 PermissionManager.checkPermission(this,this@ViewTopRoutesActivity,
-                    arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
+                    arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
             }
 
         //Update to LatLngBounds. Define Method to calculate SW and NE corners

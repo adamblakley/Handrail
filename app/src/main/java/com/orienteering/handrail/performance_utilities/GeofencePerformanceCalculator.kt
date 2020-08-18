@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.performance_utilities
 
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng

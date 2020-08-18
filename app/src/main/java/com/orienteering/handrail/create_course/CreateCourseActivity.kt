@@ -19,7 +19,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.course.ICourseActivity
 import com.orienteering.handrail.dialogs.*
 import com.orienteering.handrail.interactors.CourseInteractor
-import com.orienteering.handrail.utilities.ImageSelect
+import com.orienteering.handrail.image_utilities.ImageSelect
 
 class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnPolygonClickListener, ExampleDialogListener, EventDialogListener,ICreateCourseContract.ICreateCourseView {
 
@@ -44,7 +44,10 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
 
         mapFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_course_create) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        imageSelect = ImageSelect(this,this@CreateCourseActivity)
+        imageSelect = ImageSelect(
+            this,
+            this@CreateCourseActivity
+        )
         performer = CreateCoursePerformer(this,CourseInteractor(),imageSelect)
         performer.createLocationRequest()
 

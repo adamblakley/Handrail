@@ -1,37 +1,37 @@
 package com.orienteering.handrail.create_course
 
-import android.content.IntentSender
 import android.location.Location
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.image_utilities.MultipartBodyFactory
 import com.orienteering.handrail.interactors.CourseInteractor
+import com.orienteering.handrail.location_updates.ILocationResponder
+import com.orienteering.handrail.location_updates.LocationPerformer
 import com.orienteering.handrail.models.Control
 import com.orienteering.handrail.models.Course
-import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.MultipartBodyFactory
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.permissions.PermissionManager
+import com.orienteering.handrail.utilities.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 
-class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCourseView, courseInteractor: CourseInteractor, imageSelect: ImageSelect) : ICreateCourseContract.ICreateCoursePerformer {
-    private val REQUEST_CHECK_SETTINGS = 2
+class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCourseView, courseInteractor: CourseInteractor, imageSelect: ImageSelect) : ICreateCourseContract.ICreateCoursePerformer,
+    ILocationResponder {
     var courseInteractor : CourseInteractor
     var createCourseView : ICreateCourseContract.ICreateCourseView
     var postCoursetOnFinishedListener : IOnFinishedListener<Course>
+    var locationPerfomer: LocationPerformer
     // image select
     var imageSelect : ImageSelect
     // create image files
     var multipartBodyFactory : MultipartBodyFactory
     // Fused Location Prover Client Variable
     private var fusedLocationClient: FusedLocationProviderClient
-    private var locationCallback : LocationCallback
     // location request and updated location state
     // store parameters for requests to fused location provider (determining level of accuracy)
     private lateinit var locationRequest: LocationRequest
@@ -41,7 +41,6 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
     private lateinit var lastLocation: Location
     // potential control latlng
     var potentialLatLng: LatLng = LatLng(0.0, 0.0)
-
     // potential control altitude
     var potentialAltitude: Double = 0.0
 
@@ -60,64 +59,28 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         this.postCoursetOnFinishedListener = PostCourseOnFinishedListener(this,createCourseView)
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(createCourseView.returnContext())
         this.imageSelect=imageSelect
-        this.multipartBodyFactory = MultipartBodyFactory(imageSelect)
+        this.multipartBodyFactory =
+            MultipartBodyFactory(
+                imageSelect
+            )
+        this.locationPerfomer=
+            LocationPerformer(
+                this,
+                createCourseView.returnContext(),
+                createCourseView.returnActivity()
+            )
         // fused location provider invokes the LocationCallback.onLocationResult() method. Incoming argument contains a  Locaiton obkect containing location's lat and lng
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(p0: LocationResult) {
-                super.onLocationResult(p0)
-
-                lastLocation = p0.lastLocation
-                val currentLatLng = LatLng(lastLocation.latitude, lastLocation.longitude)
-                listOfRoutePoints.add(currentLatLng)
-                createCourseView.animateMapCamera(currentLatLng)
-                createCourseView.addMapPolyline(listOfRoutePoints)
-            }
-        }
     }
 
     /**
      * Update location
      */
     override fun createLocationRequest() {
-        // create instance of locationRequest, add to instance of locationSettingsRequest.Builder and get and deal with any changes to be made based on current state of location settings
-        locationRequest = LocationRequest()
-        // rate at which we will get updates
-        locationRequest.interval = 10000
-        //fastestInterval provides the fastest rate we can handle updates. It places a limit on how often updates will be sent.
-        locationRequest.fastestInterval = 5000
-        // high accuracy more likely to use GPS than wifi and cell
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-        // adds one request to builder to get location
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-
-        //check whether current location settings are satisfied
-        val client = LocationServices.getSettingsClient(createCourseView.returnActivity())
-        val task = client.checkLocationSettings(builder.build())
-
-        //when task completes, app can check location settings by looking at status code from LocationSettingsResponse object
-        //update locationUpdateState and startLocationUpdates()
-        task.addOnSuccessListener {
-            locationUpdateState = true
-            startLocationUpdates()
-        }
-        // on failure (location settings) eg locaton settings being turned off, try a fix
-        task.addOnFailureListener { e ->
-
-            if (e is ResolvableApiException) {
-                // show a user dialogue by calling startResolutionForResult()
-                // check result in onActivityResult()
-                try { e.startResolutionForResult(createCourseView.returnActivity(), REQUEST_CHECK_SETTINGS)
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    // ignore
-                }
-            }
-        }
+        locationPerfomer.createLocationRequest()
     }
 
     override fun updateLocationUpdateState(){
-        locationUpdateState = true
-        startLocationUpdates()
+        locationPerfomer.updateLocationUpdateState()
     }
 
     override fun setImage(imageUri: Uri) {
@@ -133,37 +96,6 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
 
             createCourseView.setUpMap()
-            // step 2 to display location
-            // provide most recent location
-            fusedLocationClient.lastLocation.addOnSuccessListener(createCourseView.returnActivity()) { location ->
-
-                // step 3 to display location
-                // get last known location
-                if (location != null) {
-
-                    lastLocation = location
-
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-
-                    createCourseView.animateMapCamera(currentLatLng)
-
-                } else {
-                    createCourseView.onResponseError()
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Start Location Updates
-     */
-    private fun startLocationUpdates() {
-        if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
-        } else {
-            Log.e("TAG", "Unable to find location -> Location = null")
-            Toast.makeText(createCourseView.returnContext(), "Unable to find current location", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -172,16 +104,6 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
      * @return
      */
     override fun saveLatLng(){
-        fusedLocationClient.lastLocation.addOnSuccessListener(createCourseView.returnActivity()) { location ->
-            if (location != null) {
-                lastLocation = location
-                potentialAltitude = lastLocation.altitude
-                potentialLatLng = LatLng(location.latitude, location.longitude)
-            } else {
-                potentialLatLng = LatLng(0.0, 0.0)
-                createCourseView.onLocationUpdateFailure()
-            }
-        }
         if (potentialLatLng.latitude != 0.0 && potentialLatLng.longitude != 0.0) {
             if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
                 createCourseView.onSaveLatLngSuccess()
@@ -249,12 +171,26 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         }
         createCourseView.onControlinformationSucess(nameOfMarker,noteOfMarket,positionOfMarker,imageUriOfMarker)
     }
+
+    override fun locationCallback(lastLocation: Location) {
+        if (lastLocation != null) {
+            potentialAltitude = lastLocation.altitude
+            potentialLatLng = LatLng(lastLocation.latitude, lastLocation.longitude)
+        } else {
+            potentialLatLng = LatLng(0.0, 0.0)
+            createCourseView.onLocationUpdateFailure()
+        }
+        listOfRoutePoints.add(potentialLatLng)
+        createCourseView.animateMapCamera(potentialLatLng)
+        createCourseView.addMapPolyline(listOfRoutePoints)
+    }
+
+    override fun startLocationUpdatesFailure() {
+        Log.e("TAG", "Unable to find location -> Location = null")
+        Toast.makeText(createCourseView.returnContext(), "Unable to find current location", Toast.LENGTH_SHORT).show()
+    }
 }
 
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class PostCourseOnFinishedListener(createCoursePerformer : ICreateCourseContract.ICreateCoursePerformer, createCourseView : ICreateCourseContract.ICreateCourseView) : IOnFinishedListener<Course> {
     // Events view

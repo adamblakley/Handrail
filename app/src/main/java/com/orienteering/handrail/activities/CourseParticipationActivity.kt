@@ -26,7 +26,11 @@ import com.orienteering.handrail.models.*
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.controllers.PcpController
 import com.orienteering.handrail.controllers.RoutePointController
+import com.orienteering.handrail.geofence_utilities.GeofenceBroadcastReceiver
+import com.orienteering.handrail.geofence_utilities.GeofenceBuilder
 import com.orienteering.handrail.httprequests.*
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.permissions.PermissionManager
 import com.orienteering.handrail.utilities.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,7 +39,8 @@ import retrofit2.Response
 class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //geofence builder to create fences on request
-    val geofenceBuilder : GeofenceBuilder = GeofenceBuilder()
+    val geofenceBuilder : GeofenceBuilder =
+        GeofenceBuilder()
 
     // geofencing client to manage geofences
     lateinit var geofencingClient: GeofencingClient
@@ -102,7 +107,8 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     var participantRoutePoints = mutableListOf<RoutePoint>()
 
     // geofence performance calculator
-    val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+    val geofencePerformanceCalculator =
+        GeofencePerformanceCalculator()
 
     // manage response of getEvents
     val getEventsCallback = object : Callback<StatusResponseEntity<Event>>{
@@ -289,12 +295,14 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         courseMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
 
         if(PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
         )
 
         if (runningQOrLater) {
             PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
+                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
         }
 
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
@@ -318,11 +326,13 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun startLocationUpdates() {
 
         if(PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),PermissionManager.LOCATION_PERMISSION_REQUEST_CODE))
+            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                PermissionManager.LOCATION_PERMISSION_REQUEST_CODE))
 
         if (runningQOrLater) {
             PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
+                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
         }
         Log.e(TAG,"Starting Location Updates")
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)

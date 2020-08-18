@@ -24,8 +24,8 @@ import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.models.Event
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.permissions.PermissionManager
 import kotlinx.android.synthetic.main.activity_create_event.*
 import java.util.*
 
@@ -87,7 +87,10 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        imageSelect = ImageSelect(this,this@CreateEventActivity)
+        imageSelect = ImageSelect(
+            this,
+            this@CreateEventActivity
+        )
         this.createEventPerformer = CreateEventPerformer(this,imageSelect, EventInteractor(), CourseInteractor())
         setContentView(R.layout.activity_create_event)
         initiateText()

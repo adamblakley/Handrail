@@ -12,7 +12,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
-import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
 import com.orienteering.handrail.utilities.PerformanceRecyclerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,7 +42,8 @@ class ResultsListActivity : AppCompatActivity() {
     lateinit var viewTopRoutesButton : Button
 
     //geofence performance calculator to calculate performance times
-    val geofencePerformanceCalculator : GeofencePerformanceCalculator = GeofencePerformanceCalculator()
+    val geofencePerformanceCalculator : GeofencePerformanceCalculator =
+        GeofencePerformanceCalculator()
 
     // controller for participant services
     val participantController : ParticipantController = ParticipantController()

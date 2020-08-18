@@ -19,8 +19,8 @@ import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.password_update.PasswordUpdateActivity
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.permissions.PermissionManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -77,7 +77,8 @@ class EditProfileActivity : AppCompatActivity() {
     /**
      * Image select for selecting image from camera intent or gallery and associated methods
      */
-    val imageSelect : ImageSelect = ImageSelect(this,this)
+    val imageSelect : ImageSelect =
+        ImageSelect(this, this)
 
     /**
      * user dob value

@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.permissions
 
 import android.app.Activity
 import android.content.ContentValues.TAG
@@ -37,7 +37,12 @@ class PermissionManager  {
         }
 
         if (permissionsNotGranted.size>=1){
-            return grantPermission(activity,context,permissionsNotGranted,requestCode)
+            return grantPermission(
+                activity,
+                context,
+                permissionsNotGranted,
+                requestCode
+            )
         } else{
             return true
         }
@@ -49,7 +54,12 @@ class PermissionManager  {
         ActivityCompat.requestPermissions(activity,
             permissions.toTypedArray(), requestCode)
 
-         return handlePermissionResult(activity, context, permissions, requestCode)
+         return handlePermissionResult(
+             activity,
+             context,
+             permissions,
+             requestCode
+         )
     }
 
 

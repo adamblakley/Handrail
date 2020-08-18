@@ -16,7 +16,7 @@ import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.interactors.UserInteractor
 import com.orienteering.handrail.models.User
 import com.orienteering.handrail.password_update.PasswordUpdateActivity
-import com.orienteering.handrail.utilities.ImageSelect
+import com.orienteering.handrail.image_utilities.ImageSelect
 import java.util.*
 
 class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfileView {
@@ -64,7 +64,10 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
         createButtons()
         createText()
         createImage()
-        this.imageSelect = ImageSelect(this,this@EditProfileActivity)
+        this.imageSelect = ImageSelect(
+            this,
+            this@EditProfileActivity
+        )
         editProfilePerformer = EditProfilePerformer(this,UserInteractor(),imageSelect)
         editProfilePerformer.getDataFromServer()
     }

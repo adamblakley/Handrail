@@ -9,8 +9,8 @@ import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Control
 import com.orienteering.handrail.models.Course
-import com.orienteering.handrail.utilities.GPXBuilder
-import com.orienteering.handrail.utilities.MapUtilities
+import com.orienteering.handrail.gpx_utilities.GPXBuilder
+import com.orienteering.handrail.map_utilities.MapUtilities
 import retrofit2.Response
 
 class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, courseInteractor: CourseInteractor) : ICourseContract.ICoursePresenter {

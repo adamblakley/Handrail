@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.image_utilities
 
 import android.app.Activity
 import android.app.AlertDialog

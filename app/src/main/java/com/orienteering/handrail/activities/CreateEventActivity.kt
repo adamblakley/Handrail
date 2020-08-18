@@ -25,8 +25,8 @@ import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.permissions.PermissionManager
 import kotlinx.android.synthetic.main.activity_create_event.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -65,7 +65,8 @@ class CreateEventActivity : AppCompatActivity() {
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
 
-    val imageSelect : ImageSelect = ImageSelect(this,this)
+    val imageSelect : ImageSelect =
+        ImageSelect(this, this)
 
     // Image capture codes and uri for image selection
     private val IMAGE_CAPTURE_CODE = 1001

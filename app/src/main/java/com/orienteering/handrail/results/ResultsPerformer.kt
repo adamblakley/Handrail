@@ -4,7 +4,7 @@ import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.ParticipantInteractor
 import com.orienteering.handrail.models.Participant
-import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
 import retrofit2.Response
 
 class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantInteractor: ParticipantInteractor) : IResultsContract.IResultsPerformer {
@@ -26,7 +26,8 @@ class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantI
     }
 
     override fun processInformation(){
-        val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+        val geofencePerformanceCalculator =
+            GeofencePerformanceCalculator()
         // participant names
         var names = mutableListOf<String>()
         //participant time

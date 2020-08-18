@@ -83,7 +83,7 @@
             android:label="Handrail" />
 
         <receiver
-            android:name=".utilities.GeofenceBroadcastReceiver"
+            android:name=".geofence_utilities.GeofenceBroadcastReceiver"
             android:enabled="true"
             android:exported="true" />
 

@@ -5,10 +5,9 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.ParticipantInteractor
-import com.orienteering.handrail.models.Control
 import com.orienteering.handrail.models.Participant
-import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
-import com.orienteering.handrail.utilities.MapUtilities
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.map_utilities.MapUtilities
 import retrofit2.Response
 
 class TopRoutesPerformer(topRoutesView : ITopRoutesContract.ITopRoutesView, participantInteractor: ParticipantInteractor) : ITopRoutesContract.ITopRoutesPerformer {
@@ -30,7 +29,8 @@ class TopRoutesPerformer(topRoutesView : ITopRoutesContract.ITopRoutesView, part
     }
 
     override fun processInformation(){
-        val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+        val geofencePerformanceCalculator =
+            GeofencePerformanceCalculator()
         // participant names
         var names = mutableListOf<String>()
         //participant time

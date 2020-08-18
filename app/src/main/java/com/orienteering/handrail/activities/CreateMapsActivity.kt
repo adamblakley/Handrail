@@ -26,8 +26,8 @@ import com.orienteering.handrail.controllers.CourseController
 import com.orienteering.handrail.dialogs.*
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.permissions.PermissionManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -54,7 +54,8 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
     }
 
     // image select
-    val imageSelect = ImageSelect(this, this)
+    val imageSelect =
+        ImageSelect(this, this)
 
     // dialog for control create
     val createControlDialog: CreateControlDialog = CreateControlDialog()

@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.map_utilities
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds

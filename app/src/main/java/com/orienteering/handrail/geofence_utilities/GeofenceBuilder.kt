@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.geofence_utilities
 
 import android.graphics.Color
 import android.util.Log

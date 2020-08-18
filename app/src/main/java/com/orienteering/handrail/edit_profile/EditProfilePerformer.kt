@@ -6,9 +6,9 @@ import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.UserInteractor
 import com.orienteering.handrail.models.User
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.MultipartBodyFactory
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.image_utilities.MultipartBodyFactory
+import com.orienteering.handrail.permissions.PermissionManager
 import retrofit2.Response
 import java.text.SimpleDateFormat
 
@@ -30,7 +30,10 @@ class EditProfilePerformer(editProfileView : IEditProfileContract.IEditProfileVi
         this.imageSelect = imageSelect
         this.getEditUserOnFinishedListener = GetEditUserOnFinishedListener(this, editProfileView)
         this.putEditUserOnFinsihedListener = PutEditUserOnFinishedListener(this,editProfileView)
-        this.multipartBodyFactory = MultipartBodyFactory(imageSelect)
+        this.multipartBodyFactory =
+            MultipartBodyFactory(
+                imageSelect
+            )
     }
 
     override fun onDestroy() {

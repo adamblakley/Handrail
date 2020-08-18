@@ -1,11 +1,6 @@
 package com.orienteering.handrail.httprequests
 
-import android.content.Intent
-import android.os.Looper
-import android.widget.Toast
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.UnauthorizedHandler
-import com.orienteering.handrail.welcome.WelcomeActivity
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -22,7 +17,8 @@ class AuthenticationInterceptor : Interceptor {
 
         var response = chain.proceed(request)
         if (response.code==401){
-            val unauthorizedHandler = UnauthorizedHandler()
+            val unauthorizedHandler =
+                UnauthorizedHandler()
             unauthorizedHandler.redirect()
         }
 

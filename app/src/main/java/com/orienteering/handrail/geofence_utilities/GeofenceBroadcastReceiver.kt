@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.geofence_utilities
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,7 +14,6 @@ class GeofenceBroadcastReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        Log.e(TAG, "I've noticed a transition")
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
 

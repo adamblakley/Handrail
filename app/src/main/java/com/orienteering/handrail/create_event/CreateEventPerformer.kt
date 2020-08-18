@@ -1,7 +1,6 @@
 package com.orienteering.handrail.create_event
 
 import android.net.Uri
-import android.util.Log
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.CourseInteractor
@@ -9,9 +8,9 @@ import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.ImageSelect
-import com.orienteering.handrail.utilities.MultipartBodyFactory
-import com.orienteering.handrail.utilities.PermissionManager
+import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.image_utilities.MultipartBodyFactory
+import com.orienteering.handrail.permissions.PermissionManager
 import retrofit2.Response
 
 class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventView, imageSelect : ImageSelect, eventInteractor: EventInteractor, courseInteractor: CourseInteractor) : ICreateEventContract.ICreateEventPerformer{
@@ -30,7 +29,10 @@ class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventVi
         this.imageSelect=imageSelect
         this.eventInteractor=eventInteractor
         this.courseInteractor=courseInteractor
-        this.multipartBodyFactory = MultipartBodyFactory(imageSelect)
+        this.multipartBodyFactory =
+            MultipartBodyFactory(
+                imageSelect
+            )
         this.getCoursesForEventOnFinishedListener = GetCoursesForEventOnFinishedListener(this,createEventView)
         this.postEventOnFinishedListener = PostEventOnFinishedListener(this,createEventView)
     }
@@ -59,7 +61,8 @@ class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventVi
     }
 
     override fun selectImage() {
-        if (PermissionManager.checkPermission(imageSelect.activity, imageSelect.context, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),PermissionManager.MULTIPLE_REQUEST_CODES)) {
+        if (PermissionManager.checkPermission(imageSelect.activity, imageSelect.context, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PermissionManager.MULTIPLE_REQUEST_CODES)) {
             imageUri=imageSelect.selectImage()
         }
     }

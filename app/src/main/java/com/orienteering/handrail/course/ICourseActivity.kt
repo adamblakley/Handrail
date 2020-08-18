@@ -2,7 +2,6 @@ package com.orienteering.handrail.course
 
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +21,7 @@ import com.orienteering.handrail.dialogs.ViewCourseInfoDialog
 import com.orienteering.handrail.dialogs.ViewMarkerCourseControlDialog
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Control
-import com.orienteering.handrail.utilities.MapUtilities
+import com.orienteering.handrail.map_utilities.MapUtilities
 
 class ICourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 

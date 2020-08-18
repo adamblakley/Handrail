@@ -1,10 +1,7 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.httprequests
 
-import android.content.Context
 import android.content.Intent
-import android.os.Looper
-import android.widget.Toast
-import com.orienteering.handrail.activities.WelcomeActivity
+import com.orienteering.handrail.utilities.App
 
 /**
  * handles unauthorized access

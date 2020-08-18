@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.gpx_utilities
 
 import android.content.Context
 import android.os.Build

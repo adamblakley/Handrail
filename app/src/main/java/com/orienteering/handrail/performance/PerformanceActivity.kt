@@ -15,8 +15,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
 import com.orienteering.handrail.interactors.ParticipantInteractor
-import com.orienteering.handrail.models.Control
-import com.orienteering.handrail.utilities.PermissionManager
 
 class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanceContract.IPerformanceView {
 

@@ -16,6 +16,9 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.models.*
 import com.orienteering.handrail.controllers.ParticipantController
 import com.orienteering.handrail.httprequests.StatusResponseEntity
+import com.orienteering.handrail.map_utilities.MapUtilities
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.permissions.PermissionManager
 import com.orienteering.handrail.utilities.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,7 +43,8 @@ class ViewPerformanceActivity : AppCompatActivity(), OnMapReadyCallback {
     // google map view
     private lateinit var performanceMap: GoogleMap
     // geofence performance calculator to convert performance times
-    val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+    val geofencePerformanceCalculator =
+        GeofencePerformanceCalculator()
     // map utilities such as camera and movement
     val mapUtilities = MapUtilities()
     // participant controller to manage participant services

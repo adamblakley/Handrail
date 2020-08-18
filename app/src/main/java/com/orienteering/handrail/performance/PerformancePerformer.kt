@@ -5,12 +5,10 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.ParticipantInteractor
-import com.orienteering.handrail.models.Control
 import com.orienteering.handrail.models.Participant
-import com.orienteering.handrail.models.RoutePoint
 import com.orienteering.handrail.utilities.App
-import com.orienteering.handrail.utilities.GeofencePerformanceCalculator
-import com.orienteering.handrail.utilities.MapUtilities
+import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
+import com.orienteering.handrail.map_utilities.MapUtilities
 import retrofit2.Response
 
 class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceView, participantInteractor: ParticipantInteractor) : IPerformanceContract.IPerformancePresenter {
@@ -49,7 +47,8 @@ class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceVi
     }
 
     override fun getPerformanceInformation(){
-        val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+        val geofencePerformanceCalculator =
+            GeofencePerformanceCalculator()
         // control names
         var controlNames = mutableListOf<String>()
         // control positions
