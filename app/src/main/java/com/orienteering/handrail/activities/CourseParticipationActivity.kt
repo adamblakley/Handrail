@@ -43,7 +43,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         GeofenceBuilder()
 
     // geofencing client to manage geofences
-    lateinit var geofencingClient: GeofencingClient
+    private lateinit var geofencingClient: GeofencingClient
 
     // pending intent to handle geofence transitions
     val geofencePendingIntent: PendingIntent by lazy {
@@ -276,7 +276,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         courseMap = googleMap
 
-        courseMap.uiSettings.setZoomControlsEnabled(false)
+        courseMap.uiSettings.setZoomControlsEnabled(true)
         courseMap.uiSettings.setCompassEnabled(false)
         courseMap.uiSettings.setMyLocationButtonEnabled(false)
         courseMap.uiSettings.setAllGesturesEnabled(false)
@@ -338,24 +338,11 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
-    /**
-     * Add Control Markers to Course
-     */
-    private fun setCourse() {
-        Log.e(TAG,"Adding Controls to map")
-        for (control in event.eventCourse.courseControls) {
-            control.controlLatLng
-            val markerOptions = MarkerOptions().position(control.controlLatLng)
-                .title(control.controlId.toString())
-            courseMap.addMarker(markerOptions)
-        }
-
-    }
 
     private fun addNextControl(){
         val markerOptions = MarkerOptions().position(myControl.controlLatLng)
         courseMap.addMarker(markerOptions)
-
+        courseMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myControl.controlLatLng, 15f))
         if (myControl.controlPosition!!<event.eventCourse.courseControls.size){
             addNextGeoFence()
         }
@@ -394,22 +381,25 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
      * record and add performance to participant
      */
     private fun addPerformance(){
-
+        // create a new participantcontrolperformance object, add to the list of performances
         val participantPerformance = ParticipantControlPerformance(System.currentTimeMillis() - startTime, myControl)
         participantControlPerformances.add(participantPerformance)
-
+        // update the recycler view with the control time
         updateList(participantPerformance.controlTime)
-
+        // check if more controls are required
         if (myControl.controlPosition!!<(event.eventCourse.courseControls.size-1)){
-
+            // add the next control to the class variable myControl if so
             for (control in event.eventCourse.courseControls){
                 if (control.controlPosition == (myControl.controlPosition!! +1)) {
                     myControl=control
                     break
                 }
             }
+            // call the addNextControl method to begin adding the next geofence
             addNextControl()
         } else {
+            // else notify the user of the end and present them with the option to upload their results.
+            Toast.makeText(this@CourseParticipationActivity,"Congratulations, you have completed the course",Toast.LENGTH_SHORT).show()
             makeButtonVisibile(uploadResultsButton)
         }
     }

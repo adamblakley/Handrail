@@ -35,10 +35,7 @@ class CourseInteractor {
      */
     fun uploadCourse(id : Long, course : Course, files : Array<MultipartBody.Part?>, onFinishedListener: IOnFinishedListener<Course>){
         val call = courseService.createWPhoto(id,course,files)
-        val customCallback : CustomCallback<Course> =
-            CustomCallback(
-                onFinishedListener
-            )
+        val customCallback : CustomCallback<Course> = CustomCallback(onFinishedListener)
         call.enqueue(customCallback)
     }
 

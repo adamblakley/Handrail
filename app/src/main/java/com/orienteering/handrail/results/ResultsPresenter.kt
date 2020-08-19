@@ -7,7 +7,7 @@ import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
 import retrofit2.Response
 
-class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantInteractor: ParticipantInteractor) : IResultsContract.IResultsPerformer {
+class ResultsPresenter(resultsView : IResultsContract.IResultsView, participantInteractor: ParticipantInteractor) : IResultsContract.IResultsPresenter {
 
     // Coursesview
     private var resultsView : IResultsContract.IResultsView?
@@ -16,7 +16,6 @@ class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantI
     // Listener to handles interactor responses
     private var getParticipantsOnFinishedListener : IOnFinishedListener<List<Participant>>
 
-    private lateinit var participants : List<Participant>
 
     init{
         this. resultsView=resultsView
@@ -25,9 +24,13 @@ class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantI
 
     }
 
-    override fun processInformation(){
-        val geofencePerformanceCalculator =
-            GeofencePerformanceCalculator()
+    /**
+     * Responsible for the processing of participant information into separate collections for dissemination by the view
+     *
+     * @param participants
+     */
+    override fun processInformation(participants : List<Participant>){
+        val geofencePerformanceCalculator = GeofencePerformanceCalculator()
         // participant names
         var names = mutableListOf<String>()
         //participant time
@@ -38,12 +41,14 @@ class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantI
         var ids = mutableListOf<Int?>()
         //participant image urls
         var imageUrls = mutableListOf<String>()
+        // retreive the names, times, positions and id's of each participant into seperate lists of values
         if (participants != null) {
             for (participant in participants){
                 names.add(participant.participantUser.userFirstName)
                 times.add(geofencePerformanceCalculator.convertMilliToMinutes(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime))
                 positions.add(participants.indexOf(participant))
                 ids.add(participant.participantId)
+                // find and store the active photo associated to a user
                 if (participant.participantUser.userPhotographs?.size!! >=1){
                     for (photo in participant.participantUser.userPhotographs!!){
                         if (photo.active==true){
@@ -52,18 +57,16 @@ class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantI
                         }
                     }
                 } else {
+                    // dummy to be interpreted by the glide implementation and a standard image shown on the presence of 'dummy'
                     imageUrls.add("dummy")
                 }
             }
         }
-        resultsView?.showRecyclerInformation(names,times,positions,ids,imageUrls)
+        resultsView?.showInformation(names,times,positions,ids,imageUrls)
     }
 
     override fun requestDataFromServer(eventId: Int) {
         participantInteractor.getParticipants(eventId,getParticipantsOnFinishedListener)
-    }
-    override fun setPerformerParticipants(participants : List<Participant>){
-        this.participants=participants
     }
 
     override fun onDestroy() {
@@ -77,9 +80,9 @@ class ResultsPerformer(resultsView : IResultsContract.IResultsView, participantI
  * @param performancePerformer
  * @param performanceView
  */
-class GetParticipantsOnFinishedListener(resultsPerformer : IResultsContract.IResultsPerformer, resultsView : IResultsContract.IResultsView) : IOnFinishedListener<List<Participant>> {
+class GetParticipantsOnFinishedListener(resultsPresenter : IResultsContract.IResultsPresenter, resultsView : IResultsContract.IResultsView) : IOnFinishedListener<List<Participant>> {
     // Events view
-    private var resultsPerformer : IResultsContract.IResultsPerformer
+    private var resultsPresenter : IResultsContract.IResultsPresenter
     // Events presenter
     private var resultsView : IResultsContract.IResultsView
 
@@ -88,7 +91,7 @@ class GetParticipantsOnFinishedListener(resultsPerformer : IResultsContract.IRes
      */
     init{
         this.resultsView = resultsView
-        this.resultsPerformer = resultsPerformer
+        this.resultsPresenter = resultsPresenter
     }
 
     /**
@@ -100,8 +103,7 @@ class GetParticipantsOnFinishedListener(resultsPerformer : IResultsContract.IRes
     override fun onFinished(response: Response<StatusResponseEntity<List<Participant>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                resultsPerformer.setPerformerParticipants(response.body()?.entity!!)
-                resultsPerformer.processInformation()
+                resultsPresenter.processInformation(response.body()?.entity!!)
             } else {
                 resultsView.onResponseError()
             }

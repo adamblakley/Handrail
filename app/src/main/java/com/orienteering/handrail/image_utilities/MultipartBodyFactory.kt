@@ -32,7 +32,7 @@ class MultipartBodyFactory(imageSelect: ImageSelect) {
      * Create image upload Request and return
      *
      */
-    fun createImageMultipartBody(activity : Activity, fileUri : Uri) : MultipartBody.Part{
+    fun createImageMultipartBody(activity : Activity, fileUri : Uri, fileName:String) : MultipartBody.Part{
         if (fileUri.toString()[0].equals('c')) {
             Log.e(TAG,"I START WITH C")
             var inputStream: InputStream? = activity.contentResolver.openInputStream(fileUri)
@@ -49,7 +49,7 @@ class MultipartBodyFactory(imageSelect: ImageSelect) {
                     Log.e(TAG, i.printStackTrace().toString())
                 }
                 val requestBody: RequestBody = RequestBody.create(activity.contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() }, cachedFile)
-                val body: MultipartBody.Part = MultipartBody.Part.createFormData("file", cachedFile.name, requestBody)
+                val body: MultipartBody.Part = MultipartBody.Part.createFormData("file", fileName, requestBody)
                 return body
             } catch (i: IOException) {
                 Log.e(TAG, i.printStackTrace().toString())
@@ -57,7 +57,7 @@ class MultipartBodyFactory(imageSelect: ImageSelect) {
         }
         var file = File(imageSelect.getImagePath(fileUri))
         val requestBody : RequestBody = RequestBody.create(activity.contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() },file)
-        val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",file.name,requestBody)
+        val body : MultipartBody.Part = MultipartBody.Part.createFormData("file",fileName,requestBody)
         return body
     }
 

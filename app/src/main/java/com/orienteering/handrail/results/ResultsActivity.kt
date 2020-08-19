@@ -9,29 +9,44 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.ViewTopRoutesActivity
-import com.orienteering.handrail.results.ResultsAdapter
 import com.orienteering.handrail.interactors.ParticipantInteractor
 import com.orienteering.handrail.toproutes.TopRoutesActivity
 
+/**
+ * Class manages the view of event results
+ *
+ */
 class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
 
+    // Recycler view to display list of participants and their positions within the event results
     private lateinit var recyclerView : RecyclerView
-    private lateinit var performer : IResultsContract.IResultsPerformer
+
+    // Handles all logic and retrieves the model for display
+    private lateinit var presenter : IResultsContract.IResultsPresenter
+
     //button for top routes
     lateinit var viewTopRoutesButton : Button
     var eventId : Int = 0
 
+    /**
+     * Handles the functions associated to start up, including UI elements and data retrieval
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // set view to corresponding xml
         setContentView(R.layout.activity_results_list)
+        // initate recycler view adapter
         initRecyclerView()
+        // initiate buttons and declare onclick listeners
         createButtons()
-        performer = ResultsPerformer(this, ParticipantInteractor())
+        // initiate presenter property
+        presenter = ResultsPresenter(this, ParticipantInteractor())
 
         if(intent.extras!=null) {
             eventId = intent.getSerializableExtra("EVENT_ID") as Int
-            performer.requestDataFromServer(eventId)
+            presenter.requestDataFromServer(eventId)
         }
     }
 
@@ -51,7 +66,7 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
         })
     }
 
-    override fun showRecyclerInformation(names: List<String>, times: List<String>, positions: List<Int>, ids: MutableList<Int?>, imageUrls: List<String>) {
+    override fun showInformation(names: List<String>, times: List<String>, positions: List<Int>, ids: MutableList<Int?>, imageUrls: List<String>) {
         val resultsAdapter : ResultsAdapter = ResultsAdapter(names,times,imageUrls,ids,positions)
         recyclerView.adapter = resultsAdapter
     }
@@ -71,6 +86,6 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
 
     override fun onDestroy() {
         super.onDestroy()
-        performer.onDestroy()
+        presenter.onDestroy()
     }
 }

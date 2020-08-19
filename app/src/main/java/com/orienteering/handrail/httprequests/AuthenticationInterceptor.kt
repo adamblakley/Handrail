@@ -21,7 +21,6 @@ class AuthenticationInterceptor : Interceptor {
                 UnauthorizedHandler()
             unauthorizedHandler.redirect()
         }
-
         return response
     }
 }

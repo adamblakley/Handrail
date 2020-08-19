@@ -46,7 +46,7 @@ class EditProfilePerformer(editProfileView : IEditProfileContract.IEditProfileVi
                 user.userDob=myUser.userDob
             }
             if (imageUri != null) {
-                val imageMultipartBodyPart = imageUri?.let { multipartBodyFactory.createImageMultipartBody(imageSelect.activity, it) }
+                val imageMultipartBodyPart = imageUri?.let { multipartBodyFactory.createImageMultipartBody(imageSelect.activity, it,user.userFirstName) }
                 userInteractor.update(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0), user, imageMultipartBodyPart, putEditUserOnFinsihedListener)
             } else {
                 userInteractor.update(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0), user, putEditUserOnFinsihedListener)

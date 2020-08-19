@@ -17,6 +17,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.CoursesActivity
+import com.orienteering.handrail.courses.CourseAdapter
 import com.orienteering.handrail.dialogs.ViewCourseInfoDialog
 import com.orienteering.handrail.dialogs.ViewMarkerCourseControlDialog
 import com.orienteering.handrail.interactors.CourseInteractor
@@ -181,7 +182,8 @@ class ICourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRe
     }
 
     override fun fillRecyclerView(controls : List<Control>) {
-        val courseAdapter : CourseAdapter = CourseAdapter(controls)
+        val courseAdapter : CourseAdapter =
+            CourseAdapter(controls)
         recyclerView.adapter = courseAdapter
     }
 

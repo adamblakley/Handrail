@@ -13,12 +13,7 @@ interface CourseService {
 
     @Multipart
     @POST("users/{id}/courses/upload")
-    fun createWPhoto(
-        @Path("id") id : Long,
-        @Part("course") course: Course,
-        @Part files : Array<MultipartBody.Part?>
-
-    ) : Call<StatusResponseEntity<Course>>
+    fun createWPhoto(@Path("id") id : Long, @Part("course") course: Course, @Part files : Array<MultipartBody.Part?>) : Call<StatusResponseEntity<Course>>
 
     @GET("courses/{id}")
     fun read(@Path("id") courseId : Int) : Call<StatusResponseEntity<Course>>

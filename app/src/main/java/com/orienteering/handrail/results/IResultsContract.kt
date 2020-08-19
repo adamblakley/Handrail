@@ -4,16 +4,15 @@ import com.orienteering.handrail.models.Participant
 
 interface IResultsContract {
 
-    interface IResultsPerformer{
+    interface IResultsPresenter{
         fun onDestroy()
-        fun setPerformerParticipants(participants : List<Participant>)
         fun requestDataFromServer(eventId: Int)
-        fun processInformation()
+        fun processInformation(participants : List<Participant>)
     }
 
     interface IResultsView{
         fun onResponseError()
         fun onResponseFailure()
-        fun showRecyclerInformation(names:List<String>, times:List<String>, positions:List<Int>, ids: MutableList<Int?>, imageUrls:List<String>)
+        fun showInformation(names:List<String>, times:List<String>, positions:List<Int>, ids: MutableList<Int?>, imageUrls:List<String>)
     }
 }

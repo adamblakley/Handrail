@@ -50,7 +50,7 @@ class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventVi
     override fun postDataOnServer(event: Event) {
         if (event!=null) {
             if (imageUri != null) {
-                val imageMultipartBodyPart = imageUri?.let {multipartBodyFactory.createImageMultipartBody(imageSelect.activity, it) }
+                val imageMultipartBodyPart = imageUri?.let {multipartBodyFactory.createImageMultipartBody(imageSelect.activity, it,event.eventName) }
                 if (imageMultipartBodyPart != null) {
                     eventInteractor.createEvent(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0), event, imageMultipartBodyPart, postEventOnFinishedListener)
                 }

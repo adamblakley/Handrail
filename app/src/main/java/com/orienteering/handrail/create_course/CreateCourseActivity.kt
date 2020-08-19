@@ -29,7 +29,8 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     // map fragment
     private lateinit var mapFragment: SupportMapFragment
     // dialog for control create
-    val createControlDialog: CreateControlDialog = CreateControlDialog()
+    val createControlDialog: CreateControlDialog =
+        CreateControlDialog()
     // performer
     lateinit var performer : ICreateCourseContract.ICreateCoursePerformer
     // image select
@@ -82,6 +83,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     }
 
     fun definePattern(){
+        pattern = mutableListOf<PatternItem>()
         pattern.add(Dot())
         pattern.add(Gap(10F))
         pattern.add(Dash(20F))
@@ -108,7 +110,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     }
 
     override fun onSaveLatLngSuccess(){
-        createControlDialog.show(mapFragment.childFragmentManager, "ExampleDialog")
+        createControlDialog.show(mapFragment.childFragmentManager, "ControlDialog")
     }
 
     override fun onPolylineClick(p0: Polyline?) {
@@ -134,7 +136,8 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     fun openSaveEventDialog() {
 
         if (performer.getCourseLength()){
-            val courseDialog: CreateCourseDialog = CreateCourseDialog()
+            val courseDialog: CreateCourseDialog =
+                CreateCourseDialog()
             courseDialog.show(mapFragment.childFragmentManager, "CreateEventDialog")
         } else {
             Toast.makeText(this,"Error: Add at least one control",Toast.LENGTH_SHORT).show()

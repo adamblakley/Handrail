@@ -64,7 +64,7 @@ class ResultsAdapter(participantNames: List<String>, participantTimes: List<Stri
 
         holder.name.text=participantNames[position]
         holder.time.append(participantTimes[position])
-        holder.position.text=participantPositions[position].toString()
+        holder.position.text=(participantPositions[position].toInt()+1).toString()
         holder.parentLayout.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
                 // no onclick

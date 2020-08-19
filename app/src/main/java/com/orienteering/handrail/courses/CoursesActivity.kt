@@ -12,6 +12,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.create_course.CreateCourseActivity
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Course
+import com.orienteering.handrail.utilities.ResultsAdapter
 
 class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
 
@@ -44,7 +45,8 @@ class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
     }
 
     override fun fillRecyclerView(coursesList: ArrayList<Course>) {
-        val coursesAdapter : ResultsAdapter = ResultsAdapter(coursesList)
+        val coursesAdapter : ResultsAdapter =
+            ResultsAdapter(coursesList)
         recyclerView.adapter = coursesAdapter
     }
 

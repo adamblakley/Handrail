@@ -10,12 +10,21 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import com.orienteering.handrail.activities.CourseParticipationActivity
 
+/**
+ * Broadcast receivever listens for geofence messages in intents
+ *
+ */
 class GeofenceBroadcastReceiver() : BroadcastReceiver() {
 
+    /**
+     * overridden onReceive method, applies methods on successful or failure geofence interaction
+     * @param context
+     * @param intent
+     */
     override fun onReceive(context: Context, intent: Intent) {
 
+        // Geofencing event received from intent
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
-
 
 
         if (geofencingEvent.hasError()){
@@ -33,7 +42,7 @@ class GeofenceBroadcastReceiver() : BroadcastReceiver() {
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
             CourseParticipationActivity.getInstance().triggerGeofence()
         } else {
-            Toast.makeText(context,"Error in transition", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,"Error: Geofence transition failure", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "error in transition")
         }
 

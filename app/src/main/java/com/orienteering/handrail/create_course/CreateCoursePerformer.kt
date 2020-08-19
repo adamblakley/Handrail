@@ -63,6 +63,11 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         locationPerfomer.updateLocationUpdateState()
     }
 
+    /**
+     * Store image uri in hashmap, key = control, value = imageURI
+     *
+     * @param imageUri
+     */
     override fun setImage(imageUri: Uri) {
         if (imageUri != null) {
             fileUris.put(controlsForCourse.size, imageUri)
@@ -96,13 +101,7 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
     override fun createControl(name : String, note : String) {
         val calendar = java.util.Calendar.getInstance()
         val date = calendar.time
-        val control = Control(
-            name,
-            note,
-            potentialLatLng.latitude,
-            potentialLatLng.longitude,
-            potentialAltitude, date
-        )
+        val control = Control(name, note, potentialLatLng.latitude, potentialLatLng.longitude, potentialAltitude, date)
         controlsForCourse.add(control)
         control.controlPosition = controlsForCourse.size
         createCourseView.addMapControl(name,note,potentialLatLng)
@@ -115,12 +114,12 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
      * @param name
      */
     override fun createCourse(name: String, note : String) {
-        val course = Course(controlsForCourse, name)
+        val course = Course(controlsForCourse, name,note)
         var files: Array<MultipartBody.Part?> = arrayOfNulls(controlsForCourse.size)
         for ((key, value) in fileUris) {
-            val multipartBodyPart: MultipartBody.Part = multipartBodyFactory.createImageMultipartBody(createCourseView.returnActivity(),value)
             val position = key
             val positionMinusOne = position - 1
+            val multipartBodyPart: MultipartBody.Part = multipartBodyFactory.createImageMultipartBody(createCourseView.returnActivity(),value, controlsForCourse[positionMinusOne].controlName)
             files.set(positionMinusOne, multipartBodyPart)
         }
         courseInteractor.uploadCourse(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0), course, files, postCoursetOnFinishedListener)

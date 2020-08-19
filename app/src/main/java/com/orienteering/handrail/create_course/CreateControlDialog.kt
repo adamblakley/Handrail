@@ -1,4 +1,4 @@
-package com.orienteering.handrail.dialogs
+package com.orienteering.handrail.create_course
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDialogFragment
+import com.orienteering.handrail.dialogs.ExampleDialogListener
 import java.lang.ClassCastException
 
 class CreateControlDialog : AppCompatDialogFragment() {

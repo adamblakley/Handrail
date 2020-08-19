@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.models.Control
 import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.controllers.CourseController
+import com.orienteering.handrail.create_course.CreateControlDialog
+import com.orienteering.handrail.create_course.CreateCourseDialog
 import com.orienteering.handrail.dialogs.*
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App
@@ -58,7 +60,8 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
         ImageSelect(this, this)
 
     // dialog for control create
-    val createControlDialog: CreateControlDialog = CreateControlDialog()
+    val createControlDialog: CreateControlDialog =
+        CreateControlDialog()
 
     // GoogleMap variable
     private lateinit var map: GoogleMap
@@ -345,7 +348,8 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
     }
 
     fun openSaveEventDialog() {
-        val courseDialog: CreateCourseDialog = CreateCourseDialog()
+        val courseDialog: CreateCourseDialog =
+            CreateCourseDialog()
         courseDialog.show(mapFragment.childFragmentManager, "CreateEventDialog")
     }
 
@@ -372,8 +376,8 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
      *
      * @param name
      */
-    fun createCourse(name: String) {
-        val course = Course(controlsForCourse, name)
+    fun createCourse(name: String, note : String) {
+        val course = Course(controlsForCourse, name,note)
         var files: Array<MultipartBody.Part?> = arrayOfNulls(controlsForCourse.size)
         for ((key, value) in fileUris) {
             val multipartBodyPart: MultipartBody.Part = createImageMultipartBody(value)
@@ -395,7 +399,7 @@ class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.On
      * @note
      */
     override fun applyEventText(name: String, note: String) {
-        createCourse(name)
+        createCourse(name, note)
     }
 
     /**

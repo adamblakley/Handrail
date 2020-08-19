@@ -1,4 +1,4 @@
-package com.orienteering.handrail.courses
+package com.orienteering.handrail.utilities
 
 import android.content.Intent
 import android.util.Log
@@ -28,7 +28,9 @@ class ResultsAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<Resu
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoursesViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_course_item,parent,false)
-        return CoursesViewHolder(view)
+        return CoursesViewHolder(
+            view
+        )
     }
 
     override fun getItemCount(): Int {

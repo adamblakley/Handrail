@@ -62,10 +62,7 @@ class ImageSelect(activity: Activity, context: Context){
                 if (options[item].equals("Take Photo")) {
                     openCamera()
                 } else if (options[item].equals("Choose from Gallery")) {
-                    val pickPhotoIntent = Intent(
-                        Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    )
+                    val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                     activity.startActivityForResult(pickPhotoIntent, PICK_IMAGE_CODE)
                 } else {
                     dialogInterface.dismiss()
@@ -91,7 +88,6 @@ class ImageSelect(activity: Activity, context: Context){
                         FileProvider.getUriForFile(context,"com.orienteering.handrail.fileprovider",
                             it
                         )
-
                     }
                     if (photoUri != null) {
                         tempImageUri=photoUri
@@ -102,17 +98,6 @@ class ImageSelect(activity: Activity, context: Context){
 
             }
         }
-
-/*
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "New Picture")
-        values.put(MediaStore.Images.Media.TITLE, "From the Camera")
-        val image_uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-        activity.startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE)
-
- */
     }
 
     /**
