@@ -43,12 +43,12 @@ class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceVi
         var routePointsLatLng = mapUtilities.getAllParticipantRoutePoints(participant)
         val bounds : LatLngBounds = mapUtilities.determineNESW(routePointsLatLng)
         val totalDistance = mapUtilities.calculateTotalDistance(routePointsLatLng)
-        performanceView?.showRoute(routePointsLatLng,bounds,totalDistance)
+        val pace = mapUtilities.calculatePace(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime,totalDistance)
+        performanceView?.showRoute(routePointsLatLng,bounds,totalDistance,pace)
     }
 
     override fun getPerformanceInformation(){
-        val geofencePerformanceCalculator =
-            GeofencePerformanceCalculator()
+        val geofencePerformanceCalculator = GeofencePerformanceCalculator()
         // control names
         var controlNames = mutableListOf<String>()
         // control positions

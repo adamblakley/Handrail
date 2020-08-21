@@ -1,14 +1,11 @@
-package com.orienteering.handrail.create_event
+package com.orienteering.handrail.edit_event
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,25 +13,24 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.ViewEventActivity
-import com.orienteering.handrail.interactors.CourseInteractor
-import com.orienteering.handrail.interactors.EventInteractor
-import com.orienteering.handrail.models.Course
-import com.orienteering.handrail.models.Event
+import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.permissions.PermissionManager
 import kotlinx.android.synthetic.main.activity_create_event.*
 import java.util.*
 
-class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEventView {
+class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView {
 
     // Tag for class log
     val TAG : String = "CreateEventActivity"
 
-    lateinit var createEventPerformer : ICreateEventContract.ICreateEventPerformer
+    lateinit var editEventPresenter : IEditEventContract.IEditEventPresenter
 
     // event name for display and creation
     var eventName : String = ""
@@ -44,8 +40,8 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     var eventDate : String = ""
     // event time for creation
     var eventTime : String = ""
-    // event course for creation
-    lateinit var eventcourse : Course
+    // check event change date
+    var eventDateChange : Boolean = false
 
     // calendar for date and time values to correctly display and modify for creation
     val calendar = Calendar.getInstance()
@@ -87,8 +83,14 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        imageSelect = ImageSelect(this, this@CreateEventActivity)
-        this.createEventPerformer = CreateEventPerformer(this,imageSelect, EventInteractor(), CourseInteractor())
+        imageSelect = ImageSelect(this, this@EditEventActivity)
+        if (intent.extras!=null){
+            this.editEventPresenter = EditEventPresenter(intent.getSerializableExtra("EVENT_ID") as Int,this,imageSelect, EventInteractor())
+            editEventPresenter.getDataFromServer()
+        } else {
+            val intent = Intent(this@EditEventActivity, EventsActivity::class.java).apply {}
+            startActivity(intent)
+        }
         setContentView(R.layout.activity_create_event)
         initiateText()
         createButtons()
@@ -102,11 +104,12 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         buttonSelectDate = findViewById<Button>(R.id.button_event_date)
         buttonSelectTime = findViewById(R.id.button_event_time)
         buttonSelectCourse = findViewById<Button>(R.id.button_event_course)
+        buttonSelectCourse?.visibility=View.INVISIBLE
         buttonCreateEvent = findViewById<Button>(R.id.button_event_create)
 
         buttonUpdatePhoto?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                if (PermissionManager.checkPermission(this@CreateEventActivity, this@CreateEventActivity, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PermissionManager.MULTIPLE_REQUEST_CODES)) {
+                if (PermissionManager.checkPermission(this@EditEventActivity, this@EditEventActivity, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PermissionManager.MULTIPLE_REQUEST_CODES)) {
                     imageUri=imageSelect.selectImage()
                 }
             }
@@ -116,8 +119,8 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
 
-                val datePickerDialog = DatePickerDialog(this@CreateEventActivity,
-                    DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
+                val datePickerDialog = DatePickerDialog(this@EditEventActivity, DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
+                        eventDateChange = true
                         var yearString : String = Tyear.toString()
                         var monthString : String = Tmonth.toString()
                         var dayString : String = TdayOfMonth.toString()
@@ -139,10 +142,9 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
 
-                val timePickerDialog = TimePickerDialog(this@CreateEventActivity,
+                val timePickerDialog = TimePickerDialog(this@EditEventActivity,
                     TimePickerDialog.OnTimeSetListener{ view: TimePicker?, Thour: Int, Tminute: Int ->
-                        Log.e(TAG,"$Thour,$Tminute")
-
+                        eventDateChange = true
                         var hourString : String = Thour.toString()
                         var minuteString : String = Tminute.toString()
 
@@ -159,22 +161,20 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             }
         })
 
-        buttonSelectCourse?.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                createEventPerformer.getDataFromServer()
-            }
-        })
-
         buttonCreateEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (checkFields()) {
-                    val eventDateString = "$eventDate $eventTime"
+                    val eventDateString = "$eventDate"+"T"+"$eventTime"
                     if (eventName != null && eventDescription != null) {
-                        val event = Event(eventName, eventcourse, eventDateString, eventDescription)
-                        createEventPerformer.postDataOnServer(event)
+                        if (eventDateChange){
+                            editEventPresenter.putDataOnServer(eventName,eventDescription,eventDateString)
+                        } else {
+                            editEventPresenter.putDataOnServer(eventName,eventDescription,null)
+                        }
+
                     }
                 } else {
-                    Toast.makeText(this@CreateEventActivity, "Please check all fields", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditEventActivity, "Please check all fields", Toast.LENGTH_SHORT).show()
                 }
             }
         })
@@ -236,56 +236,66 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         return inputsOk
     }
 
-    override fun setupImage(imageUri : Uri) {
-        val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
-        Glide.with(this).asBitmap().load(imageUri).apply(options).into(eventImageView)
+    override fun onGetResponseFailure(throwable: Throwable) {
+        Log.e(TAG, "Failure connecting to service")
+        Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
-    override fun onImageResponseError() {
-        Log.e(TAG, "No Image Selected")
-        Toast.makeText(this@CreateEventActivity,"Error: Please select an event image",Toast.LENGTH_SHORT).show()
+    override fun onGetResponseError() {
+        Log.e(TAG, "Error event empty")
+        Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
-    override fun onResponseFailure() {
-        Log.e(TAG, "Failure connecting successfully")
-        Toast.makeText(this@CreateEventActivity,"Error: Connection Failure, please try again later",Toast.LENGTH_SHORT).show()
+
+    override fun onUpdateResponseFailure(throwable: Throwable) {
+        Log.e(TAG, "Failure connecting to service")
+        Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
-    override fun onResponseError() {
-        Log.e(TAG, "Error with response")
-        Toast.makeText(this@CreateEventActivity,"Error: If problem persists, please contact admin.",Toast.LENGTH_SHORT).show()
+    override fun onUpdateResponseError() {
+        Log.e(TAG, "Error event empty")
+        Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
-    override fun onPostResponseSuccess(eventId : Int) {
-        Log.e(TAG, "Success adding Event")
-        Toast.makeText(this@CreateEventActivity,"Success creating event.",Toast.LENGTH_SHORT).show()
-        val intent : Intent = Intent(this@CreateEventActivity, ViewEventActivity::class.java)
+    override fun onUpdatePartialResponseError(eventId: Int) {
+        Log.e(TAG, "Partial success updating Event")
+        Toast.makeText(this@EditEventActivity,"Error: Partial Success updating event, please reupload event image.",Toast.LENGTH_SHORT).show()
+        val intent : Intent = Intent(this@EditEventActivity, ViewEventActivity::class.java)
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
         finish()
     }
 
-    override fun onGetResponseSuccess(courses: List<Course>) {
-        val courseNames = mutableListOf<String>()
-        for (course in courses){
-            courseNames.add(course.courseName)
-        }
-        val options : Array<CharSequence> = courseNames.toTypedArray()
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this@CreateEventActivity)
-        builder.setTitle("Choose Course")
-        builder.setItems(
-            options,
-            DialogInterface.OnClickListener() { dialogInterface: DialogInterface, item: Int ->
-                lateinit var selectedCourse : Course
-                for (course in courses){
-                    if (options[item] == course.courseName){
-                        selectedCourse = course
-                    }
-                }
-                eventcourse=selectedCourse
-                textViewEventCourse.text=eventcourse.courseName
-            })
-        builder.show()
+    override fun onUpdateResponseSuccess(eventId: Int) {
+        Log.e(TAG, "Success updating Event")
+        Toast.makeText(this@EditEventActivity,"Success updating event.",Toast.LENGTH_SHORT).show()
+        val intent : Intent = Intent(this@EditEventActivity, ViewEventActivity::class.java)
+        intent.putExtra("EVENT_ID", eventId)
+        startActivity(intent)
+        finish()
+    }
+
+    override fun fillInformation(eventName: String, eventNote: String, eventTime: String, eventDate: String, courseName : String) {
+        this.eventName=eventName
+        this.eventDescription=eventNote
+        this.eventTime=eventTime
+        this.eventDate=eventDate
+        this.editTextEventName.setText(eventName)
+        this.editTextEventDescription.setText(eventNote)
+        this.textViewEventTime.setText(eventTime)
+        this.textViewEventDate.setText(eventDate)
+        this.textViewEventCourse.setText(courseName)
+    }
+
+
+    override fun setupImage(imageUri : Uri) {
+        val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        Glide.with(this).asBitmap().load(imageUri).apply(options).into(eventImageView)
+    }
+
+    override fun setupImage(imagepath: String) {
+        val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        Glide.with(this).asBitmap().load(imagepath).apply(options).into(eventImageView)
     }
 
     /**
@@ -301,20 +311,20 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             when (requestCode) {
                 1001 -> {
                     if (resultCode == Activity.RESULT_OK) {
-                        createEventPerformer.setImage(imageSelect.tempImageUri)
+                        editEventPresenter.setImage(imageSelect.tempImageUri)
                         setupImage(imageSelect.tempImageUri)
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")
-                        Toast.makeText(this@CreateEventActivity,"Error: Cannot use image",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditEventActivity,"Error: Cannot use image",Toast.LENGTH_SHORT).show()
                     }
                 }
                 1002 -> {
                     if (resultCode == Activity.RESULT_OK && data != null) {
-                        data.data?.let { createEventPerformer.setImage(it) }
+                        data.data?.let { setupImage(it) }
                         data.data?.let { setupImage(it) }
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")
-                        Toast.makeText(this@CreateEventActivity,"Error: Cannot use image",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditEventActivity,"Error: Cannot use image",Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -325,6 +335,6 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
 
     override fun onDestroy() {
         super.onDestroy()
-        createEventPerformer.onDestroy()
+        editEventPresenter.onDestroy()
     }
 }

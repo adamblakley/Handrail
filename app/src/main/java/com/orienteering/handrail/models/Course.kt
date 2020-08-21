@@ -2,7 +2,7 @@ package com.orienteering.handrail.models
 
 import java.io.Serializable
 
-class Course(courseControls: List<Control>, courseName : String, courseNote : String )  : Serializable {
+class Course(courseControls: List<Control>? = null, courseName: String, courseNote: String )  : Serializable {
 
     val courseId : Int? = null
     var courseName : String
@@ -13,7 +13,9 @@ class Course(courseControls: List<Control>, courseName : String, courseNote : St
     init{
         this.courseName = courseName
         this.courseNote=courseNote
-        this.courseControls = courseControls as MutableList<Control>
+        if (courseControls!=null){
+            this.courseControls = courseControls as MutableList<Control>
+        }
     }
 
     override fun toString(): String {

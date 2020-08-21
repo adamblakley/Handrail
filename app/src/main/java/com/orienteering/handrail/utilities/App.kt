@@ -14,6 +14,7 @@ class App : Application() {
         const val SharedPreferencesAuthToken : String = "AUTH_TOKEN"
         const val SharedPreferencesTokenType : String = "TOKEN_TYPE"
         const val SharedPreferencesUserId : String = "USER_ID"
+        const val GLOBAL_RADIUS = 6371
     }
 
 

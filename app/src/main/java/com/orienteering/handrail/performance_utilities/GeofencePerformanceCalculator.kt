@@ -23,9 +23,15 @@ class GeofencePerformanceCalculator {
     }
 
     fun convertMilliToMinutes(time : Long) : String{
-        val minutes : Long = (time/1000) / 60
-        val seconds : Int = ((time/1000) % 60).toInt()
-        return String.format("%d:%d",minutes,seconds)
+        var minutes : String = ((time/1000) / 60).toString()
+        var seconds : String = ((time/1000) % 60).toString()
+        if (minutes.length==1){
+            minutes="0"+minutes
+        }
+        if (seconds.length==1){
+            seconds="0"+seconds
+        }
+        return String.format("$minutes:$seconds")
 }
 
     fun calculateDistance(firstLatLng: LatLng, secondLatLng: LatLng): Double {

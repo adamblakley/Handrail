@@ -27,6 +27,8 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
     lateinit var recyclerView : RecyclerView
     // text view for total distance
     lateinit var textViewDistance : TextView
+    // text view for pace
+    lateinit var textViewPace : TextView
     // google map view
     private lateinit var performanceMap: GoogleMap
 
@@ -60,15 +62,15 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
         performanceMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
     }
 
-    override fun showRoute(routePoints: List<LatLng>, bounds: LatLngBounds, totalDistance : Double) {
+    override fun showRoute(routePoints: List<LatLng>, bounds: LatLngBounds, totalDistance : Double, pace : Double) {
         performanceMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,100))
-
         val pattern: MutableList<PatternItem> = mutableListOf()
         pattern.add(Dot())
         pattern.add(Gap(20F))
         pattern.add(Dash(30F))
         pattern.add(Gap(20F))
-        textViewDistance.text = "Total Distance Metres: %.2f".format(totalDistance)
+        textViewDistance.text = "Total Distance: Metres: %.2f".format(totalDistance)
+        textViewPace.text = "Average Pace: Metres per Minute: %d".format(pace.toInt())
         performanceMap.addPolyline(PolylineOptions().addAll(routePoints).width(10f).color(Color.RED).pattern(pattern))
     }
 
@@ -88,6 +90,7 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
      */
     fun createTextView(){
         textViewDistance = findViewById(R.id.textView_distance_performance)
+        textViewPace = findViewById(R.id.textView_pace_performance)
     }
 
     /**

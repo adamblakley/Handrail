@@ -219,6 +219,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
         val intent = Intent(this@CreateCourseActivity, ICourseActivity::class.java).apply {}
         intent.putExtra("COURSE_ID", courseId)
         this.startActivity(intent)
+        finish()
     }
 
     /**

@@ -164,6 +164,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (participant != null) {
                     intentResults.putExtra("EVENT_ID", event.eventId)
                     startActivity(intentResults)
+                    finish()
                 }
 
             } else {

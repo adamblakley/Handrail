@@ -78,6 +78,18 @@ class EventInteractor {
     }
 
     /**
+     * retreive events by uorganiser
+     *
+     * @param id
+     * @param onFinishedListener
+     */
+    fun retreiveByOrganiser(id : Long, onFinishedListener: IOnFinishedListener<List<Event>>){
+        val call = eventService.readAllByUser(id)
+        val customCallback : CustomCallback<List<Event>> = CustomCallback(onFinishedListener)
+        call.enqueue(customCallback)
+    }
+
+    /**
      * update event status via eventService
      *
      * @param id
@@ -86,6 +98,39 @@ class EventInteractor {
     fun updateStatus(id : Int, onFinishedListener: IOnFinishedListener<Event>){
         val call = eventService.updateStatus(id)
         val customCallback : CustomCallback<Event> =
+            CustomCallback(
+                onFinishedListener
+            )
+        call.enqueue(customCallback)
+    }
+
+    /**
+     * Function to call service method to update event information
+     *
+     * @param eventId
+     * @param event
+     * @param onFinishedListener
+     */
+    fun update(eventId: Int, event : Event, onFinishedListener: IOnFinishedListener<Event>){
+        val call = eventService.update(eventId,event)
+        val customCallback =
+            CustomCallback(
+                onFinishedListener
+            )
+        call.enqueue(customCallback)
+    }
+
+    /**
+     * Function to call service method to update event information and photograph
+     *
+     * @param eventId
+     * @param event
+     * @param file
+     * @param onFinishedListener
+     */
+    fun update(eventId: Int, event : Event, file : MultipartBody.Part?, onFinishedListener: IOnFinishedListener<Event>){
+        val call = eventService.update(eventId,event,file)
+        val customCallback =
             CustomCallback(
                 onFinishedListener
             )

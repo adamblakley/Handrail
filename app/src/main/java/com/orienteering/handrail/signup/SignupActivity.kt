@@ -168,5 +168,6 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
     override fun startLoginActivity() {
         val intent = Intent(this@SignupActivity, LoginActivity::class.java).apply {}
         startActivity(intent)
+        finish()
     }
 }

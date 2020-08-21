@@ -19,7 +19,7 @@ interface EventService {
     fun read(@Path("id") iD : Int?) : Call<StatusResponseEntity<Event>>
 
     @GET("users/{id}/events")
-    fun readAllByUser(@Path("id") id : Long?) : Call<List<Event>>
+    fun readAllByUser(@Path("id") id : Long?) : Call<StatusResponseEntity<List<Event>>>
 
     @GET("events")
     fun readAll(): Call<StatusResponseEntity<List<Event>>>
@@ -29,5 +29,12 @@ interface EventService {
 
     @PUT("events/{id}/delete")
     fun deleteEvent(@Path("id") id : Int?) : Call<StatusResponseEntity<Boolean>>
+
+    @PUT("events/{id}/update")
+    fun update(@Path("id") eventId : Int, @Body event : Event) : Call<StatusResponseEntity<Event>>
+
+    @POST("events/{id}/update")
+    @Multipart
+    fun update(@Path("id") eventId : Int, @Part("event") event : Event, @Part file : MultipartBody.Part?) : Call<StatusResponseEntity<Event>>
 
 }

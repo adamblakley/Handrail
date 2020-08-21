@@ -72,6 +72,7 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
     override fun startHomeMenuActivity() {
         val intent = Intent(this@LoginActivity, HomeActivity::class.java).apply {}
         startActivity(intent)
+        finish()
     }
 
     override fun onResponseFailure(throwable: Throwable) {

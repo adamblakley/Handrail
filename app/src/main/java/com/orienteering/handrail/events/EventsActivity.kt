@@ -1,7 +1,10 @@
 package com.orienteering.handrail.events
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +17,7 @@ class EventsActivity : AppCompatActivity(), IEventsContract.IEventsView {
     private lateinit var recyclerView : RecyclerView
     private lateinit var eventsPerformer : IEventsContract.IEventsPerformer
 
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_events)

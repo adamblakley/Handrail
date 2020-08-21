@@ -4,7 +4,6 @@ import android.location.Location
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity

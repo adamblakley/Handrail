@@ -47,8 +47,9 @@ class WelcomeActivity: AppCompatActivity(), IWelcomeContract.IWelcomeView {
     }
 
     override fun onResponseSuccess() {
-            val intent = Intent(this@WelcomeActivity, HomeActivity::class.java).apply {}
-            startActivity(intent)
+        val intent = Intent(this@WelcomeActivity, HomeActivity::class.java).apply {}
+        startActivity(intent)
+        finish()
     }
 
     override fun onResponseFailure(throwable: Throwable) {

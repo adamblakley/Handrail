@@ -246,6 +246,7 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
         Toast.makeText(this@EditProfileActivity,"Successfully Updated.",Toast.LENGTH_SHORT).show()
         val intent : Intent = Intent(this@EditProfileActivity, HomeActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.orienteering.handrail.edit_profile
 
 import android.net.Uri
+import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.models.User
 
 interface IEditProfileContract {

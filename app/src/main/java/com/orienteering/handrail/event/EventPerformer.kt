@@ -45,7 +45,6 @@ class EventPerformer(eventId : Int, eventView : IEventContract.IEventView, event
     }
 
     override fun requestDataFromServer() {
-        Log.e("TAG","I've been hit!")
          eventId?.let {eventInteractor.retreiveByID(it,getEventOnFinishedListener) }
     }
 
