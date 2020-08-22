@@ -37,6 +37,9 @@ class LocationPerformer(locationResponder : ILocationResponder, context : Contex
     private var locationCallback : LocationCallback
     // Fused Location Provider Client Variable
     private var fusedLocationClient: FusedLocationProviderClient
+    //check if running Q or later
+    //    additional permission required if so
+    private val runningQOrLater = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
 
     /**
      * Initialisation block
@@ -108,11 +111,19 @@ class LocationPerformer(locationResponder : ILocationResponder, context : Contex
      * Start Location Updates
      * Checks permissions, and requests updates from fused location client
      */
-    private fun startLocationUpdates() {
+    fun startLocationUpdates() {
         // If permission check successful, request updates, else call responder failure to handle failure of location permissions grant.
         if (PermissionManager.checkPermission(activity, context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
         ) {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+            if (runningQOrLater) {
+                if(PermissionManager.checkPermission(activity,context, arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION), PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)){
+                    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+                }
+
+            } else {
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+            }
+
         } else {
             locationResponder.startLocationUpdatesFailure()
         }

@@ -2,7 +2,6 @@ package com.orienteering.handrail.dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +9,17 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDialogFragment
-import java.lang.ClassCastException
 
+/**
+ * Dialog for the display of course information
+ *
+ * @constructor
+ *
+ * @param courseName
+ * @param courseNote
+ * @param courseAltitudes
+ * @param courseDistance
+ */
 class ViewCourseInfoDialog(courseName: String?=null, courseNote : String?=null, courseAltitudes : MutableList<Double>? = null, courseDistance :Double) : AppCompatDialogFragment() {
 
     var courseName : String? = courseName
@@ -23,8 +31,11 @@ class ViewCourseInfoDialog(courseName: String?=null, courseNote : String?=null, 
     lateinit var textViewCourseNote : TextView
     lateinit var textViewCourseAltitude : TextView
     lateinit var textViewCourseDistance : TextView
-    lateinit var listener: ExampleDialogListener
+    lateinit var listener: StandardDialogListener
 
+    /**
+     * Applies altitude as an average of all altitudes
+     */
     init{
         if (courseAltitudes != null) {
             courseAltitude = courseAltitudes.sum()/courseAltitudes.size
@@ -36,7 +47,7 @@ class ViewCourseInfoDialog(courseName: String?=null, courseNote : String?=null, 
 
         val layoutInflater : LayoutInflater = activity!!.layoutInflater
         val view : View = layoutInflater.inflate(com.orienteering.handrail.R.layout.layout_course_information_dialog,null)
-
+        // apply negative button and set title
         alertDialogueBuilder.setView(view).setTitle("Course Info").setNegativeButton("Cancel",{ dialogInterface: DialogInterface, i: Int -> })
 
         textViewCourseName = view.findViewById<EditText>(com.orienteering.handrail.R.id.textView_course_info_name)
@@ -49,6 +60,10 @@ class ViewCourseInfoDialog(courseName: String?=null, courseNote : String?=null, 
         return alertDialogueBuilder.create()
     }
 
+    /**
+     * Fill text of altitude, distance, note and name
+     *
+     */
     private fun fillText(){
         if(courseName!=null){
             textViewCourseName.text = courseName

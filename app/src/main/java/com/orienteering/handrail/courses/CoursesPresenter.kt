@@ -15,7 +15,7 @@ import retrofit2.Response
  * @param coursesView
  * @param courseInteractor
  */
-class CoursesPerformer(coursesView : ICoursesContract.ICoursesView, courseInteractor: CourseInteractor) : ICoursesContract.ICoursesPerformer {
+class CoursesPresenter(coursesView : ICoursesContract.ICoursesView, courseInteractor: CourseInteractor) : ICoursesContract.ICoursesPresenter {
 
     // Coursesview
     private var coursesView : ICoursesContract.ICoursesView?
@@ -24,40 +24,45 @@ class CoursesPerformer(coursesView : ICoursesContract.ICoursesView, courseIntera
     // Listener to handles interactor responses
     private var getCoursesOnFinishedListener : IOnFinishedListener<List<Course>>
 
+    /**
+     * Initialise views, interactor and onfinished listener for interactor
+     */
     init{
         this.coursesView = coursesView
         this.courseInteractor = courseInteractor
-        this.getCoursesOnFinishedListener = GetCoursesOnFinishedListener(this,coursesView)
+        this.getCoursesOnFinishedListener = GetCoursesOnFinishedListener(coursesView)
     }
+
+    /**
+     * Destroy view
+     *
+     */
     override fun onDestroy() {
         coursesView=null
     }
 
+    /**
+     * Request data via interactor, use user id from shared preferences and apply onfinished listener
+     *
+     */
     override fun requestDataFromServer() {
         courseInteractor.retrieveAllByUser(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),getCoursesOnFinishedListener)
     }
 }
 
-/**
- * Listener handles interactor responses
- *
- * @param eventsPresenter
- * @param eventsView
- */
-class GetCoursesOnFinishedListener(coursePerformer : ICoursesContract.ICoursesPerformer, coursesView : ICoursesContract.ICoursesView) :
-    IOnFinishedListener<List<Course>> {
-    // Events view
-    private var coursesView : ICoursesContract.ICoursesView
-    // Events presenter
-    private var coursesPerformer : ICoursesContract.ICoursesPerformer
 
-    /**
-     * Initialises view, presenter
-     */
-    init{
-        this.coursesPerformer = coursePerformer
-        this.coursesView = coursesView
-    }
+/**
+ * handle on finished interactions from retreival of course data
+ *
+ * @constructor
+ *
+ * @param coursePresenter
+ * @param coursesView
+ */
+class GetCoursesOnFinishedListener(coursesView : ICoursesContract.ICoursesView) :
+    IOnFinishedListener<List<Course>> {
+
+    private var coursesView : ICoursesContract.ICoursesView = coursesView
 
     /**
      * On successful response, ask view to fill recycler view with events information
@@ -68,7 +73,7 @@ class GetCoursesOnFinishedListener(coursePerformer : ICoursesContract.ICoursesPe
     override fun onFinished(response: Response<StatusResponseEntity<List<Course>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                coursesView.fillRecyclerView(response.body()!!.entity as ArrayList<Course>)
+                coursesView.fillInformation(response.body()!!.entity as ArrayList<Course>)
             } else {
                 coursesView.onResponseError()
             }

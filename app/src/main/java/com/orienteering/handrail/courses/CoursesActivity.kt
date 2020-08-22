@@ -14,24 +14,39 @@ import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.utilities.ResultsAdapter
 
+/**
+ * Class handles view for view courses use case, displays each course with an action prompt for the user. allows user to create new views
+ *
+ */
 class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
 
     private lateinit var recyclerView : RecyclerView
     private lateinit var btnCreateCourse : Button
-    private lateinit var performer : ICoursesContract.ICoursesPerformer
+    // presenter to handle all logic and aquire data
+    private lateinit var presenter : ICoursesContract.ICoursesPresenter
 
+    /**
+     * initialise view and elements, request data from presenter
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_courses)
         initRecyclerView()
         createButtons()
-        performer = CoursesPerformer(this, CourseInteractor())
-        performer.requestDataFromServer()
+        presenter = CoursesPresenter(this, CourseInteractor())
+        presenter.requestDataFromServer()
     }
 
+    /**
+     * create all buttons for view, add onclick
+     *
+     */
     private fun createButtons(){
         btnCreateCourse = findViewById(R.id.button_create_course_courses)
-        btnCreateCourse?.setOnClickListener(object : View.OnClickListener {
+        // start create course on click
+        btnCreateCourse.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 val intent = Intent(this@CoursesActivity, CreateCourseActivity::class.java).apply {}
                 startActivity(intent)
@@ -39,29 +54,48 @@ class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
         })
     }
 
+    /**
+     * Initialise recycler view
+     *
+     */
     private fun initRecyclerView(){
         recyclerView = findViewById(R.id.rv_courses)
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    override fun fillRecyclerView(coursesList: ArrayList<Course>) {
-        val coursesAdapter : ResultsAdapter =
-            ResultsAdapter(coursesList)
+    /**
+     * fill recycler view with information from presenter
+     *
+     * @param coursesList
+     */
+    override fun fillInformation(coursesList: ArrayList<Course>) {
+        val coursesAdapter = ResultsAdapter(coursesList)
         recyclerView.adapter = coursesAdapter
     }
 
+    /**
+     * Respond with failure to user
+     *
+     * @param throwable
+     */
     override fun onResponseFailure(throwable: Throwable) {
-        val toast = Toast.makeText(this@CoursesActivity,"Error: Connectivity Error, unable to retreive courses", Toast.LENGTH_SHORT)
-        toast.show()
+        Toast.makeText(this@CoursesActivity,"Error: Connectivity Error, unable to retrieve courses", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Responsd with error to user
+     *
+     */
     override fun onResponseError() {
-        val toast = Toast.makeText(this@CoursesActivity,"No Courses available",Toast.LENGTH_SHORT)
-        toast.show()
+        Toast.makeText(this@CoursesActivity,"No Courses available",Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Override ondestroy add presenter ondestroy
+     *
+     */
     override fun onDestroy() {
-        performer.onDestroy()
+        presenter.onDestroy()
         super.onDestroy()
     }
 }

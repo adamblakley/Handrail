@@ -42,7 +42,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnPolygonClickListener, ExampleDialogListener, EventDialogListener {
+class CreateMapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnPolygonClickListener, StandardDialogListener, EventDialogListener {
 
 
     /**

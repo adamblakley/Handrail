@@ -15,6 +15,7 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.controllers.EventController
 import com.orienteering.handrail.controllers.ParticipantController
+import com.orienteering.handrail.course_participation.CourseParticipationActivity
 import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.utilities.App

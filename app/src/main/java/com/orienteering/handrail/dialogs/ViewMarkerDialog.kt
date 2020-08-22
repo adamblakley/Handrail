@@ -17,10 +17,21 @@ import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import java.lang.ClassCastException
 
+/**
+ * Display control information via dialog on selection of individual control
+ *
+ * @constructor
+ * TODO
+ *
+ * @param nameOfMarker
+ * @param noteOfMarker
+ * @param positionOfMarker
+ * @param imagePath
+ */
 class ViewMarkerDialog(nameOfMarker:String? = "Control", noteOfMarker: String? = "Example Text", positionOfMarker: Int? = 0, imageUriOfMarker: Uri? = null ) : AppCompatDialogFragment()  {
 
     val TAG : String = "ViewMarkerDialog"
-    lateinit var listener: ExampleDialogListener
+    lateinit var listener: StandardDialogListener
 
     var nameOfMarker : String?
     var positionOfMarker : Int? = null
@@ -62,12 +73,16 @@ class ViewMarkerDialog(nameOfMarker:String? = "Control", noteOfMarker: String? =
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            listener = context as ExampleDialogListener
+            listener = context as StandardDialogListener
         } catch (e: ClassCastException) {
             throw  ClassCastException(context.toString() + "must implement ExampleDialogListener")
         }
     }
 
+    /**
+     * Set image of control and apply name, note and position text
+     *
+     */
     private fun setTextandImage(){
         textViewMarkerName.text=nameOfMarker
         textViewMarkerNote.text=noteOfMarker

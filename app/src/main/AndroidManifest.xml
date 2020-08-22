@@ -42,7 +42,7 @@
                 android:value=".home_menu.HomeActivity"
                 ></meta-data>
         </activity>
-        <activity android:name=".course.ICourseActivity" >
+        <activity android:name=".course.CourseActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -211,7 +211,7 @@
             android:name=".activities.CreateMapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".activities.CourseParticipationActivity"
+            android:name=".course_participation.CourseParticipationActivity"
             android:label="Course Participation" />
         <activity
             android:name=".home_menu.HomeActivity"

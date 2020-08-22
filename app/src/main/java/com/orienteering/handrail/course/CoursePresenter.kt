@@ -12,17 +12,35 @@ import com.orienteering.handrail.models.Course
 import com.orienteering.handrail.gpx_utilities.GPXBuilder
 import com.orienteering.handrail.map_utilities.MapUtilities
 import retrofit2.Response
+// TAG for Logs
+private val TAG: String = CoursePresenter::class.java.name
 
-class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, courseInteractor: CourseInteractor) : ICourseContract.ICoursePresenter {
-    var courseId : Int
+/**
+ * Class manages the logic of obtaining, manipulating and providing course information for display to view
+ *
+ * @constructor
+ *
+ * @param courseId
+ * @param courseView
+ * @param courseInteractor
+ */
+class CoursePresenter(courseId : Int, courseView : ICourseContract.ICourseView, courseInteractor: CourseInteractor) : ICourseContract.ICoursePresenter {
+    // course id for use in obtaining course
+    private var courseId : Int
+    // course obtained from data source
     lateinit var course : Course
+    // view required to display course data
+    private var courseView : ICourseContract.ICourseView
+    // interactor to obtain course information
+    private var courseInteractor : CourseInteractor
+    // on finished listener handle receipt of course data
+    private var getCourseOnFinishedListener : GetCourseOnFinishedListener
+    // on finished listener handle receipt of delete course response
+    private var deleteCourseOnFinishedListener : DeleteCourseOnFinishedListener
 
-    var courseView : ICourseContract.ICourseView
-    var courseInteractor : CourseInteractor
-
-    var getCourseOnFinishedListener : GetCourseOnFinishedListener
-    var deleteCourseOnFinishedListener : DeleteCourseOnFinishedListener
-
+    /**
+     * Initialise class variables
+     */
     init{
         this.courseId = courseId
         this.courseView=courseView
@@ -31,22 +49,39 @@ class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, 
         this.deleteCourseOnFinishedListener = DeleteCourseOnFinishedListener(this,courseView)
     }
 
+    /**
+     * Request data directly from interactor
+     *
+     */
     override fun requestDataFromServer() {
         courseInteractor.retrieve(courseId,getCourseOnFinishedListener)
     }
 
+    /**
+     * utilize interactor to request removal of data from source
+     *
+     */
     override fun removeDataFromServer() {
         courseInteractor.deleteCourse(courseId,deleteCourseOnFinishedListener)
     }
 
+    /**
+     * Set this course as passed
+     * @param course
+     */
     override fun setPresenterCourse(course: Course) {
         this.course=course
     }
 
+    /**
+     * Disseminate course information from interactor response and choose correct control and altitude values
+     * Calculate total distance
+     * Provide information to view
+     */
     override fun courseInformation() {
         val mapUtilities = MapUtilities()
-        var courseAltitudes = mutableListOf<Double>()
-        var courseLatLngs = mutableListOf<LatLng>()
+        val courseAltitudes = mutableListOf<Double>()
+        val courseLatLngs = mutableListOf<LatLng>()
         for (control in course.courseControls){
             control.createLatLng()
             if (control.controlAltitude!=null){
@@ -60,31 +95,44 @@ class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, 
         courseView.showInformation(course.courseName,course.courseNote,courseAltitudes,totalDistance)
     }
 
-    fun findControlByTitle(controlName : String): Control? {
+    /**
+     *  method determines control by passed title string
+     * @param controlName
+     * @return
+     */
+    private fun findControlByTitle(controlName : String): Control? {
         for (control in course.courseControls) {
             if (controlName != null) {
-                if (control.controlName.equals(controlName)) {
+                if (control.controlName == controlName) {
                     return control
-                    break;
                 }
             }
         }
         return null
     }
 
+    /**
+     * get all controls and output to map for courseview
+     *
+     */
     override fun getControls() {
-        var controlNameLatLng = mutableMapOf<String,LatLng>()
+        val controlNameLatLng = mutableMapOf<String,LatLng>()
         for (control in course.courseControls){
             control.createLatLng()
-            controlNameLatLng.put(control.controlName,control.controlLatLng)
+            controlNameLatLng[control.controlName] = control.controlLatLng
         }
         courseView.addControls(controlNameLatLng)
     }
 
+    /**
+     * Obtain control information and disseminate, pass to view to show data
+     *
+     * @param markerTitle
+     */
     override fun controlInformation(markerTitle : String) {
         val control = findControlByTitle(markerTitle)
         val nameOfControl: String? = control?.controlName
-        var positionOfControl: Int? = control?.controlPosition
+        val positionOfControl: Int? = control?.controlPosition
         var imagePathOfControl: String? = null
         if (control != null) {
             if (control.isControlPhotographInitialised()){
@@ -95,24 +143,34 @@ class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, 
                 }
             }
         }
-        var noteOfControl: String? = control?.controlNote
+        val noteOfControl: String? = control?.controlNote
         courseView.showControlInformation(nameOfControl,noteOfControl,positionOfControl,imagePathOfControl)
     }
 
-    fun provideBounds(controls : List<Control>) : LatLngBounds {
+    /**
+     * Provide latitude and longitude bounds for display in map
+     *
+     * @param controls
+     * @return
+     */
+    private fun provideBounds(controls : List<Control>) : LatLngBounds {
         val mapUtilities = MapUtilities()
-        var controlLatLngs = mutableListOf<LatLng>()
+        val controlLatLngs = mutableListOf<LatLng>()
         for (control in controls){
             control.createLatLng()
             controlLatLngs.add(control.controlLatLng)
         }
-        val bounds : LatLngBounds = mapUtilities.determineNESW(controlLatLngs)
-        return bounds
+        // utilize map utilities method to determine NESW
+        return mapUtilities.determineNESW(controlLatLngs)
     }
 
+    /**
+     * get route from all controls and provide control points and bound to view
+     * @param controls
+     */
     override fun getRoute(controls: List<Control>) {
         val mapUtilities = MapUtilities()
-        var allControlPoints = mapUtilities.getAllControlPoints(controls)
+        val allControlPoints = mapUtilities.getAllControlPoints(controls)
         val bounds = provideBounds(controls)
         courseView.showRoute(allControlPoints,bounds)
     }
@@ -136,27 +194,29 @@ class ICoursePresenter(courseId : Int,courseView : ICourseContract.ICourseView, 
 }
 
 /**
- * Listener handles interactor responses
+ * Listener class, handles response from interactor callback of get course
  *
- * @param eventsPresenter
- * @param eventsView
+ * @constructor
+ *
+ * @param presenter
+ * @param view
  */
-class GetCourseOnFinishedListener(coursePerformer : ICourseContract.ICoursePresenter, courseView : ICourseContract.ICourseView) : IOnFinishedListener<Course> {
-    // Events view
-    private var courseView : ICourseContract.ICourseView
-    // Events presenter
-    private var coursePerformer : ICourseContract.ICoursePresenter
+class GetCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, view : ICourseContract.ICourseView) : IOnFinishedListener<Course> {
+    // Course view
+    private var view : ICourseContract.ICourseView
+    // Course presenter
+    private var presenter : ICourseContract.ICoursePresenter
 
     /**
      * Initialises view, presenter
      */
     init{
-        this.coursePerformer = coursePerformer
-        this.courseView = courseView
+        this.presenter = presenter
+        this.view = view
     }
 
     /**
-     * On successful response, ask view to fill recycler view with events information
+     * On successful response, ask presenter to set course, get controls and view to display via the ongetresponsesuccess method
      * If unsuccessful call view error response handler to display to user
      *
      * @param response
@@ -164,14 +224,14 @@ class GetCourseOnFinishedListener(coursePerformer : ICourseContract.ICoursePrese
     override fun onFinished(response: Response<StatusResponseEntity<Course>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                coursePerformer.setPresenterCourse(response.body()?.entity!!)
-                coursePerformer.getControls()
-                courseView.onGetResponseSuccess(response.body()?.entity!!.courseControls,response.body()?.entity!!.courseName)
+                presenter.setPresenterCourse(response.body()?.entity!!)
+                presenter.getControls()
+                view.onGetResponseSuccess(response.body()?.entity!!.courseControls,response.body()?.entity!!.courseName)
             } else {
-                courseView.onResponseError()
+                view.onResponseError()
             }
         } else {
-            courseView.onResponseError()
+            view.onResponseError()
         }
     }
 
@@ -181,34 +241,34 @@ class GetCourseOnFinishedListener(coursePerformer : ICourseContract.ICoursePrese
      * @param t
      */
     override fun onFailure(t: Throwable) {
-        if (courseView!=null){
-            courseView.onResponseFailure(t)
-        }
+        view.onResponseFailure(t)
     }
 }
 
 /**
- * Listener handles interactor responses
+ * Listener handles interactor responses for deleting course, success provides positive message for view to handle
+ * Failure and error mapped to view responses
+ * @constructor
  *
- * @param eventsPresenter
- * @param eventsView
+ * @param presenter
+ * @param view
  */
-class DeleteCourseOnFinishedListener(coursePerformer : ICourseContract.ICoursePresenter, courseView : ICourseContract.ICourseView) : IOnFinishedListener<Boolean> {
-    // Events view
-    private var courseView : ICourseContract.ICourseView
-    // Events presenter
-    private var coursePerformer : ICourseContract.ICoursePresenter
+class DeleteCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, view : ICourseContract.ICourseView) : IOnFinishedListener<Boolean> {
+    // Course view
+    private var view : ICourseContract.ICourseView
+    // Course presenter
+    private var presenter : ICourseContract.ICoursePresenter
 
     /**
      * Initialises view, presenter
      */
     init{
-        this.coursePerformer = coursePerformer
-        this.courseView = courseView
+        this.presenter = presenter
+        this.view = view
     }
 
     /**
-     * On successful response, ask view to fill recycler view with events information
+     * On successful response, ask view to fill recycler view with course information
      * If unsuccessful call view error response handler to display to user
      *
      * @param response
@@ -216,12 +276,12 @@ class DeleteCourseOnFinishedListener(coursePerformer : ICourseContract.ICoursePr
     override fun onFinished(response: Response<StatusResponseEntity<Boolean>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                courseView.onDeleteResponseSuccess()
+                view.onDeleteResponseSuccess()
             } else {
-                courseView.onResponseError()
+                view.onResponseError()
             }
         } else {
-            courseView.onResponseError()
+            view.onResponseError()
         }
     }
 
@@ -231,8 +291,6 @@ class DeleteCourseOnFinishedListener(coursePerformer : ICourseContract.ICoursePr
      * @param t
      */
     override fun onFailure(t: Throwable) {
-        if (courseView!=null){
-            courseView.onResponseFailure(t)
-        }
+        view.onResponseFailure(t)
     }
 }

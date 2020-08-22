@@ -10,20 +10,33 @@ import com.orienteering.handrail.utilities.App
 import retrofit2.Response
 import java.text.SimpleDateFormat
 
-class EventPerformer(eventId : Int, eventView : IEventContract.IEventView, eventInteractor: EventInteractor, participantInteractor: ParticipantInteractor) : IEventContract.IEventPerformer {
+/**
+ * Presenter contains all logic to retrieve, post and manipulate model for view event, join, leave, start and delete event
+ *
+ * @constructor
+ *
+ * @param eventId
+ * @param eventView
+ * @param eventInteractor
+ * @param participantInteractor
+ */
+class EventPresenter(eventId : Int, eventView : IEventContract.IEventView, eventInteractor: EventInteractor, participantInteractor: ParticipantInteractor) : IEventContract.IEventPresenter {
 
     private var event : Event? = null
     private var eventId : Int = 0
     private var eventView : IEventContract.IEventView?
     private var eventInteractor: EventInteractor
     private var participantInteractor : ParticipantInteractor
-
+    // on finished listeners for each request from backend
     private var getEventOnFinishedListener : GetEventOnFinishedListener
     private var joinEventOnFinishedListener : JoinEventOnFinishedListener
     private var updateEventOnFinishedListener : UpdateEventOnFinishedListener
     private var leaveEventOnFinishedListener : LeaveEventOnFinishedListener
     private var deleteEventOnFinishedListener : DeleteEventOnFinishedListener
 
+    /**
+     * initialise view, interactors and onfinished listeners
+     */
     init{
         this.eventView = eventView
         this.eventInteractor = eventInteractor
@@ -44,57 +57,86 @@ class EventPerformer(eventId : Int, eventView : IEventContract.IEventView, event
         eventView = null
     }
 
+    /**
+     * provide event id to interactor to request event information
+     *
+     */
     override fun requestDataFromServer() {
-         eventId?.let {eventInteractor.retreiveByID(it,getEventOnFinishedListener) }
+        eventId.let {eventInteractor.retreiveByID(it,getEventOnFinishedListener) }
     }
 
+    /**
+     * user interactor to make update request for event
+     *
+     */
     override fun updateEventStatus() {
-        eventId?.let { eventInteractor.updateStatus(it,updateEventOnFinishedListener) }
+        eventId.let { eventInteractor.updateStatus(it,updateEventOnFinishedListener) }
     }
 
     override fun startEvent() {
-        eventId?.let { eventView?.startCourseParticipationActivity(it) }
+        eventId.let { eventView?.startCourseParticipationActivity(it) }
     }
 
+    /**
+     * request to join event by padding user id and event id to interactor
+     *
+     */
     override fun joinEvent() {
-        eventId?.let { participantInteractor.createParticipant(it, App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),joinEventOnFinishedListener) }
+        eventId.let { participantInteractor.createParticipant(it, App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),joinEventOnFinishedListener) }
     }
 
+    /**
+     * request to leave event by padding user id and event id to interactor
+     *
+     */
     override fun leaveEvent() {
-        eventId?.let { participantInteractor.removeParticipant(it,App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),leaveEventOnFinishedListener) }
+        eventId.let { participantInteractor.removeParticipant(it,App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),leaveEventOnFinishedListener) }
     }
 
+    /**
+     * request to delete event by padding user id and event id to interactor
+     *
+     */
     override fun deleteEvent() {
-        eventId?.let { eventInteractor.deleteEvent(it,deleteEventOnFinishedListener) }
+        eventId.let { eventInteractor.deleteEvent(it,deleteEventOnFinishedListener) }
     }
 
     override fun showResults(){
-        eventId?.let { eventView?.startEventResultsActivity(it) }
+        eventId.let { eventView?.startEventResultsActivity(it) }
     }
 }
 
-class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+/**
+ *  get event information onfinsihed listener, determines success of response and provides information to view toupdate interface
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventPresenter
+ * @param eventView
+ */
+class GetEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) :
     IOnFinishedListener<Event> {
 
     lateinit var event : Event
     private var eventView : IEventContract.IEventView
-    private var eventPerformer : IEventContract.IEventPerformer
+    private var eventPresenter : IEventContract.IEventPresenter
 
     init{
         this.eventView = eventView
-        this.eventPerformer = eventPerformer
+        this.eventPresenter = eventPresenter
     }
 
     override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
 
         lateinit var eventDate : String
         lateinit var eventTime : String
-        var userIsParticipant : Boolean = false
+        var userIsParticipant = false
 
         if(response.isSuccessful){
             if (response.body() != null) {
                 event = response.body()!!.entity!!
-
+                // update date format to text for display
                 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 
                 val dateformatted = sdf.parse(event.eventDate)
@@ -103,13 +145,14 @@ class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer
                 val timeFormatter = SimpleDateFormat("HH:mm")
                 eventDate = dateFormatter.format(dateformatted)
                 eventTime = timeFormatter.format(dateformatted)
-
+                // check if user is organiser and setup display by checking user id against organiser id
                 if (event.eventOrganiser.userId == App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0)) {
                     eventView.setupForOrganizer(event.eventStatus)
                 } else {
-
+                    // else check if user is participanty. first check if participants is empty
                     if (!event.participants.isEmpty()) {
                         for (participant in event.participants) {
+                            // check user id against participants list
                             if (participant.participantUser.userId?.equals(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0))!! && participant.participantControlPerformances.isEmpty()) {
                                 userIsParticipant=true
                                 break
@@ -118,9 +161,9 @@ class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer
                     }
                     eventView.setupForUser(event.eventStatus,userIsParticipant)
                 }
-
-                eventPerformer.setEvent(event)
-                response.body()!!.entity?.let { eventView?.fillInformation(event.eventName,event.eventNote,eventDate,eventTime) }
+                //set event in presenter
+                eventPresenter.setEvent(event)
+                response.body()!!.entity?.let { eventView.fillInformation(event.eventName,event.eventNote,eventDate,eventTime) }
                 for (photo in response.body()!!.entity?.eventPhotographs!!){
                     if (photo.active!!){
                         eventView.setupImage(photo.photoPath)
@@ -129,31 +172,34 @@ class GetEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer
                 }
             } else {
                 Log.e("TAG","problem 1")
-                eventView?.onResponseError()
+                eventView.onResponseError()
             }
         } else {
             Log.e("TAG","problem 2")
-            eventView?.onResponseError()
+            eventView.onResponseError()
         }
     }
 
     override fun onFailure(t: Throwable) {
         if (eventView!=null){
-            eventView?.onResponseFailure(t)
+            eventView.onResponseFailure(t)
         }
     }
 }
 
-class JoinEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
-    IOnFinishedListener<Event> {
+/**
+ * handles response from join event and updates user interface on success, displaying error on failure
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventPresenter
+ * @param eventView
+ */
+class JoinEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) : IOnFinishedListener<Event> {
 
-    private var eventView : IEventContract.IEventView
-    private var eventPerformer : IEventContract.IEventPerformer
-
-    init{
-        this.eventView = eventView
-        this.eventPerformer = eventPerformer
-    }
+    private var eventView : IEventContract.IEventView = eventView
+    private var eventPresenter : IEventContract.IEventPresenter = eventPresenter
 
     override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
         if(response.isSuccessful){
@@ -161,10 +207,10 @@ class JoinEventOnFinishedListener(eventPerformer : IEventContract.IEventPerforme
                 eventView.makeToast("Event Successfully Joined")
                 response.body()!!.entity?.let { eventView.setupForUser(it.eventStatus,true) }
             } else {
-                eventView?.onResponseError()
+                eventView.onResponseError()
             }
         } else {
-            eventView?.onResponseError()
+            eventView.onResponseError()
         }
     }
 
@@ -175,28 +221,32 @@ class JoinEventOnFinishedListener(eventPerformer : IEventContract.IEventPerforme
     }
 }
 
-class UpdateEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+/**
+ * handles update request response, updating display on success, informing user on error
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventPresenter
+ * @param eventView
+ */
+class UpdateEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) :
     IOnFinishedListener<Event> {
 
-    private var eventView : IEventContract.IEventView
-    private var eventPerformer : IEventContract.IEventPerformer
-
-    init{
-        this.eventView = eventView
-        this.eventPerformer = eventPerformer
-    }
+    private var eventView : IEventContract.IEventView = eventView
+    private var eventPresenter : IEventContract.IEventPresenter = eventPresenter
 
     override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
                 eventView.makeToast("Event Status Updated")
-                response.body()!!.entity?.let { eventPerformer.setEvent(it) }
+                response.body()!!.entity?.let { eventPresenter.setEvent(it) }
                 response.body()!!.entity?.let { eventView.setupForOrganizer(it.eventStatus) }
             } else {
-                eventView?.onResponseError()
+                eventView.onResponseError()
             }
         } else {
-            eventView?.onResponseError()
+            eventView.onResponseError()
         }
     }
 
@@ -207,16 +257,20 @@ class UpdateEventOnFinishedListener(eventPerformer : IEventContract.IEventPerfor
     }
 }
 
-class LeaveEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+/**
+ * Handles leave event response from callback
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventPresenter
+ * @param eventView
+ */
+class LeaveEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) :
     IOnFinishedListener<Event> {
 
-    private var eventView : IEventContract.IEventView
-    private var eventPerformer : IEventContract.IEventPerformer
-
-    init{
-        this.eventView = eventView
-        this.eventPerformer = eventPerformer
-    }
+    private var eventView : IEventContract.IEventView = eventView
+    private var eventPresenter : IEventContract.IEventPresenter = eventPresenter
 
     override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
         if(response.isSuccessful){
@@ -224,10 +278,10 @@ class LeaveEventOnFinishedListener(eventPerformer : IEventContract.IEventPerform
                 eventView.makeToast("Event Successfully Left")
                 eventView.startViewEventsActivity()
             } else {
-                eventView?.onResponseError()
+                eventView.onResponseError()
             }
         } else {
-            eventView?.onResponseError()
+            eventView.onResponseError()
         }
     }
 
@@ -238,16 +292,20 @@ class LeaveEventOnFinishedListener(eventPerformer : IEventContract.IEventPerform
     }
 }
 
-class DeleteEventOnFinishedListener(eventPerformer : IEventContract.IEventPerformer, eventView : IEventContract.IEventView) :
+/**
+ * Handles delete event response from callback
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventPresenter
+ * @param eventView
+ */
+class DeleteEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) :
     IOnFinishedListener<Boolean> {
 
-    private var eventView : IEventContract.IEventView
-    private var eventPerformer : IEventContract.IEventPerformer
-
-    init{
-        this.eventView = eventView
-        this.eventPerformer = eventPerformer
-    }
+    private var eventView : IEventContract.IEventView = eventView
+    private var eventPresenter : IEventContract.IEventPresenter = eventPresenter
 
     override fun onFinished(response: Response<StatusResponseEntity<Boolean>>) {
         if(response.isSuccessful){
@@ -255,10 +313,10 @@ class DeleteEventOnFinishedListener(eventPerformer : IEventContract.IEventPerfor
                 eventView.makeToast("Event Successfully Deleted")
                 eventView.startViewEventsActivity()
             } else {
-                eventView?.onResponseError()
+                eventView.onResponseError()
             }
         } else {
-            eventView?.onResponseError()
+            eventView.onResponseError()
         }
     }
 

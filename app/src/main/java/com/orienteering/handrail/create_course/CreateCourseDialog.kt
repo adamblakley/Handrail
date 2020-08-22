@@ -15,20 +15,30 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.dialogs.EventDialogListener
 import java.lang.ClassCastException
 
+/**
+ * Dialog for creation of a course
+ *
+ */
 class CreateCourseDialog : AppCompatDialogFragment() {
 
     lateinit var edittextCourseName : EditText
     lateinit var edittextCourseNote : EditText
+    // listener determines outcome of button press and value input
     lateinit var listener: EventDialogListener
 
+    /**
+     * set view, buttons and inputs. validate input, apply listener
+     *
+     * @param savedInstanceState
+     * @return
+     */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val alertDialogueBuilder : AlertDialog.Builder = AlertDialog.Builder(activity)
 
         val layoutInflater : LayoutInflater = activity!!.layoutInflater
         val view : View = layoutInflater.inflate(R.layout.layout_event_creation_dialog,null)
 
-
-
+        // set buttons and title
         alertDialogueBuilder.setView(view).setTitle("Create Course").setNegativeButton("Cancel",{ dialogInterface: DialogInterface, i: Int -> })
             .setPositiveButton("Create",DialogInterface.OnClickListener(){ dialogInterface: DialogInterface, i: Int ->
 
@@ -36,7 +46,7 @@ class CreateCourseDialog : AppCompatDialogFragment() {
 
                     val courseName : String = edittextCourseName.text.toString()
                     val courseNote : String = edittextCourseNote.text.toString()
-
+                // validiate fields, greater than 0
                 if (courseName.trim().length<=0){
                     edittextCourseName.error="Please enter a course name"
                     Toast.makeText(context,"Please enter a course name and note", Toast.LENGTH_SHORT).show()
@@ -44,6 +54,7 @@ class CreateCourseDialog : AppCompatDialogFragment() {
                     edittextCourseNote.error="Please enter a course note"
                     Toast.makeText(context,"Please enter a course name and note",Toast.LENGTH_SHORT).show()
                 } else {
+                    // apply listener on change of input
                     listener.applyEventText(courseName,courseNote)
                 }
             })
@@ -54,12 +65,16 @@ class CreateCourseDialog : AppCompatDialogFragment() {
         return alertDialogueBuilder.create()
     }
 
+    /**
+     * Attach to view via context
+     * @param context
+     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             listener = context as EventDialogListener
         } catch (e: ClassCastException) {
-            throw  ClassCastException(context.toString() + "must implement ExampleDialogListener")
+            throw  ClassCastException(context.toString() + "must implement EventDialogListener")
         }
     }
 

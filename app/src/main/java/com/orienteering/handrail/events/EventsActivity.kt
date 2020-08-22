@@ -2,9 +2,7 @@ package com.orienteering.handrail.events
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,10 +10,14 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Event
 
+/**
+ * Handles view of the events list
+ *
+ */
 class EventsActivity : AppCompatActivity(), IEventsContract.IEventsView {
 
     private lateinit var recyclerView : RecyclerView
-    private lateinit var eventsPerformer : IEventsContract.IEventsPerformer
+    private lateinit var eventsPresenter : IEventsContract.IEventsPresenter
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +25,8 @@ class EventsActivity : AppCompatActivity(), IEventsContract.IEventsView {
         setContentView(R.layout.activity_events)
         initRecyclerView()
 
-        eventsPerformer = EventsEventsPerformer(this, EventInteractor())
-        eventsPerformer.requestDataFromServer()
+        eventsPresenter = EventsPresenter(this, EventInteractor())
+        eventsPresenter.requestDataFromServer()
     }
 
     fun initRecyclerView(){
@@ -32,7 +34,12 @@ class EventsActivity : AppCompatActivity(), IEventsContract.IEventsView {
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    override fun fillRecyclerView(eventsList: ArrayList<Event>) {
+    /**
+     * initialise reycler view adapter and fill information via recyclerview
+     *
+     * @param eventsList
+     */
+    override fun fillInformation(eventsList: ArrayList<Event>) {
         val eventsAdapter : EventsAdapter = EventsAdapter(eventsList)
         recyclerView.adapter = eventsAdapter
     }
@@ -48,7 +55,7 @@ class EventsActivity : AppCompatActivity(), IEventsContract.IEventsView {
     }
 
     override fun onDestroy() {
-        eventsPerformer.onDestroy()
+        eventsPresenter.onDestroy()
         super.onDestroy()
     }
 }

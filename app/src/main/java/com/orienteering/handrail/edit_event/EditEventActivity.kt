@@ -25,11 +25,16 @@ import com.orienteering.handrail.permissions.PermissionManager
 import kotlinx.android.synthetic.main.activity_create_event.*
 import java.util.*
 
+// TAG for Logs
+private val TAG: String = EditEventActivity::class.java.getName()
+
+/**
+ * View for edit event use case, displays event information and binds user input ofr upadted information
+ *
+ */
 class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView {
 
-    // Tag for class log
-    val TAG : String = "CreateEventActivity"
-
+    // presenter to handle edit event logic
     lateinit var editEventPresenter : IEditEventContract.IEditEventPresenter
 
     // event name for display and creation
@@ -44,7 +49,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     var eventDateChange : Boolean = false
 
     // calendar for date and time values to correctly display and modify for creation
-    val calendar = Calendar.getInstance()
+    val calendar: Calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
@@ -57,7 +62,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     var imageUri: Uri? = null
 
     // image view for event image
-    lateinit var eventImageView : ImageView
+    private lateinit var eventImageView : ImageView
     // edit text for name
     lateinit var editTextEventName : EditText
     // edit text for description
@@ -67,18 +72,18 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     //text view for time
     lateinit var textViewEventTime : TextView
     //text view for course
-    lateinit var textViewEventCourse : TextView
+    private lateinit var textViewEventCourse : TextView
 
     // button to select photo for event
-    var buttonUpdatePhoto: Button? = null
+    private var buttonUpdatePhoto: Button? = null
     // button to select date for event
-    var buttonSelectDate: Button? = null
+    private var buttonSelectDate: Button? = null
     // button to select time for event
-    var buttonSelectTime: Button? = null
+    private var buttonSelectTime: Button? = null
     //button to select course for event
-    var buttonSelectCourse: Button? = null
+    private var buttonSelectCourse: Button? = null
     // button to create event
-    var buttonCreateEvent: Button? = null
+    private var buttonCreateEvent: Button? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,13 +123,13 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         buttonSelectDate?.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
-
+                // creates select date dialog, binds output to date values
                 val datePickerDialog = DatePickerDialog(this@EditEventActivity, DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
                         eventDateChange = true
                         var yearString : String = Tyear.toString()
                         var monthString : String = Tmonth.toString()
                         var dayString : String = TdayOfMonth.toString()
-
+                        // add leading 0s if month and day are < 10
                         if (monthString.length==1){
                             monthString="0"+monthString
                         }
@@ -137,7 +142,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
                 datePickerDialog.show()
             }
         })
-
+        // creates select time dialog, binds output to time values
         buttonSelectTime?.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
@@ -147,7 +152,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
                         eventDateChange = true
                         var hourString : String = Thour.toString()
                         var minuteString : String = Tminute.toString()
-
+                        // add leading 0s if time is less than 10am or 10 minutes
                         if (hourString.length==1){
                             hourString="0"+hourString
                         }
@@ -160,10 +165,11 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
                 timePickerDialog.show()
             }
         })
-
+        // check all fields, and request update of event information via presenter
         buttonCreateEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (checkFields()) {
+                    // refactor date string to acceptable value format
                     val eventDateString = "$eventDate"+"T"+"$eventTime"
                     if (eventName != null && eventDescription != null) {
                         if (eventDateChange){
@@ -208,8 +214,8 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     }
 
     /**
-     * Check user input fields for createEvent
-     *
+     * Check user input fields for createEvent return boolean
+     * @return
      */
     fun checkFields() : Boolean{
         var inputsOk = true
@@ -257,6 +263,11 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * start intent view event on success, finish current activity
+     *
+     * @param eventId
+     */
     override fun onUpdatePartialResponseError(eventId: Int) {
         Log.e(TAG, "Partial success updating Event")
         Toast.makeText(this@EditEventActivity,"Error: Partial Success updating event, please reupload event image.",Toast.LENGTH_SHORT).show()
@@ -265,7 +276,11 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         startActivity(intent)
         finish()
     }
-
+    /**
+     * start intent view event on success, finish current activity
+     *
+     * @param eventId
+     */
     override fun onUpdateResponseSuccess(eventId: Int) {
         Log.e(TAG, "Success updating Event")
         Toast.makeText(this@EditEventActivity,"Success updating event.",Toast.LENGTH_SHORT).show()
@@ -275,6 +290,15 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         finish()
     }
 
+    /**
+     * set input field information to retrieved event information
+     *
+     * @param eventName
+     * @param eventNote
+     * @param eventTime
+     * @param eventDate
+     * @param courseName
+     */
     override fun fillInformation(eventName: String, eventNote: String, eventTime: String, eventDate: String, courseName : String) {
         this.eventName=eventName
         this.eventDescription=eventNote
@@ -288,11 +312,21 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     }
 
 
+    /**
+     * set image display to select uri from device
+     *
+     * @param imageUri
+     */
     override fun setupImage(imageUri : Uri) {
         val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
         Glide.with(this).asBitmap().load(imageUri).apply(options).into(eventImageView)
     }
 
+    /**
+     * set image display to select imagepath from retrieves event image
+     *
+     * @param imagepath
+     */
     override fun setupImage(imagepath: String) {
         val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
         Glide.with(this).asBitmap().load(imagepath).apply(options).into(eventImageView)
@@ -310,15 +344,16 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         if (requestCode != Activity.RESULT_CANCELED) {
             when (requestCode) {
                 1001 -> {
+                    // camera intent - bind uri from selected data after check
                     if (resultCode == Activity.RESULT_OK) {
                         editEventPresenter.setImage(imageSelect.tempImageUri)
                         setupImage(imageSelect.tempImageUri)
                     } else {
-                        Log.e(TAG,"Result: $resultCode  Data: $data")
                         Toast.makeText(this@EditEventActivity,"Error: Cannot use image",Toast.LENGTH_SHORT).show()
                     }
                 }
                 1002 -> {
+                    // gallery intent- bind uri from selected data after check
                     if (resultCode == Activity.RESULT_OK && data != null) {
                         data.data?.let { setupImage(it) }
                         data.data?.let { setupImage(it) }

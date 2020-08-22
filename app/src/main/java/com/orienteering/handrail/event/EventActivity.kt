@@ -1,5 +1,6 @@
 package com.orienteering.handrail.event
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,8 +12,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.CourseParticipationActivity
-import com.orienteering.handrail.activities.ResultsListActivity
+import com.orienteering.handrail.course_participation.CourseParticipationActivity
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.interactors.ParticipantInteractor
@@ -25,24 +25,21 @@ import com.orienteering.handrail.results.ResultsActivity
 class EventActivity : AppCompatActivity(), IEventContract.IEventView {
 
     // image view for event image
-    lateinit var eventImageImageView : ImageView
+    private lateinit var eventImageImageView : ImageView
     // textview for event name
-    lateinit var eventNameTextView: TextView
+    private lateinit var eventNameTextView: TextView
     // text view for event note
-    lateinit var eventNoteTextView: TextView
+    private lateinit var eventNoteTextView: TextView
     // text view for event date
-    lateinit var eventDateTextView: TextView
+    private lateinit var eventDateTextView: TextView
     // text view for event time
-    lateinit var eventTimeTextView: TextView
+    private lateinit var eventTimeTextView: TextView
     // button to action event
-    lateinit var buttonAction: Button
+    private lateinit var buttonAction: Button
     // button to delete event
-    lateinit var buttonDelete: Button
-
-    /**
-     * Logic presenter
-     */
-    private lateinit var eventPerformer : IEventContract.IEventPerformer
+    private lateinit var buttonDelete: Button
+    // presenter contains logic for view event activity
+    private lateinit var eventPresenter : IEventContract.IEventPresenter
 
     // Id passed via intent
     override var eventId : Int = 0
@@ -57,24 +54,24 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
             startViewEventsActivity()
         }
 
-        this.eventPerformer = EventPerformer(this.eventId,this, EventInteractor(), ParticipantInteractor())
+        this.eventPresenter = EventPresenter(this.eventId,this, EventInteractor(), ParticipantInteractor())
 
         intialiseTextView()
         createButtons()
         createImages()
-
-        eventPerformer.requestDataFromServer()
+        // request event information from presenter
+        eventPresenter.requestDataFromServer()
     }
 
     /**
      * function to create buttons from view and add on click listeners
      */
-    override fun createButtons() {
+    fun createButtons() {
         buttonDelete = findViewById(R.id.button_delete_event_view_event)
         buttonAction = findViewById(R.id.button_action_view_event)
         buttonDelete.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                eventPerformer.deleteEvent()
+                eventPresenter.deleteEvent()
             }
         })
         buttonAction.setOnClickListener(object : View.OnClickListener {
@@ -84,14 +81,18 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         })
     }
 
-    override fun createImages(){
+    /**
+     * initialise image view
+     *
+     */
+    private fun createImages(){
         eventImageImageView = findViewById(R.id.imageview_event_photo_view_event)
     }
 
     /**
      * initialise text view variables
      */
-    override fun intialiseTextView() {
+    fun intialiseTextView() {
         eventNameTextView = findViewById(R.id.textView_event_name_view_event)
         eventNoteTextView = findViewById(R.id.textView_event_note_view_event)
         eventDateTextView = findViewById(R.id.textView_event_date_event_view)
@@ -99,9 +100,11 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     }
 
     /**
-     * Setup view buttons for event user
-     *
+     * Setup view buttons for event user and add tags to determine what action they will incur upon press
+     * @param eventStatus
+     * @param userIsParticipant
      */
+    @SuppressLint("UseValueOf", "SetTextI18n")
     override fun setupForUser(eventStatus : Integer, userIsParticipant : Boolean) {
 
         if (eventStatus == Integer(1) && !userIsParticipant) {
@@ -128,9 +131,10 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     }
 
     /**
-     * Setup view buttons for organiser to manage event status
+     * Setup view buttons for organiser to manage event status, determine button action based on tag
      *
      */
+    @SuppressLint("UseValueOf", "SetTextI18n")
     override fun setupForOrganizer(eventStatus : Integer) {
         when (eventStatus) {
             Integer(1) -> {
@@ -155,6 +159,14 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         }
     }
 
+    /**
+     * fill textview information from event
+     *
+     * @param name
+     * @param note
+     * @param date
+     * @param time
+     */
     override fun fillInformation(name : String, note : String, date : String, time : String) {
         eventNameTextView.text = name
         eventNoteTextView.text = note
@@ -174,22 +186,26 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
             .into(eventImageImageView)
     }
 
-    override fun eventAction() {
+    /**
+     * when button tag is value, initiate action by presenter
+     *
+     */
+    fun eventAction() {
         when (buttonAction.tag) {
             1 , 2 -> {
-                eventPerformer.updateEventStatus()
+                eventPresenter.updateEventStatus()
             }
             3 -> {
-                eventPerformer.showResults()
+                eventPresenter.showResults()
             }
             4 -> {
-                eventPerformer.joinEvent()
+                eventPresenter.joinEvent()
             }
             5 -> {
-                eventPerformer.leaveEvent()
+                eventPresenter.leaveEvent()
             }
             6 ->{
-                eventPerformer.startEvent()
+                eventPresenter.startEvent()
             }
             else -> {
                 val toast = Toast.makeText(this@EventActivity, "Error: Problem with Handrail, please contact an admin", Toast.LENGTH_SHORT)
@@ -213,25 +229,43 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         toast.show()
     }
 
+    /**
+     * start courseparticipationactivity and pass event id as intent extra
+     *
+     * @param eventId
+     */
     override fun startCourseParticipationActivity(eventId : Int) {
         val intent = Intent(this@EventActivity, CourseParticipationActivity::class.java).apply {}
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
     }
 
+    /**
+     * start view events activity
+     *
+     */
     override fun startViewEventsActivity(){
         val intent = Intent(this@EventActivity, EventsActivity::class.java).apply {}
         startActivity(intent)
     }
 
+    /**
+     * start events results activity
+     *
+     * @param eventId
+     */
     override fun startEventResultsActivity(eventId : Int){
         val intent = Intent(this@EventActivity, ResultsActivity::class.java).apply {}
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
     }
 
+    /**
+     * call presenter on destroy
+     *
+     */
     override fun onDestroy() {
-        eventPerformer.onDestroy()
+        eventPresenter.onDestroy()
         super.onDestroy()
     }
 

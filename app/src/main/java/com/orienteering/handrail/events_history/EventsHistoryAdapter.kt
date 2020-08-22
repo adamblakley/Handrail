@@ -12,23 +12,35 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.ViewPerformanceActivity
 import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.performance.PerformanceActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
+
+
+/**
+ * Handles display of events history through recycler view
+ *
+ * @constructor
+ *
+ * @param eventsList
+ */
 class EventsHistoryAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<EventsHistoryAdapter.EventsHistoryViewHolder>()  {
 
-    val TAG = "EventsHistoryAdapter"
     var eventsList : ArrayList<Event>
     var imageUrls = mutableListOf<String>()
 
+    /**
+     * initialise event images list
+     */
     init{
         this.eventsList = eventsList
+        // find event images that are active
         for (event in eventsList) {
             for (photo in event.eventPhotographs){
                 if (photo.active!!){
                     imageUrls.add(photo.photoPath)
+                    break
                 }
             }
         }
@@ -61,7 +73,7 @@ class EventsHistoryAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter
 
         holder.imageName.text = eventsList[position].eventName
         holder.viewButton.setOnClickListener(object : View.OnClickListener {
-
+            // start view performance activity on button press, load event id as extra
             override fun onClick(view: View?) {
                 val intent = Intent(holder.itemView.context, PerformanceActivity::class.java).apply {}
                 intent.putExtra("EVENT_ID", eventsList[position].eventId)
@@ -71,7 +83,7 @@ class EventsHistoryAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter
     }
 
     /**
-     *     View Holder holds widgets in memory of each item
+     *     View Holder holds each item in memory from layout
      */
     class EventsHistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 

@@ -7,14 +7,14 @@ import com.orienteering.handrail.interactors.EventInteractor
 import retrofit2.Response
 
 /**
- * Handles EventsActivity logic and access eventInteractor for service requests
+ * Handles EventsActivity logic and access event Interactor for service requests
  *
  * @constructor
  *
  * @param eventsView
  * @param eventInteractor
  */
-class EventsEventsPerformer(eventsView: IEventsContract.IEventsView, eventInteractor: EventInteractor) : IEventsContract.IEventsPerformer{
+class EventsPresenter(eventsView: IEventsContract.IEventsView, eventInteractor: EventInteractor) : IEventsContract.IEventsPresenter{
 
     // Events view
     private var eventsView : IEventsContract.IEventsView?
@@ -47,22 +47,21 @@ class EventsEventsPerformer(eventsView: IEventsContract.IEventsView, eventIntera
  * @constructor
  * TODO
  *
- * @param eventsEventsPerformer
+ * @param eventsEventsPresenter
  * @param eventsView
  */
-class GetEventsOnFinishedListener(eventsEventsPerformer : IEventsContract.IEventsPerformer, eventsView : IEventsContract.IEventsView) :
-    IOnFinishedListener<List<Event>> {
+class GetEventsOnFinishedListener(eventsEventsPresenter : IEventsContract.IEventsPresenter, eventsView : IEventsContract.IEventsView) : IOnFinishedListener<List<Event>> {
     // Events view
     private var eventsView : IEventsContract.IEventsView
     // Events presenter
-    private var eventsEventsPerformer : IEventsContract.IEventsPerformer
+    private var eventsEventsPresenter : IEventsContract.IEventsPresenter
 
     /**
      * Initialises view, presenter
      */
     init{
         this.eventsView = eventsView
-        this.eventsEventsPerformer = eventsEventsPerformer
+        this.eventsEventsPresenter = eventsEventsPresenter
     }
 
     /**
@@ -74,7 +73,7 @@ class GetEventsOnFinishedListener(eventsEventsPerformer : IEventsContract.IEvent
     override fun onFinished(response: Response<StatusResponseEntity<List<Event>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                eventsView?.fillRecyclerView(response.body()!!.entity as ArrayList<Event>)
+                eventsView?.fillInformation(response.body()!!.entity as ArrayList<Event>)
             } else {
                 eventsView?.onResponseError()
             }

@@ -16,18 +16,30 @@ import com.orienteering.handrail.event.EventActivity
 import com.orienteering.handrail.models.Event
 import de.hdodenhof.circleimageview.CircleImageView
 
+/**
+ * events adapter for recycler view - binds events information to text and image per item
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventsList
+ */
 class EventsAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<EventsAdapter.EventsViewHolder>(){
 
     val TAG = "EventsAdapter"
     var eventsList : ArrayList<Event>
     var imageUrls = mutableListOf<String>()
 
+    /**
+     * initialise events and add active photo. check all photos for active
+     */
     init{
         this.eventsList = eventsList
         for (event in eventsList) {
             for (photo in event.eventPhotographs){
                 if (photo.active!!){
                     imageUrls.add(photo.photoPath)
+                    break
                 }
             }
         }
@@ -43,6 +55,7 @@ class EventsAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<Events
         Log.e(TAG,"onBindViewHolder: Called")
 
         val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        // load event images by selecting from arraylist position, load via glide as bitmap
         if (eventsList.size>=1){
             Glide.with(holder.itemView.context)
                 .asBitmap()
@@ -67,7 +80,7 @@ class EventsAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<Events
     }
 
     /**
-     *     View Holder holds widgets in memory of each item
+     *     View Holder holds each item intialised from layout
      */
     class EventsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 

@@ -1,7 +1,6 @@
 package com.orienteering.handrail.edit_event
 
 import android.net.Uri
-import android.util.Log
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.image_utilities.ImageSelect
@@ -12,13 +11,23 @@ import com.orienteering.handrail.permissions.PermissionManager
 import retrofit2.Response
 import java.text.SimpleDateFormat
 
+/**
+ * Presenter class handles logic of edit event use case
+ *
+ * @constructor
+ *
+ * @param eventId
+ * @param editEventView
+ * @param imageSelect
+ * @param eventInteractor
+ */
 class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEventView, imageSelect: ImageSelect, eventInteractor: EventInteractor) : IEditEventContract.IEditEventPresenter {
 
     var eventId: Int
-    var editEventView: IEditEventContract.IEditEventView?
+    private var editEventView: IEditEventContract.IEditEventView?
     var imageSelect: ImageSelect
-    var multipartBodyFactory: MultipartBodyFactory
-    var eventInteractor: EventInteractor
+    private var multipartBodyFactory: MultipartBodyFactory
+    private var eventInteractor: EventInteractor
 
     private var event: Event? = null
     var imageUri: Uri? = null
@@ -26,6 +35,9 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
     private var getEditEventOnFinishedListener: GetEditEventOnFinishedListener
     private var postEditEventOnFinishedListener: PostEditEventOnFinishedListener
 
+    /**
+     * initialise event id, view, image select, interactor and onfinish listeners
+     */
     init {
         this.eventId = eventId
         this.editEventView = editEventView
@@ -36,11 +48,21 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
         this.postEditEventOnFinishedListener = PostEditEventOnFinishedListener(this, editEventView)
     }
 
+    /**
+     * remove view from presenter
+     *
+     */
     override fun onDestroy() {
         editEventView = null
     }
 
-
+    /**
+     * query interactor to upload data to server, provide onfinished listener to handle response
+     *
+     * @param eventName
+     * @param eventDescription
+     * @param eventDate
+     */
     override fun putDataOnServer(eventName: String, eventDescription: String, eventDate: String?) {
         this.event?.eventName = eventName
         this.event?.eventNote = eventDescription
@@ -48,7 +70,7 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
             this.event?.eventDate = eventDate
         }
         if (imageUri != null) {
-
+             // if image available, create multipartbody.part and add to update request
             val imageMultipartBodyPart = imageUri?.let { event?.eventName?.let { it1 -> multipartBodyFactory.createImageMultipartBody(imageSelect.activity, it, it1) } }
             this.event?.eventId?.let { eventInteractor.update(it, event!!, imageMultipartBodyPart, postEditEventOnFinishedListener) }
         } else {
@@ -57,11 +79,18 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
 
     }
 
+    /**
+     *  retrieve event data from server via interacor, pass event id
+     *
+     */
     override fun getDataFromServer() {
-        eventId?.let { eventInteractor.retreiveByID(it, getEditEventOnFinishedListener) }
+        eventId.let { eventInteractor.retreiveByID(it, getEditEventOnFinishedListener) }
     }
 
-
+    /**
+     * request camera and storage permissions, bind image uri from selection
+     *
+     */
     override fun selectImage() {
         if (PermissionManager.checkPermission(
                 imageSelect.activity, imageSelect.context,
@@ -86,20 +115,20 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
     }
 }
 
-class GetEditEventOnFinishedListener(
-    editEventPresenter: IEditEventContract.IEditEventPresenter,
-    editEventView: IEditEventContract.IEditEventView
-) :
-    IOnFinishedListener<Event> {
+/**
+ * Handles retrieval of events response, updates view and presenter if successful or selects view error if unsuccessful
+ *
+ * @constructor
+ * TODO
+ *
+ * @param editEventPresenter
+ * @param editEventView
+ */
+class GetEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEditEventPresenter, editEventView: IEditEventContract.IEditEventView) : IOnFinishedListener<Event> {
 
     lateinit var event: Event
-    private var editEventView: IEditEventContract.IEditEventView
-    private var editEventPresenter: IEditEventContract.IEditEventPresenter
-
-    init {
-        this.editEventView = editEventView
-        this.editEventPresenter = editEventPresenter
-    }
+    private var editEventView: IEditEventContract.IEditEventView = editEventView
+    private var editEventPresenter: IEditEventContract.IEditEventPresenter = editEventPresenter
 
     override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
 
@@ -109,7 +138,7 @@ class GetEditEventOnFinishedListener(
         if (response.isSuccessful) {
             if (response.body() != null) {
                 event = response.body()!!.entity!!
-
+                // convert data format to string for display to user
                 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 
                 val dateformatted = sdf.parse(event.eventDate)
@@ -118,17 +147,12 @@ class GetEditEventOnFinishedListener(
                 val timeFormatter = SimpleDateFormat("HH:mm")
                 eventDate = dateFormatter.format(dateformatted)
                 eventTime = timeFormatter.format(dateformatted)
-
+                // set presenter event and update view with fillinformation method
                 editEventPresenter.setEvent(event)
-                response.body()!!.entity?.let {
-                    editEventView?.fillInformation(
-                        event.eventName,
-                        event.eventNote,
-                        eventTime,
-                        eventDate,
-                        event.eventCourse.courseName
+                response.body()!!.entity?.let { editEventView.fillInformation(event.eventName, event.eventNote, eventTime, eventDate, event.eventCourse.courseName
                     )
                 }
+                // determine active photo and set to view
                 for (photo in response.body()!!.entity?.eventPhotographs!!) {
                     if (photo.active!!) {
                         editEventView.setupImage(photo.photoPath)
@@ -136,25 +160,30 @@ class GetEditEventOnFinishedListener(
                     }
                 }
             } else {
-                editEventView?.onGetResponseError()
+                editEventView.onGetResponseError()
             }
         } else {
-            editEventView?.onGetResponseError()
+            editEventView.onGetResponseError()
         }
     }
 
     override fun onFailure(t: Throwable) {
         if (editEventView != null) {
-            editEventView?.onGetResponseFailure(t)
+            editEventView.onGetResponseFailure(t)
         }
     }
 }
 
-
-class PostEditEventOnFinishedListener(
-    editEventPresenter: IEditEventContract.IEditEventPresenter,
-    editEventView: IEditEventContract.IEditEventView
-) : IOnFinishedListener<Event> {
+/**
+ * Handles response from update event
+ * on success, request view update to notify user. on-failure identify error and response to user with explanation
+ * @constructor
+ * TODO
+ *
+ * @param editEventPresenter
+ * @param editEventView
+ */
+class PostEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEditEventPresenter, editEventView: IEditEventContract.IEditEventView) : IOnFinishedListener<Event> {
 
     lateinit var event: Event
     private var editEventView: IEditEventContract.IEditEventView
@@ -177,10 +206,11 @@ class PostEditEventOnFinishedListener(
             } else {
                 editEventView.onUpdateResponseError()
             }
+            // if code 206, image upload failure, notify user
         } else if (response.code() == 206) {
-            response.body()!!.entity?.eventId?.let { editEventView?.onUpdatePartialResponseError(it) }
+            response.body()!!.entity?.eventId?.let { editEventView.onUpdatePartialResponseError(it) }
         } else {
-            editEventView?.onUpdateResponseError()
+            editEventView.onUpdateResponseError()
         }
     }
 

@@ -14,6 +14,17 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 
+/**
+ * Display control information via dialog on selection of individual control
+ *
+ * @constructor
+ * TODO
+ *
+ * @param nameOfMarker
+ * @param noteOfMarker
+ * @param positionOfMarker
+ * @param imagePath
+ */
 class ViewMarkerCourseControlDialog(nameOfMarker:String? = "No Name Available", noteOfMarker: String? = "No Note Available", positionOfMarker: Int? = 0, imagePath: String? = null ) : AppCompatDialogFragment() {
     val TAG : String = "ViewMarkerDialog"
 
@@ -29,7 +40,6 @@ class ViewMarkerCourseControlDialog(nameOfMarker:String? = "No Name Available", 
     lateinit var imageViewMarkerImage : ImageView
 
     init{
-
         this.nameOfMarker = nameOfMarker
         this.noteOfMarker = noteOfMarker
         this.positionOfMarker = positionOfMarker
@@ -56,10 +66,11 @@ class ViewMarkerCourseControlDialog(nameOfMarker:String? = "No Name Available", 
         return alertDialogueBuilder.create()
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
 
+    /**
+     * Set image of control and apply name, note and position text
+     *
+     */
     private fun setTextandImage(){
         textViewMarkerName.text=nameOfMarker
         textViewMarkerNote.text=noteOfMarker

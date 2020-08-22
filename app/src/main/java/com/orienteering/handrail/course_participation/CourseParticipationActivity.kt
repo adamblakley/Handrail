@@ -1,12 +1,11 @@
-package com.orienteering.handrail.activities
+package com.orienteering.handrail.course_participation
 
-import com.orienteering.handrail.R
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentSender
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,84 +13,71 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.orienteering.handrail.models.*
-import com.orienteering.handrail.controllers.EventController
-import com.orienteering.handrail.controllers.PcpController
-import com.orienteering.handrail.controllers.RoutePointController
+import com.orienteering.handrail.R
+import com.orienteering.handrail.activities.ViewPerformanceActivity
 import com.orienteering.handrail.geofence_utilities.GeofenceBroadcastReceiver
 import com.orienteering.handrail.geofence_utilities.GeofenceBuilder
-import com.orienteering.handrail.httprequests.*
+import com.orienteering.handrail.httprequests.IOnFinishedListener
+import com.orienteering.handrail.httprequests.StatusResponseEntity
+import com.orienteering.handrail.interactors.EventInteractor
+import com.orienteering.handrail.interactors.PCPInteractor
+import com.orienteering.handrail.models.*
 import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
 import com.orienteering.handrail.permissions.PermissionManager
-import com.orienteering.handrail.utilities.*
-import retrofit2.Call
-import retrofit2.Callback
+import com.orienteering.handrail.utilities.App
 import retrofit2.Response
 
+// TAG for Logs
+private val TAG: String = CourseParticipationActivity::class.java.getName()
+
+/**
+ * Class responsible for recording participants event performances
+ *
+ */
 class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //geofence builder to create fences on request
     val geofenceBuilder : GeofenceBuilder =
         GeofenceBuilder()
-
     // geofencing client to manage geofences
     private lateinit var geofencingClient: GeofencingClient
-
     // pending intent to handle geofence transitions
     val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
         PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    // event controller to manage service requests
-    val eventController:EventController = EventController()
-
-    // pcp controller to manage service requests
-    val pcpController:PcpController = PcpController()
-
-
-    // route point controller to manage service requests
-    val routePointController: RoutePointController = RoutePointController()
-
     // google map view
     private lateinit var courseMap: GoogleMap
-
     // course list listview
     private lateinit var courseList : ListView
-
     // button for results upload
     private lateinit var uploadResultsButton : Button
-
     //button for results viewing
     private lateinit var viewResultsButton: Button
-
     //list of unique rest ids for geofences
     var geoFencingRequestIds = mutableListOf<String>()
-
     // list of performance times
     var performanceList = mutableListOf<String>()
-
     // event for course
     lateinit var event : Event
-
     // next control for participant
     lateinit var myControl : Control
-
     //adapt performance results to list
     lateinit var arrayAdapter : ArrayAdapter<String>
-
+    // location client to provide location data
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    // callback to handle location updates
     private lateinit var locationCallback: LocationCallback
-
+    // location request used to create a
     private lateinit var locationRequest: LocationRequest
 
     private var locationUpdateState = false
@@ -100,83 +86,14 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var lastLocation: Location
 
     // participant startTime
-    var startTime : Long = 0
+    private var startTime : Long = 0
     // participant performances
     var participantControlPerformances = mutableListOf<ParticipantControlPerformance>()
     // participant route points
     var participantRoutePoints = mutableListOf<RoutePoint>()
 
     // geofence performance calculator
-    val geofencePerformanceCalculator =
-        GeofencePerformanceCalculator()
-
-    // manage response of getEvents
-    val getEventsCallback = object : Callback<StatusResponseEntity<Event>>{
-        override fun onFailure(call: Call<StatusResponseEntity<Event>>, t: Throwable) {
-            Log.e(TAG, "Failure getting event")
-        }
-
-        override fun onResponse(
-            call: Call<StatusResponseEntity<Event>>,
-            response: Response<StatusResponseEntity<Event>>
-        ) {
-            Log.e(TAG, "Success getting event")
-            val eventgot: Event? = response.body()?.entity
-            if (eventgot != null) {
-
-                startTime = System.currentTimeMillis()
-
-                for (control in eventgot.eventCourse.courseControls){
-                    if (control.controlPosition==0){
-                        myControl = control
-                    }
-                }
-                event = eventgot
-                Log.e(TAG,event.toString())
-                for (control in event.eventCourse.courseControls){
-                    control.createLatLng()
-                }
-            }
-            addNextControl()
-        }
-    }
-
-    // manage response of upload performance
-    val uploadParticipantControlPerformanceCallback = object : Callback<StatusResponseEntity<Participant>?> {
-
-        override fun onFailure(call: Call<StatusResponseEntity<Participant>?>, t: Throwable) {
-            Log.e(TAG,"Failure adding pcps")
-            val toast = Toast.makeText(this@CourseParticipationActivity,"Service Currently Unavailable, Please contact an Admin.",Toast.LENGTH_SHORT)
-            toast.show()
-        }
-
-        override fun onResponse(
-            call: Call<StatusResponseEntity<Participant>?>,
-            response: Response<StatusResponseEntity<Participant>?>
-        ) {
-            if (response.isSuccessful){
-                val participant : Participant? = response.body()?.entity
-                Log.e(TAG,"Success adding performance")
-                val toast = Toast.makeText(this@CourseParticipationActivity,"Performance Recorded",Toast.LENGTH_SHORT)
-                toast.show()
-                val intentResults = Intent(this@CourseParticipationActivity, ViewPerformanceActivity::class.java).apply { }
-
-                if (participant != null) {
-                    intentResults.putExtra("EVENT_ID", event.eventId)
-                    startActivity(intentResults)
-                    finish()
-                }
-
-            } else {
-                Log.e(TAG,"Failure adding performance")
-                val toast = Toast.makeText(this@CourseParticipationActivity,"Service Currently Unavailable",Toast.LENGTH_SHORT)
-                toast.show()
-            }
-
-        }
-    }
-
-
+    val geofencePerformanceCalculator = GeofencePerformanceCalculator()
 
     /**
      * Companion object, contains permission request codes
@@ -184,16 +101,17 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object Companion{
         var altitude : Double? = null
         private const val REQUEST_CODE_CHECK = 2
-        var courseActivity : CourseParticipationActivity = CourseParticipationActivity()
+        var courseActivity : CourseParticipationActivity =
+            CourseParticipationActivity()
 
-        fun getInstance() : CourseParticipationActivity{
+        fun getInstance() : CourseParticipationActivity {
             return courseActivity
         }
     }
 
     //check if running Q or later
-    //    additional permission required if so
-    private val runningQOrLater = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+    //additional permission required if so
+    private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     /**
      * OnCreate
@@ -203,28 +121,24 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.orienteering.handrail.R.layout.activity_course_participation)
+        setContentView(R.layout.activity_course_participation)
 
-        val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_course_participation) as SupportMapFragment
+        val mapCourseFragment = supportFragmentManager.findFragmentById(R.id.map_course_participation) as SupportMapFragment
 
         createButtons()
-
+        // if intent extras passed successfully, initiate participation methods and location updates
         if(intent.extras!=null){
-
-            getEvents()
-
-            courseList = findViewById(com.orienteering.handrail.R.id.list_course_participation)
-
+            // create list for control success information to be displayed
+            courseList = findViewById(R.id.list_course_participation)
             arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,performanceList)
-
             courseList.adapter = arrayAdapter
-
+            // initialise map and view
             mapCourseFragment.getMapAsync(this)
 
             courseActivity = this
-
+            // initiate location services client
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
+            // callback to add to routepoints in order to capture user route
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult) {
                     super.onLocationResult(p0)
@@ -233,11 +147,11 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
                     participantRoutePoints.add(routePoint)
                 }
             }
-
+            // initiate geofencing client
             geofencingClient = LocationServices.getGeofencingClient(this)
-
+            // create location request
             createLocationRequest()
-
+            // handle with error message
         }  else {
             Log.e(TAG,"Error: Event not found")
         }
@@ -255,8 +169,8 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         uploadResultsButton.visibility= View.INVISIBLE
         viewResultsButton.visibility=View.INVISIBLE
-
-        uploadResultsButton?.setOnClickListener(object : View.OnClickListener {
+        // upload participation on click
+        uploadResultsButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 uploadParticipantControlPerformances()
             }
@@ -266,18 +180,19 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * Function to get event by intent extra event ID
      */
-    fun getEvents(){
+    private fun getEvents(){
         val eventId = intent.getSerializableExtra("EVENT_ID") as Int
-        eventController.retreiveByID(eventId,getEventsCallback)
+        val eventInteractor = EventInteractor()
+        eventInteractor.retreiveByID(eventId,GetEventOnFinishedListener())
     }
 
     /**
-     * When map is ready, set options, request permissions and markers and geofences
+     * When map is ready, set options for user interaction, request permissions and markers and geofences
      */
     override fun onMapReady(googleMap: GoogleMap) {
         courseMap = googleMap
-
-        courseMap.uiSettings.setZoomControlsEnabled(true)
+        getEvents()
+        courseMap.uiSettings.setZoomControlsEnabled(false)
         courseMap.uiSettings.setCompassEnabled(false)
         courseMap.uiSettings.setMyLocationButtonEnabled(false)
         courseMap.uiSettings.setAllGesturesEnabled(false)
@@ -289,29 +204,26 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
      * Setup map and request permissions
      */
     private fun setUpMap() {
-
-        Log.e(TAG,"Setting Up Map")
-
+        // manage additional map features such as display
         courseMap.isMyLocationEnabled = true
         courseMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
-
+        // check permissions for location, if so add onsuccess listener to location service
         if(PermissionManager.checkPermission(this,this@CourseParticipationActivity,
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                 PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
         )
-
-        if (runningQOrLater) {
-            PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
-        }
+            // necessary for devices with Q or later
+            if (runningQOrLater) {
+                PermissionManager.checkPermission(this,this@CourseParticipationActivity,
+                    arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
+            }
 
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
 
             if (location != null) {
                 lastLocation = location
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                altitude = location.getAltitude()
+                altitude = location.altitude
 
                 //Update to LatLngBounds. Define Method to calculate SW and NE corners
                 courseMap.animateCamera(CameraUpdateFactory.newLatLngZoom(event.eventCourse.courseControls[0].controlLatLng, 15f))
@@ -322,24 +234,27 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     /**
-     * Start location updates
+     * Start location updates by requesting from fusedlocation client
      */
     private fun startLocationUpdates() {
-
+        // check permissions before requyesting location updates
         if(PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                 PermissionManager.LOCATION_PERMISSION_REQUEST_CODE))
 
-        if (runningQOrLater) {
-            PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
-        }
+            if (runningQOrLater) {
+                PermissionManager.checkPermission(this,this@CourseParticipationActivity,
+                    arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
+            }
         Log.e(TAG,"Starting Location Updates")
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
-
+    /**
+     * Add the next control in the list of controls to the map in marker form, request a geofence be manufactured
+     *
+     */
     private fun addNextControl(){
         val markerOptions = MarkerOptions().position(myControl.controlLatLng)
         courseMap.addMarker(markerOptions)
@@ -347,8 +262,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         if (myControl.controlPosition!!<event.eventCourse.courseControls.size){
             addNextGeoFence()
         }
-
-
     }
 
     private fun addNextGeoFence(){
@@ -435,7 +348,9 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         task.addOnFailureListener { e ->
             if (e is ResolvableApiException) {
                 try {
-                    e.startResolutionForResult(this@CourseParticipationActivity, REQUEST_CODE_CHECK)
+                    e.startResolutionForResult(this@CourseParticipationActivity,
+                        REQUEST_CODE_CHECK
+                    )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     //ignore
                 }
@@ -444,8 +359,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun updateList(time : Long){
-        Log.e("Course Part Activity","Writing Time")
-
         val timeString = geofencePerformanceCalculator.convertMilliToMinutes(time)
 
         performanceList.add("Time/Minutes: $timeString")
@@ -455,8 +368,9 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     fun uploadParticipantControlPerformances(){
-        val performanceUploadRequest : PerformanceUploadRequest = PerformanceUploadRequest(startTime,participantControlPerformances,participantRoutePoints)
-        pcpController.create(event.eventId!!,App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),performanceUploadRequest, uploadParticipantControlPerformanceCallback)
+        val performanceUploadRequest = PerformanceUploadRequest(startTime,participantControlPerformances,participantRoutePoints)
+        val pcpInteractor = PCPInteractor()
+        event.eventId?.let { pcpInteractor.create(it,App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),performanceUploadRequest,PostPerformanceOnFinishedListener()) }
     }
 
 
@@ -483,6 +397,131 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    fun onEventGetSuccess(event : Event){
+        Log.e(TAG, "Success getting event")
+        if (event != null) {
+
+            startTime = System.currentTimeMillis()
+
+            for (control in event.eventCourse.courseControls){
+                control.createLatLng()
+                if (control.controlPosition==0){
+                    myControl = control
+                }
+            }
+            this.event = event
+        }
+        addNextControl()
+    }
+
+    fun onEventGetError(){
+        Log.e(TAG, "Error getting event")
+        Toast.makeText(this@CourseParticipationActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT).show()
+    }
+
+    fun onEventGetFailure(){
+        Log.e(TAG, "Failure getting event")
+        Toast.makeText(this@CourseParticipationActivity,"Error: Failure to connect to service",Toast.LENGTH_SHORT).show()
+    }
+
+    fun onParticipantPostSuccess(participant : Participant){
+        Log.e(TAG,"Success adding performance")
+        val toast = Toast.makeText(this@CourseParticipationActivity,"Performance Recorded",Toast.LENGTH_SHORT)
+        toast.show()
+        val intentResults = Intent(this@CourseParticipationActivity, ViewPerformanceActivity::class.java).apply { }
+
+        if (participant != null) {
+            intentResults.putExtra("EVENT_ID", event.eventId)
+            startActivity(intentResults)
+            finish()
+        }
+
+    }
+
+    fun onParticipantPostError(){
+        Log.e(TAG, "Error posting event")
+        Toast.makeText(this@CourseParticipationActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@CourseParticipationActivity,"Please try again once connection resolved, do not leave this page or performance will be lost",Toast.LENGTH_SHORT).show()
+    }
+
+    fun onParticipantPostFailure(){
+        Log.e(TAG, "Failure posting participant")
+        Toast.makeText(this@CourseParticipationActivity,"Error: Failure to connect to service",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@CourseParticipationActivity,"Please try again once connection resolved, do not leave this page or performance will be lost",Toast.LENGTH_SHORT).show()
+    }
+
 }
 
-private const val TAG = "CourseParticipation"
+/**
+ * Onfinished listener aquires event information, calls activity to fill screen information and use to display route.
+ * Provides error on failure
+ */
+class GetEventOnFinishedListener : IOnFinishedListener<Event> {
+    // participants view
+    private var courseParticipationActivity : CourseParticipationActivity = CourseParticipationActivity.courseActivity
+
+    /**
+     * On successful response, ask view add event information via map information
+     * If unsuccessful call view error response handler to display to user
+     * @param response
+     */
+    override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
+        if(response.isSuccessful){
+            if (response.body()?.entity != null) {
+                response.body()!!.entity?.let { courseParticipationActivity.onEventGetSuccess(it) }
+            } else {
+                courseParticipationActivity.onEventGetError()
+            }
+        } else {
+            courseParticipationActivity.onEventGetError()
+        }
+    }
+
+    /**
+     * Unsuccessful response of data request, call view failure handler to display to user
+     * @param t
+     */
+    override fun onFailure(t: Throwable) {
+        if (courseParticipationActivity!=null){
+            courseParticipationActivity.onEventGetFailure()
+        }
+    }
+}
+
+/**
+ * Manages onfinished actions from posting performance, notifies user of success or failure
+ *
+ */
+class PostPerformanceOnFinishedListener : IOnFinishedListener<Participant> {
+    // Events view
+    private var courseParticipationActivity : CourseParticipationActivity = CourseParticipationActivity.courseActivity
+
+    /**
+     * On successful response, ask view to fill recycler view with events information
+     * If unsuccessful call view error response handler to display to user
+     * @param response
+     */
+    override fun onFinished(response: Response<StatusResponseEntity<Participant>>) {
+        if(response.isSuccessful){
+            if (response.body()?.entity != null) {
+                response.body()!!.entity?.let { courseParticipationActivity.onParticipantPostSuccess(it)
+                }
+            } else {
+                courseParticipationActivity.onParticipantPostError()
+            }
+        } else {
+            courseParticipationActivity.onParticipantPostError()
+        }
+    }
+
+    /**
+     * Unsuccessful response of data request, call view failure handler to display to user
+     * @param t
+     */
+    override fun onFailure(t: Throwable) {
+        if (courseParticipationActivity!=null){
+            courseParticipationActivity.onParticipantPostFailure()
+        }
+    }
+}
+

@@ -7,7 +7,16 @@ import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.utilities.App
 import retrofit2.Response
 
-class EventsHistoryPerformer(eventsHistoryView : IEventsHistoryContract.IEventsHistoryView, eventInteractor: EventInteractor) : IEventsHistoryContract.IEventsHistoryPresenter {
+/**
+ * Presenter handles logic of events history view,including retrieval of events information
+ *
+ * @constructor
+ * TODO
+ *
+ * @param eventsHistoryView
+ * @param eventInteractor
+ */
+class EventsHistoryPresenter(eventsHistoryView : IEventsHistoryContract.IEventsHistoryView, eventInteractor: EventInteractor) : IEventsHistoryContract.IEventsHistoryPresenter {
 
     // EventsHistory view
     private var eventsView : IEventsHistoryContract.IEventsHistoryView?
@@ -19,9 +28,13 @@ class EventsHistoryPerformer(eventsHistoryView : IEventsHistoryContract.IEventsH
     init{
         this.eventsView = eventsHistoryView
         this.eventInteractor = eventInteractor
-        this.getEventsOnFinishedListener = GetEventsHistoryOnFinishedListener(this,this.eventsView!!)
+        this.getEventsOnFinishedListener = GetEventsHistoryOnFinishedListener(this.eventsView!!)
     }
 
+    /**
+     * request events data from backend by applying user id as check for participation
+     *
+     */
     override fun requestDataFromServer() {
         eventInteractor.retreiveByUserHistory(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),getEventsOnFinishedListener)
     }
@@ -35,25 +48,13 @@ class EventsHistoryPerformer(eventsHistoryView : IEventsHistoryContract.IEventsH
  * Listener handles interactor responses
  *
  * @constructor
- * TODO
- *
- * @param eventsPresenter
- * @param eventsView
+ * @param presenter
+ * @param view
  */
-class GetEventsHistoryOnFinishedListener(eventsHistoryPerformer : IEventsHistoryContract.IEventsHistoryPresenter ,eventsView : IEventsHistoryContract.IEventsHistoryView) :
+class GetEventsHistoryOnFinishedListener(view : IEventsHistoryContract.IEventsHistoryView) :
     IOnFinishedListener<List<Event>> {
     // Events view
-    private var eventsHistoryView :  IEventsHistoryContract.IEventsHistoryView
-    // Events presenter
-    private var eventsHistoryperformer : IEventsHistoryContract.IEventsHistoryPresenter
-
-    /**
-     * Initialises view, presenter
-     */
-    init{
-        this.eventsHistoryView = eventsView
-        this.eventsHistoryperformer = eventsHistoryPerformer
-    }
+    private var view :  IEventsHistoryContract.IEventsHistoryView = view
 
     /**
      * On successful response, ask view to fill recycler view with events history information
@@ -64,12 +65,12 @@ class GetEventsHistoryOnFinishedListener(eventsHistoryPerformer : IEventsHistory
     override fun onFinished(response: Response<StatusResponseEntity<List<Event>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                eventsHistoryView?.fillRecyclerView(response.body()!!.entity as ArrayList<Event>)
+                view?.fillInformation(response.body()!!.entity as ArrayList<Event>)
             } else {
-                eventsHistoryView?.onResponseError()
+                view?.onResponseError()
             }
         } else {
-            eventsHistoryView?.onResponseError()
+            view?.onResponseError()
         }
     }
 
@@ -79,8 +80,8 @@ class GetEventsHistoryOnFinishedListener(eventsHistoryPerformer : IEventsHistory
      * @param t
      */
     override fun onFailure(t: Throwable) {
-        if (eventsHistoryView!=null){
-            eventsHistoryView?.onResponseFailure(t)
+        if (view!=null){
+            view?.onResponseFailure(t)
         }
     }
 

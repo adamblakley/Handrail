@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.activities.ViewEventActivity
+import com.orienteering.handrail.create_course.CreateCoursePresenter
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Course
@@ -29,12 +30,17 @@ import com.orienteering.handrail.permissions.PermissionManager
 import kotlinx.android.synthetic.main.activity_create_event.*
 import java.util.*
 
+
+// TAG for Logs
+private val TAG: String = CreateCoursePresenter::class.java.getName()
+
+/**
+ * Create Event View provides UI and input binding for creating an event
+ *
+ */
 class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEventView {
-
-    // Tag for class log
-    val TAG : String = "CreateEventActivity"
-
-    lateinit var createEventPerformer : ICreateEventContract.ICreateEventPerformer
+    // presenter for create event logic and data retrieval
+    lateinit var createEventPresenter : ICreateEventContract.ICreateEventPresenter
 
     // event name for display and creation
     var eventName : String = ""
@@ -48,20 +54,20 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     lateinit var eventcourse : Course
 
     // calendar for date and time values to correctly display and modify for creation
-    val calendar = Calendar.getInstance()
+    val calendar: Calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
-
+    // image select object for choosing the event image
     lateinit var imageSelect : ImageSelect
 
     // Image uri for image selection and display
     var imageUri: Uri? = null
 
     // image view for event image
-    lateinit var eventImageView : ImageView
+    private lateinit var eventImageView : ImageView
     // edit text for name
     lateinit var editTextEventName : EditText
     // edit text for description
@@ -71,24 +77,29 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     //text view for time
     lateinit var textViewEventTime : TextView
     //text view for course
-    lateinit var textViewEventCourse : TextView
+    private lateinit var textViewEventCourse : TextView
 
     // button to select photo for event
-    var buttonUpdatePhoto: Button? = null
+    private var buttonUpdatePhoto: Button? = null
     // button to select date for event
-    var buttonSelectDate: Button? = null
+    private var buttonSelectDate: Button? = null
     // button to select time for event
-    var buttonSelectTime: Button? = null
+    private var buttonSelectTime: Button? = null
     //button to select course for event
-    var buttonSelectCourse: Button? = null
+    private var buttonSelectCourse: Button? = null
     // button to create event
-    var buttonCreateEvent: Button? = null
+    private var buttonCreateEvent: Button? = null
 
 
+    /**
+     * Initialise image select, presenter and buttons + text
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imageSelect = ImageSelect(this, this@CreateEventActivity)
-        this.createEventPerformer = CreateEventPerformer(this,imageSelect, EventInteractor(), CourseInteractor())
+        this.createEventPresenter = CreateEventPresenter(this,imageSelect, EventInteractor(), CourseInteractor())
         setContentView(R.layout.activity_create_event)
         initiateText()
         createButtons()
@@ -98,12 +109,12 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
      * Function to create buttons and their uses
      */
     fun createButtons(){
-        buttonUpdatePhoto = findViewById<Button>(R.id.button_event_image)
-        buttonSelectDate = findViewById<Button>(R.id.button_event_date)
+        buttonUpdatePhoto = findViewById(R.id.button_event_image)
+        buttonSelectDate = findViewById(R.id.button_event_date)
         buttonSelectTime = findViewById(R.id.button_event_time)
-        buttonSelectCourse = findViewById<Button>(R.id.button_event_course)
-        buttonCreateEvent = findViewById<Button>(R.id.button_event_create)
-
+        buttonSelectCourse = findViewById(R.id.button_event_course)
+        buttonCreateEvent = findViewById(R.id.button_event_create)
+        // select image on button click from gallery or camera intent
         buttonUpdatePhoto?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (PermissionManager.checkPermission(this@CreateEventActivity, this@CreateEventActivity, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PermissionManager.MULTIPLE_REQUEST_CODES)) {
@@ -111,14 +122,14 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                 }
             }
         })
-
+        // create date dialog, bind chosen value to date string to capture event date
         buttonSelectDate?.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
 
                 val datePickerDialog = DatePickerDialog(this@CreateEventActivity,
                     DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
-                        var yearString : String = Tyear.toString()
+                        val yearString : String = Tyear.toString()
                         var monthString : String = Tmonth.toString()
                         var dayString : String = TdayOfMonth.toString()
 
@@ -134,7 +145,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                 datePickerDialog.show()
             }
         })
-
+        // create time dialog, bind chosen value to time string to capture event time
         buttonSelectTime?.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
@@ -158,20 +169,20 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                 timePickerDialog.show()
             }
         })
-
+        // get event data from presenter
         buttonSelectCourse?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                createEventPerformer.getDataFromServer()
+                createEventPresenter.getDataFromServer()
             }
         })
-
+        // post event to server via presenter
         buttonCreateEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (checkFields()) {
                     val eventDateString = "$eventDate $eventTime"
                     if (eventName != null && eventDescription != null) {
                         val event = Event(eventName, eventcourse, eventDateString, eventDescription)
-                        createEventPerformer.postDataOnServer(event)
+                        createEventPresenter.postDataOnServer(event)
                     }
                 } else {
                     Toast.makeText(this@CreateEventActivity, "Please check all fields", Toast.LENGTH_SHORT).show()
@@ -183,7 +194,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     /**
      * function to initiate text displays
      */
-    fun initiateText(){
+    private fun initiateText(){
         textViewEventDate = findViewById(R.id.textView_event_date)
         textViewEventTime = findViewById(R.id.textView_event_time)
         textViewEventCourse = findViewById(R.id.textView_event_course)
@@ -208,16 +219,17 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     }
 
     /**
-     * Check user input fields for createEvent
+     * check all fields are valid
      *
+     * @return
      */
     fun checkFields() : Boolean{
         var inputsOk = true
-        if(eventName?.trim()?.isEmpty()!!){
+        if(eventName.trim().isEmpty()){
             editText_event_name_create.error = "Enter an Event name"
             inputsOk = false
         }
-        if(eventDescription?.trim()?.isEmpty()!!){
+        if(eventDescription.trim().isEmpty()){
             editText_event_description_create.error = "Enter an Event description"
             inputsOk = false
         }
@@ -256,15 +268,25 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         Toast.makeText(this@CreateEventActivity,"Error: If problem persists, please contact admin.",Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Start activity, view event on success. End current activity
+     *
+     * @param eventId
+     */
     override fun onPostResponseSuccess(eventId : Int) {
         Log.e(TAG, "Success adding Event")
         Toast.makeText(this@CreateEventActivity,"Success creating event.",Toast.LENGTH_SHORT).show()
-        val intent : Intent = Intent(this@CreateEventActivity, ViewEventActivity::class.java)
+        val intent = Intent(this@CreateEventActivity, ViewEventActivity::class.java)
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
         finish()
     }
 
+    /**
+     * provide course dialog, bind courses to event course on selection
+     *
+     * @param courses
+     */
     override fun onGetResponseSuccess(courses: List<Course>) {
         val courseNames = mutableListOf<String>()
         for (course in courses){
@@ -290,7 +312,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
 
     /**
      * On Activity Result for image select
-     * Displays image view of event
+     * Displays image view of event and captures uri for later use
      * @param requestCode
      * @param resultCode
      * @param data
@@ -300,8 +322,9 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         if (requestCode != Activity.RESULT_CANCELED) {
             when (requestCode) {
                 1001 -> {
+                    // camera image select
                     if (resultCode == Activity.RESULT_OK) {
-                        createEventPerformer.setImage(imageSelect.tempImageUri)
+                        createEventPresenter.setImage(imageSelect.tempImageUri)
                         setupImage(imageSelect.tempImageUri)
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")
@@ -309,8 +332,9 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                     }
                 }
                 1002 -> {
+                    // gallery image select
                     if (resultCode == Activity.RESULT_OK && data != null) {
-                        data.data?.let { createEventPerformer.setImage(it) }
+                        data.data?.let { createEventPresenter.setImage(it) }
                         data.data?.let { setupImage(it) }
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")
@@ -325,6 +349,6 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
 
     override fun onDestroy() {
         super.onDestroy()
-        createEventPerformer.onDestroy()
+        createEventPresenter.onDestroy()
     }
 }

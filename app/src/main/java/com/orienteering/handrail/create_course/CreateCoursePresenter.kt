@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.maps.model.LatLng
+
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.image_utilities.ImageSelect
@@ -19,7 +20,10 @@ import com.orienteering.handrail.utilities.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 
-class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCourseView, courseInteractor: CourseInteractor, imageSelect: ImageSelect) : ICreateCourseContract.ICreateCoursePerformer,
+// TAG for Logs
+private val TAG: String = CreateCoursePresenter::class.java.getName()
+
+class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCourseView, courseInteractor: CourseInteractor, imageSelect: ImageSelect) : ICreateCourseContract.ICreateCoursePresenter,
     ILocationResponder {
     var courseInteractor : CourseInteractor
     var createCourseView : ICreateCourseContract.ICreateCourseView
@@ -97,6 +101,12 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         }
     }
 
+    /**
+     *  Create a control object, add to the list  of controls and initiate image selection
+     *
+     * @param name
+     * @param note
+     */
     override fun createControl(name : String, note : String) {
         val calendar = java.util.Calendar.getInstance()
         val date = calendar.time
@@ -114,7 +124,7 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
      */
     override fun createCourse(name: String, note : String) {
         val course = Course(controlsForCourse, name,note)
-        var files: Array<MultipartBody.Part?> = arrayOfNulls(controlsForCourse.size)
+        val files: Array<MultipartBody.Part?> = arrayOfNulls(controlsForCourse.size)
         for ((key, value) in fileUris) {
             val position = key
             val positionMinusOne = position - 1
@@ -146,6 +156,11 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         createCourseView.onControlinformationSucess(nameOfMarker,noteOfMarket,positionOfMarker,imageUriOfMarker)
     }
 
+    /**
+     *  Save route points and update display on new location update
+     *
+     * @param lastLocation
+     */
     override fun locationCallback(lastLocation: Location) {
         if (lastLocation != null) {
             potentialAltitude = lastLocation.altitude
@@ -159,24 +174,35 @@ class CreateCoursePerformer(createCourseView : ICreateCourseContract.ICreateCour
         createCourseView.updateDisplay(potentialLatLng,listOfRoutePoints)
     }
 
+    /**
+     * Provide failure response on error from location update
+     *
+     */
     override fun startLocationUpdatesFailure() {
-        Log.e("TAG", "Unable to find location -> Location = null")
+        Log.e(TAG, "Unable to find location -> Location = null")
         Toast.makeText(createCourseView.returnContext(), "Unable to find current location", Toast.LENGTH_SHORT).show()
     }
 }
 
-
-class PostCourseOnFinishedListener(createCoursePerformer : ICreateCourseContract.ICreateCoursePerformer, createCourseView : ICreateCourseContract.ICreateCourseView) : IOnFinishedListener<Course> {
+/**
+ * On finished listener for the creation of a course - provides success and failure messages to view for handling
+ *
+ * @constructor
+ *
+ * @param createCoursePresenter
+ * @param createCourseView
+ */
+class PostCourseOnFinishedListener(createCoursePresenter : ICreateCourseContract.ICreateCoursePresenter, createCourseView : ICreateCourseContract.ICreateCourseView) : IOnFinishedListener<Course> {
     // Events view
     private var createCourseView : ICreateCourseContract.ICreateCourseView
     // Events presenter
-    private var createCoursePerformer : ICreateCourseContract.ICreateCoursePerformer
+    private var createCoursePresenter : ICreateCourseContract.ICreateCoursePresenter
 
     /**
      * Initialises view, presenter
      */
     init{
-        this.createCoursePerformer = createCoursePerformer
+        this.createCoursePresenter = createCoursePresenter
         this.createCourseView = createCourseView
     }
 

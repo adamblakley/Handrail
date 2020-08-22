@@ -8,7 +8,7 @@ import android.widget.Toast
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
-import com.orienteering.handrail.activities.CourseParticipationActivity
+import com.orienteering.handrail.course_participation.CourseParticipationActivity
 
 /**
  * Broadcast receivever listens for geofence messages in intents

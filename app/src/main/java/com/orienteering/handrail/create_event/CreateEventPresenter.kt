@@ -13,9 +13,20 @@ import com.orienteering.handrail.image_utilities.MultipartBodyFactory
 import com.orienteering.handrail.permissions.PermissionManager
 import retrofit2.Response
 
-class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventView, imageSelect : ImageSelect, eventInteractor: EventInteractor, courseInteractor: CourseInteractor) : ICreateEventContract.ICreateEventPerformer{
+/**
+ * Create Course presenter, obtains data from backend for courses and allows upload of event to backend
+ *
+ * @constructor
+ *
+ * @param createEventView
+ * @param imageSelect
+ * @param eventInteractor
+ * @param courseInteractor
+ */
+class CreateEventPresenter(createEventView : ICreateEventContract.ICreateEventView, imageSelect : ImageSelect, eventInteractor: EventInteractor, courseInteractor: CourseInteractor) : ICreateEventContract.ICreateEventPresenter{
 
     var createEventView : ICreateEventContract.ICreateEventView?
+    // image select, initiates gallery or camera intent - binds uri to imageUri
     var imageSelect : ImageSelect
     var eventInteractor : EventInteractor
     var courseInteractor : CourseInteractor
@@ -24,6 +35,9 @@ class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventVi
     var postEventOnFinishedListener : PostEventOnFinishedListener
     var imageUri : Uri? = null
 
+    /**
+     * initialise variables such as view, iamgeselect, interactors and multipartbodyfactory
+     */
     init{
         this.createEventView=createEventView
         this.imageSelect=imageSelect
@@ -43,10 +57,19 @@ class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventVi
         }
     }
 
+    /**
+     * Interact with interactor to retrieve courses, utilize shared preferences user id
+     *
+     */
     override fun getDataFromServer() {
         courseInteractor.retrieveAllByUser(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0),getCoursesForEventOnFinishedListener)
     }
 
+    /**
+     * Interact with interactor, pushing event to backend
+     *
+     * @param event
+     */
     override fun postDataOnServer(event: Event) {
         if (event!=null) {
             if (imageUri != null) {
@@ -72,30 +95,29 @@ class CreateEventPerformer(createEventView : ICreateEventContract.ICreateEventVi
     }
 }
 
+
 /**
- * Listener handles interactor responses
- * @param createEventPerformer
+ * Listener handles interactor responses for getting courses from backend
+ *
+ * @constructor
+ *
+ * @param createEventPresenter
  * @param createEventView
  */
-class GetCoursesForEventOnFinishedListener(createEventPerformer : ICreateEventContract.ICreateEventPerformer, createEventView : ICreateEventContract.ICreateEventView) : IOnFinishedListener<List<Course>> {
+class GetCoursesForEventOnFinishedListener(createEventPresenter : ICreateEventContract.ICreateEventPresenter, createEventView : ICreateEventContract.ICreateEventView) : IOnFinishedListener<List<Course>> {
     // Events view
     private var createEventView : ICreateEventContract.ICreateEventView
     // Events presenter
-    private var createEventPerformer : ICreateEventContract.ICreateEventPerformer
+    private var createEventPresenter : ICreateEventContract.ICreateEventPresenter
 
     /**
      * Initialises view, presenter
      */
     init{
-        this.createEventPerformer = createEventPerformer
+        this.createEventPresenter = createEventPresenter
         this.createEventView = createEventView
     }
 
-    /**
-     * On successful response, ask view to fill recycler view with events information
-     * If unsuccessful call view error response handler to display to user
-     * @param response
-     */
     override fun onFinished(response: Response<StatusResponseEntity<List<Course>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
@@ -108,40 +130,36 @@ class GetCoursesForEventOnFinishedListener(createEventPerformer : ICreateEventCo
         }
     }
 
-    /**
-     * Unsuccessful response of data request, call view failure handler to display to user
-     * @param t
-     */
     override fun onFailure(t: Throwable) {
         if (createEventView!=null){
             createEventView.onResponseFailure()
         }
     }
 }
+
 /**
- * Listener handles interactor responses
- * @param createEventPerformer
+ * handles response from callback of event creation
+ *
+ * @constructor
+ *
+ * @param createEventPresenter
  * @param createEventView
  */
-class PostEventOnFinishedListener(createEventPerformer : ICreateEventContract.ICreateEventPerformer, createEventView : ICreateEventContract.ICreateEventView) : IOnFinishedListener<Event> {
+class PostEventOnFinishedListener(createEventPresenter : ICreateEventContract.ICreateEventPresenter, createEventView : ICreateEventContract.ICreateEventView) : IOnFinishedListener<Event> {
     // Events view
     private var createEventView : ICreateEventContract.ICreateEventView
     // Events presenter
-    private var createEventPerformer : ICreateEventContract.ICreateEventPerformer
+    private var createEventPresenter : ICreateEventContract.ICreateEventPresenter
 
     /**
      * Initialises view, presenter
      */
     init{
-        this.createEventPerformer = createEventPerformer
+        this.createEventPresenter = createEventPresenter
         this.createEventView = createEventView
     }
 
-    /**
-     * On successful response, ask view to fill recycler view with events information
-     * If unsuccessful call view error response handler to display to user
-     * @param response
-     */
+
     override fun onFinished(response: Response<StatusResponseEntity<Event>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
@@ -154,10 +172,6 @@ class PostEventOnFinishedListener(createEventPerformer : ICreateEventContract.IC
         }
     }
 
-    /**
-     * Unsuccessful response of data request, call view failure handler to display to user
-     * @param t
-     */
     override fun onFailure(t: Throwable) {
         if (createEventView!=null){
             createEventView.onResponseFailure()
