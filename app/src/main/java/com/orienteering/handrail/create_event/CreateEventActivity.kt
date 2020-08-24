@@ -19,8 +19,8 @@ import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.ViewEventActivity
 import com.orienteering.handrail.create_course.CreateCoursePresenter
+import com.orienteering.handrail.event.EventActivity
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Course
@@ -276,7 +276,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     override fun onPostResponseSuccess(eventId : Int) {
         Log.e(TAG, "Success adding Event")
         Toast.makeText(this@CreateEventActivity,"Success creating event.",Toast.LENGTH_SHORT).show()
-        val intent = Intent(this@CreateEventActivity, ViewEventActivity::class.java)
+        val intent = Intent(this@CreateEventActivity, EventActivity::class.java)
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
         finish()

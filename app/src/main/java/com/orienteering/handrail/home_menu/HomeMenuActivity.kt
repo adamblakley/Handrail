@@ -7,9 +7,7 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.orienteering.handrail.*
-import com.orienteering.handrail.activities.WelcomeActivity
 import com.orienteering.handrail.courses.CoursesActivity
-import com.orienteering.handrail.create_course.CreateCourseActivity
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.events_history.EventsHistoryActivity
 import com.orienteering.handrail.manage_events.ManageEventsActivity
@@ -86,7 +84,7 @@ class HomeActivity : AppCompatActivity() {
                 sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
                 sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
                 sharedPreferencesEditor.remove(App.SharedPreferencesUserId).commit()
-                val intent = Intent(this@HomeActivity, WelcomeActivity::class.java).apply {}
+                val intent = Intent(this@HomeActivity, com.orienteering.handrail.welcome.WelcomeActivity::class.java).apply {}
                 startActivity(intent)
             }
 

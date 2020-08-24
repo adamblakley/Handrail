@@ -12,7 +12,6 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.create_event.CreateEventActivity
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Event
-import com.orienteering.handrail.utilities.ResultsAdapter
 
 class ManageEventsActivity : AppCompatActivity(), IManageEventsContract.IManageEventsView {
 

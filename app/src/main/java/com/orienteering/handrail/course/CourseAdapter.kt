@@ -1,4 +1,4 @@
-package com.orienteering.handrail.courses
+package com.orienteering.handrail.course
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.course.CourseActivity
 import com.orienteering.handrail.models.Control
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -56,7 +55,9 @@ class CourseAdapter(controls : List<Control>) : RecyclerView.Adapter<CourseAdapt
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_control_item,parent,false)
-        return CourseViewHolder(view)
+        return CourseViewHolder(
+            view
+        )
     }
 
     /**

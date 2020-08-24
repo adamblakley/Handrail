@@ -9,10 +9,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
+import com.orienteering.handrail.course.CourseAdapter
 import com.orienteering.handrail.create_course.CreateCourseActivity
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Course
-import com.orienteering.handrail.utilities.ResultsAdapter
 
 /**
  * Class handles view for view courses use case, displays each course with an action prompt for the user. allows user to create new views
@@ -69,7 +69,7 @@ class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
      * @param coursesList
      */
     override fun fillInformation(coursesList: ArrayList<Course>) {
-        val coursesAdapter = ResultsAdapter(coursesList)
+        val coursesAdapter = CoursesAdapter(coursesList)
         recyclerView.adapter = coursesAdapter
     }
 

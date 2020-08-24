@@ -1,4 +1,4 @@
-package com.orienteering.handrail.utilities
+package com.orienteering.handrail.courses
 
 import android.content.Intent
 import android.util.Log
@@ -16,7 +16,7 @@ import com.orienteering.handrail.course.CourseActivity
 import com.orienteering.handrail.models.Course
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ResultsAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<ResultsAdapter.CoursesViewHolder>(){
+class CoursesAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<CoursesAdapter.CoursesViewHolder>(){
 
     val TAG = "EventsAdapter"
     var courseList : ArrayList<Course>

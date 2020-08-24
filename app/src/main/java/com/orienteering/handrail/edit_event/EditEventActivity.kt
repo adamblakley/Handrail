@@ -17,7 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
-import com.orienteering.handrail.activities.ViewEventActivity
+import com.orienteering.handrail.event.EventActivity
+
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.image_utilities.ImageSelect
 import com.orienteering.handrail.interactors.EventInteractor
@@ -271,7 +272,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     override fun onUpdatePartialResponseError(eventId: Int) {
         Log.e(TAG, "Partial success updating Event")
         Toast.makeText(this@EditEventActivity,"Error: Partial Success updating event, please reupload event image.",Toast.LENGTH_SHORT).show()
-        val intent : Intent = Intent(this@EditEventActivity, ViewEventActivity::class.java)
+        val intent : Intent = Intent(this@EditEventActivity, EventActivity::class.java)
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
         finish()
@@ -284,7 +285,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     override fun onUpdateResponseSuccess(eventId: Int) {
         Log.e(TAG, "Success updating Event")
         Toast.makeText(this@EditEventActivity,"Success updating event.",Toast.LENGTH_SHORT).show()
-        val intent : Intent = Intent(this@EditEventActivity, ViewEventActivity::class.java)
+        val intent : Intent = Intent(this@EditEventActivity, EventActivity::class.java)
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
         finish()
