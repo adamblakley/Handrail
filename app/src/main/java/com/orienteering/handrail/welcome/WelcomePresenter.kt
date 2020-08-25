@@ -5,11 +5,11 @@ import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.LoginInteractor
 import retrofit2.Response
 
-class WelcomePerformer(welcomeView: IWelcomeContract.IWelcomeView, loginInteractor: LoginInteractor) : IWelcomeContract.IWelcomePerformer {
+class WelcomePresenter(welcomeView: IWelcomeContract.IWelcomeView, loginInteractor: LoginInteractor) : IWelcomeContract.IWelcomePresenter {
 
-    var welcomeView : IWelcomeContract.IWelcomeView?
-    var loginInteractor : LoginInteractor
-    var checkLoginOnFinishedListener : IOnFinishedListener<Boolean>
+    private var welcomeView : IWelcomeContract.IWelcomeView?
+    private var loginInteractor : LoginInteractor
+    private var checkLoginOnFinishedListener : IOnFinishedListener<Boolean>
 
     init{
         this.welcomeView=welcomeView
@@ -26,16 +26,10 @@ class WelcomePerformer(welcomeView: IWelcomeContract.IWelcomeView, loginInteract
     }
 }
 
-class CheckLoginOnFinishedListener(welcomeView : IWelcomeContract.IWelcomeView, welcomePerformer: IWelcomeContract.IWelcomePerformer) :
-    IOnFinishedListener<Boolean> {
+class CheckLoginOnFinishedListener(welcomeView : IWelcomeContract.IWelcomeView, welcomePresenter: IWelcomeContract.IWelcomePresenter) : IOnFinishedListener<Boolean> {
 
-    private var welcomeView : IWelcomeContract.IWelcomeView
-    private var welcomePerformer : IWelcomeContract.IWelcomePerformer
-
-    init{
-        this.welcomeView = welcomeView
-        this.welcomePerformer = welcomePerformer
-    }
+    private var welcomeView : IWelcomeContract.IWelcomeView = welcomeView
+    private var welcomePresenter : IWelcomeContract.IWelcomePresenter = welcomePresenter
 
     override fun onFinished(response: Response<StatusResponseEntity<Boolean>>) {
         if(response.isSuccessful){

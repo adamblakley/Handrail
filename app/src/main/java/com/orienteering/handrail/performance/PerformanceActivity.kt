@@ -16,35 +16,48 @@ import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
 import com.orienteering.handrail.interactors.ParticipantInteractor
 
+// TAG for Logs
+private val TAG: String = PerformanceActivity::class.java.name
+
+/**
+ * Class responsible for displaying user performance values
+ *
+ */
 class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanceContract.IPerformanceView {
 
-    // TAG for log
-    val TAG = "PerformanceActivity"
-
-    lateinit var performancePerformer : IPerformanceContract.IPerformancePresenter
+    // presenter handles performance logic
+    private lateinit var performancePresenter : IPerformanceContract.IPerformancePresenter
 
     // recycler view for control list
-    lateinit var recyclerView : RecyclerView
+    private lateinit var recyclerView : RecyclerView
     // text view for total distance
-    lateinit var textViewDistance : TextView
+    private lateinit var textViewDistance : TextView
     // text view for pace
-    lateinit var textViewPace : TextView
+    private lateinit var textViewPace : TextView
     // google map view
     private lateinit var performanceMap: GoogleMap
 
+    /**
+     * Request view intialise along with ui elements and presenter
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_view_performance)
-
+        // map fragment for displaying course information
         val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_route_performance) as SupportMapFragment
 
         initRecyclerView()
         createTextView()
-        this.performancePerformer = PerformancePerformer(this, ParticipantInteractor())
+
+        this.performancePresenter = PerformancePresenter(this, ParticipantInteractor())
+        // if intent extra is provided in form of event id, request presenter find performance
         if(intent.extras!=null) {
+            // request map initialisation
             mapCourseFragment.getMapAsync(this)
-            performancePerformer.requestDataFromServer(intent.getSerializableExtra("EVENT_ID") as Int)
+            performancePresenter.requestDataFromServer(intent.getSerializableExtra("EVENT_ID") as Int)
         }
     }
 
@@ -54,14 +67,22 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
      */
     override fun onMapReady(googleMap: GoogleMap) {
         performanceMap=googleMap
-        performanceMap.uiSettings.setZoomControlsEnabled(false)
-        performanceMap.uiSettings.setCompassEnabled(false)
-        performanceMap.uiSettings.setMyLocationButtonEnabled(false)
+        performanceMap.uiSettings.isZoomControlsEnabled = false
+        performanceMap.uiSettings.isCompassEnabled = false
+        performanceMap.uiSettings.isMyLocationButtonEnabled = false
         performanceMap.uiSettings.setAllGesturesEnabled(false)
         performanceMap.isMyLocationEnabled = false
         performanceMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
     }
 
+    /**
+     * show route on map fragment via polyline
+     *
+     * @param routePoints
+     * @param bounds
+     * @param totalDistance
+     * @param pace
+     */
     override fun showRoute(routePoints: List<LatLng>, bounds: LatLngBounds, totalDistance : Double, pace : Double) {
         performanceMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,100))
         val pattern: MutableList<PatternItem> = mutableListOf()
@@ -74,6 +95,11 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
         performanceMap.addPolyline(PolylineOptions().addAll(routePoints).width(10f).color(Color.RED).pattern(pattern))
     }
 
+    /**
+     * For controls in map, add to mapview. Key value is marker options title
+     *
+     * @param controlsNameLatLng
+     */
     override fun addControls(controlsNameLatLng : Map<String,LatLng>) {
         for ((key,value) in controlsNameLatLng){
             Log.e("TAG","$key,$value")
@@ -88,7 +114,7 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
      * Sets up textviews in view
      *
      */
-    fun createTextView(){
+    private fun createTextView(){
         textViewDistance = findViewById(R.id.textView_distance_performance)
         textViewPace = findViewById(R.id.textView_pace_performance)
     }
@@ -102,7 +128,16 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    override fun fillRecyclerView(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>) {
+    /**
+     * Use recycler view adapter to iterate through parameters and add to recycler view as items
+     *
+     * @param imageUrls
+     * @param controlPositions
+     * @param controlNames
+     * @param times
+     * @param altitudes
+     */
+    override fun fillInformation(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>) {
         val performanceAdapter : PerformanceAdapter = PerformanceAdapter(imageUrls,controlPositions,controlNames,times,altitudes)
         recyclerView.adapter = performanceAdapter
     }
@@ -119,6 +154,6 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
 
     override fun onDestroy(){
         super.onDestroy()
-        performancePerformer.onDestroy()
+        performancePresenter.onDestroy()
     }
 }

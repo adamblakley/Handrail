@@ -17,7 +17,9 @@
         android:id="@+id/button_create_manage_events"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#673AB7"
+
         android:text="Create an event"
-        android:textColor="#FFFFFF" />
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp" />
 </LinearLayout>

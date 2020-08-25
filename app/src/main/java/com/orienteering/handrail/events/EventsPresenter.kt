@@ -50,7 +50,8 @@ class EventsPresenter(eventsView: IEventsContract.IEventsView, eventInteractor: 
  * @param eventsEventsPresenter
  * @param eventsView
  */
-class GetEventsOnFinishedListener(eventsEventsPresenter : IEventsContract.IEventsPresenter, eventsView : IEventsContract.IEventsView) : IOnFinishedListener<List<Event>> {
+class GetEventsOnFinishedListener(eventsEventsPresenter : IEventsContract.IEventsPresenter, eventsView : IEventsContract.IEventsView) :
+    IOnFinishedListener<List<Event>> {
     // Events view
     private var eventsView : IEventsContract.IEventsView
     // Events presenter

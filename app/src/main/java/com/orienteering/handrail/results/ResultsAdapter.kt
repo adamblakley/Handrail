@@ -12,16 +12,32 @@ import com.bumptech.glide.request.RequestOptions
 import com.orienteering.handrail.R
 import de.hdodenhof.circleimageview.CircleImageView
 
+/**
+ * Class responsible for adapting results information to list items fopr display
+ *
+ * @constructor
+ *
+ * @param participantNames
+ * @param participantTimes
+ * @param participantImages
+ * @param participantIds
+ * @param participantPositions
+ */
 class ResultsAdapter(participantNames: List<String>, participantTimes: List<String>, participantImages: List<String>, participantIds: List<Int?>, participantPositions: List<Int>) : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() {
 
-    var participantNames = mutableListOf<String>()
-    var participantTimes = mutableListOf<String>()
-    var participantImages = mutableListOf<String>()
+    /**
+     * Variable lists of performer results information for display
+     */
+    private var participantNames = mutableListOf<String>()
+    private var participantTimes = mutableListOf<String>()
+    private var participantImages = mutableListOf<String>()
+    private var participantIds = mutableListOf<Int>()
+    private var participantPositions = mutableListOf<Int>()
 
-    var participantIds = mutableListOf<Int>()
-    var participantPositions = mutableListOf<Int>()
 
-
+    /**
+     * Initiate lists of all results information
+     */
     init {
         this.participantNames = participantNames as MutableList<String>
         this.participantTimes = participantTimes as MutableList<String>
@@ -43,8 +59,8 @@ class ResultsAdapter(participantNames: List<String>, participantTimes: List<Stri
 
 
     override fun onBindViewHolder(holder: ResultsViewHolder, position: Int) {
-        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(
-            R.mipmap.ic_launcher_round)
+        // utilise glide to load performer images if available
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.drawable.ic_action_user).error(R.drawable.ic_action_user)
         if (participantImages.size>=1){
             Glide.with(holder.itemView.context)
                 .asBitmap()
@@ -53,7 +69,7 @@ class ResultsAdapter(participantNames: List<String>, participantTimes: List<Stri
                 .into(holder.image)
         }
         holder.image.borderColor = Color.RED
-
+        // set performer colour based on position
         when (position){
             0 -> holder.image.borderColor = Color.MAGENTA
             1 -> holder.image.borderColor = Color.BLUE
@@ -75,6 +91,8 @@ class ResultsAdapter(participantNames: List<String>, participantTimes: List<Stri
 
     /**
      *     View Holder holds widgets in memory of each item
+     * @constructor
+     * @param itemView
      */
     class ResultsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 

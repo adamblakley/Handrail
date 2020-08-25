@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp">
 
@@ -14,7 +15,8 @@
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="15dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/ic_action_event"
+        tools:src="@drawable/ic_action_event" />
 
     <TextView
         android:id="@+id/textView_manage_events_item_name"
@@ -62,9 +64,10 @@
         android:layout_marginBottom="14dp"
         android:layout_toEndOf="@+id/textView_manage_events_item_name"
         android:layout_toRightOf="@+id/textView_manage_events_item_name"
-        android:background="#673AB7"
-        android:text="manage"
-        android:textColor="#FFFFFF" />
+        android:background="@drawable/handrail_button_positive"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
+        android:text="manage" />
 
     <Button
         android:id="@+id/button_manage_events_item_edit"
@@ -80,9 +83,10 @@
         android:layout_marginRight="16dp"
         android:layout_toEndOf="@+id/textView_manage_events_item_name"
         android:layout_toRightOf="@+id/textView_manage_events_item_name"
-        android:background="#673AB7"
-        android:text="Edit"
-        android:textColor="#FFFFFF" />
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
+        android:text="Edit" />
 
 
 </RelativeLayout>

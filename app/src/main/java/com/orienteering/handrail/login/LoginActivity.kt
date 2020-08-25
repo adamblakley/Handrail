@@ -13,11 +13,17 @@ import com.orienteering.handrail.R
 import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.interactors.LoginInteractor
 
-class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
-    // Tag for class log
-    val TAG : String = "LoginActivity"
+// TAG for Logs
+private val TAG: String = LoginActivity::class.java.name
 
-    lateinit var loginPerformer : LoginPerformer
+/**
+ * Class responsibile for displaying login user interface and binding interactions to events
+ *
+ */
+class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
+
+    // presenter handles login activities
+    lateinit var loginPresenter : LoginPresenter
 
     /**
      * edit text and button attributes
@@ -26,6 +32,9 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
     lateinit var passwordEditText: EditText
     lateinit var loginButton: Button
 
+    /**
+     * Strings for login
+     */
     var userEmail : String = ""
     var userPassword : String = ""
 
@@ -35,7 +44,7 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
         createEditText()
         createButtons()
 
-        loginPerformer = LoginPerformer(this, LoginInteractor())
+        loginPresenter = LoginPresenter(this, LoginInteractor())
     }
 
     override fun createEditText() {
@@ -59,7 +68,7 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
         loginButton = findViewById(R.id.button_login)
         loginButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                loginPerformer.requestDataFromServer(userEmail,userPassword)
+                loginPresenter.requestDataFromServer(userEmail,userPassword)
             }
         })
     }
@@ -89,6 +98,6 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
 
     override fun onDestroy(){
         super.onDestroy()
-        loginPerformer.onDestroy()
+        loginPresenter.onDestroy()
     }
 }

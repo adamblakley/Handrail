@@ -67,7 +67,7 @@ class CourseAdapter(controls : List<Control>) : RecyclerView.Adapter<CourseAdapt
      * @param position
      */
     override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
-        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.drawable.ic_action_control).error(R.drawable.ic_action_control)
         if (controls.size>=1){
             // Glide utilized to load images into view
             Glide.with(holder.itemView.context)

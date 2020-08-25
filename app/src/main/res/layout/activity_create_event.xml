@@ -41,19 +41,21 @@
         android:layout_marginStart="96dp"
         android:layout_marginLeft="96dp"
         android:layout_marginTop="16dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_action_event"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_event_description_create" />
+        app:layout_constraintTop_toBottomOf="@+id/editText_event_description_create"
+        tools:src="@drawable/ic_action_event" />
 
     <Button
         android:id="@+id/button_event_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:background="@drawable/handrail_button"
         android:text="Select Photo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.1"
-        app:layout_constraintStart_toEndOf="@+id/imageview_create_event"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/button_event_date"
         app:layout_constraintTop_toBottomOf="@+id/editText_event_description_create" />
 
     <TextView
@@ -64,17 +66,22 @@
         android:hint="YYYY/MM/DD"
         app:layout_constraintEnd_toStartOf="@+id/button_event_date"
         app:layout_constraintStart_toStartOf="@+id/imageview_create_event"
-        app:layout_constraintTop_toBottomOf="@+id/imageview_create_event" />
+        app:layout_constraintTop_toBottomOf="@+id/imageview_create_event"
+        />
 
 
     <Button
         android:id="@+id/button_event_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginRight="80dp"
+        android:background="@drawable/handrail_button"
+        android:padding="10dp"
         android:text="Select Date"
-        app:layout_constraintEnd_toEndOf="@+id/button_event_image"
-        app:layout_constraintStart_toEndOf="@+id/textView_event_date"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_event_image" />
 
     <TextView
@@ -92,10 +99,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:background="@drawable/handrail_button"
+        android:padding="10dp"
         android:text="Select Time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView_event_time"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/button_event_date"
         app:layout_constraintTop_toBottomOf="@+id/button_event_date" />
 
     <TextView
@@ -113,8 +121,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:background="@drawable/handrail_button"
+        android:padding="10dp"
         android:text="Select Course"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/button_event_date"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView_event_course"
         app:layout_constraintTop_toBottomOf="@+id/button_event_time" />
@@ -126,7 +137,10 @@
         android:layout_marginTop="32dp"
         android:text="Create Event"
         app:layout_constraintEnd_toEndOf="parent"
+        android:padding="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_event_course" />
+        app:layout_constraintTop_toBottomOf="@+id/button_event_course"
+        android:background="@drawable/handrail_button_positive"
+        android:textColor="#FFFFFF"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,13 +17,24 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+/**
+ * Class responsible for accessing device images via camera or gallery
+ * responsible for retrieving image uri and creating temporary photo file before transfer to web-layer
+ * @constructor
+ * TODO
+ *
+ * @param activity
+ * @param context
+ */
 class ImageSelect(activity: Activity, context: Context){
 
-    private val IMAGE_CAPTURE_CODE = 1001
-    private val PICK_IMAGE_CODE = 1002
+    // capture codes for camera or gallery
+    private val IMAGE_CAMERA_CODE = 1001
+    private val IMAGE_GALLERY_CODE = 1002
+    // used to hold image uri or selected photo and photopath of temporary files
     lateinit var currentPhotoPath: String
     lateinit var tempImageUri : Uri
+    // activity and context of calling class
     var activity : Activity
     var context : Context
 
@@ -60,40 +71,44 @@ class ImageSelect(activity: Activity, context: Context){
             options,
             DialogInterface.OnClickListener() { dialogInterface: DialogInterface, item: Int ->
                 if (options[item].equals("Take Photo")) {
+                    // open device camera
                     openCamera()
                 } else if (options[item].equals("Choose from Gallery")) {
+                    // open device gallery, pass intent extra for use in on result method
                     val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                    activity.startActivityForResult(pickPhotoIntent, PICK_IMAGE_CODE)
+                    activity.startActivityForResult(pickPhotoIntent, IMAGE_GALLERY_CODE)
                 } else {
                     dialogInterface.dismiss()
                 }
             })
         builder.show()
+        // return image uri to calling class
         return image_uri
     }
 
+    /**
+     * Open device camera, selected image returned as URI
+     *
+     */
     fun openCamera() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
             takePictureIntent -> takePictureIntent.resolveActivity(context.packageManager)?.also {
-
+                // create new photo file and catch error if presented
                 val photoFile: File? = try {
                     createPhotoFile()
                 } catch (ex: IOException) {
                     Log.e("ImageSelect",ex.printStackTrace().toString())
                     null
                 }
-
+                // capture uri from temp new file
                 photoFile.also {
-                    val photoUri : Uri? = it?.let { it ->
-                        FileProvider.getUriForFile(context,"com.orienteering.handrail.fileprovider",
-                            it
-                        )
-                    }
+                    val photoUri : Uri? = it?.let { it -> FileProvider.getUriForFile(context,"com.orienteering.handrail.fileprovider", it) }
                     if (photoUri != null) {
                         tempImageUri=photoUri
                     }
+                    // open camera activity, provide capture code as intent extra to be passed to context for onresult method
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
-                    activity.startActivityForResult(takePictureIntent, IMAGE_CAPTURE_CODE)
+                    activity.startActivityForResult(takePictureIntent, IMAGE_CAMERA_CODE)
                 }
 
             }
@@ -106,24 +121,38 @@ class ImageSelect(activity: Activity, context: Context){
      * @return
      */
     fun getImagePath(contentUri: Uri) : String?{
+        // final pathway
         var result : String? = null
+        // required information to interact with content providers
         val proj = arrayOf(MediaStore.Images.Media.DATA)
-
+        // read data from content provider
         val loader = CursorLoader(context,contentUri,proj,null,null,null)
 
         val cursor : Cursor? = loader.loadInBackground()
         if (cursor!=null){
+            // return correct column index of file pathname
             val columnIndex = cursor?.getColumnIndex(MediaStore.Images.Media.DATA)
+            // point to the first value of the returned result
             cursor?.moveToFirst()
+            // get filepathname from selected index
             result = columnIndex?.let { cursor?.getString(it) }
             cursor?.close()
         }
+        //return pathway
         return result
     }
 
+    /**
+     * Create a temporary file before transfer to web-service layer
+     *
+     * @return
+     */
     fun createPhotoFile() : File{
+        // create timestamp name for unique naming system
         val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
+        // determine sotrage directory
         val storageDir : File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        // check if storage directory exists, or make new storage directory
         if (!storageDir.exists()){
             try{
                 storageDir.mkdirs()
@@ -131,6 +160,7 @@ class ImageSelect(activity: Activity, context: Context){
                 Log.e("ImageSelect",ex.printStackTrace().toString())
             }
         }
+        // create a temp file within the cosen sotrage directory, return file to calling class
         return File.createTempFile("JPEG_${timeStamp}_",".jpg",storageDir).apply { currentPhotoPath=absolutePath }
     }
 }

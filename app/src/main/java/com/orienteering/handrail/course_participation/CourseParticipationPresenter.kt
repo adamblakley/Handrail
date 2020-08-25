@@ -57,7 +57,8 @@ class CourseParticipationPresenter(eventId : Int, view: ICourseParticipationCont
  * Onfinished listener aquires event information, calls activity to fill screen information and use to display route.
  * Provides error on failure
  */
-class GetEventOnFinishedListener(view : ICourseParticipationContract.ICourseActivity) : IOnFinishedListener<Event> {
+class GetEventOnFinishedListener(view : ICourseParticipationContract.ICourseActivity) :
+    IOnFinishedListener<Event> {
     // participants view
     private var view : ICourseParticipationContract.ICourseActivity = view
 
@@ -93,7 +94,8 @@ class GetEventOnFinishedListener(view : ICourseParticipationContract.ICourseActi
  * Manages onfinished actions from posting performance, notifies user of success or failure
  *
  */
-class PostPerformanceOnFinishedListener(view : ICourseParticipationContract.ICourseActivity) : IOnFinishedListener<Participant> {
+class PostPerformanceOnFinishedListener(view : ICourseParticipationContract.ICourseActivity) :
+    IOnFinishedListener<Participant> {
     // Events view
     private var view : ICourseParticipationContract.ICourseActivity = view
 

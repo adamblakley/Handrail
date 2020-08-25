@@ -60,8 +60,7 @@ class EventsHistoryAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: EventsHistoryViewHolder, position: Int) {
-        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(
-            R.mipmap.ic_launcher_round)
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.drawable.ic_action_event).error(R.drawable.ic_action_event)
 
         if (eventsList.size>=1){
             Glide.with(holder.itemView.context)

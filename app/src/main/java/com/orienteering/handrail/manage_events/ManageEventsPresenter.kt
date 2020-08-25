@@ -35,7 +35,8 @@ class ManageEventsPresenter(view : IManageEventsContract.IManageEventsView, even
  * @param eventsPresenter
  * @param eventsView
  */
-class GetManageEventsOnFinishedListener(presenter : IManageEventsContract.IManageEventsPresenter, view : IManageEventsContract.IManageEventsView) : IOnFinishedListener<List<Event>> {
+class GetManageEventsOnFinishedListener(presenter : IManageEventsContract.IManageEventsPresenter, view : IManageEventsContract.IManageEventsView) :
+    IOnFinishedListener<List<Event>> {
     // Events view
     private var view : IManageEventsContract.IManageEventsView
     // Events presenter
@@ -58,7 +59,7 @@ class GetManageEventsOnFinishedListener(presenter : IManageEventsContract.IManag
     override fun onFinished(response: Response<StatusResponseEntity<List<Event>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                view.fillRecyclerView(response.body()!!.entity as ArrayList<Event>)
+                view.fillInformation(response.body()!!.entity as ArrayList<Event>)
             } else {
                 view.onResponseError()
             }

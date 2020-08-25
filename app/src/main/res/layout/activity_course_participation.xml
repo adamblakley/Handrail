@@ -37,6 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/handrail_button_positive"
+        android:textColor="#FFFFFF"
         android:text="upload result"></Button>
 
     <Button
@@ -44,6 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
         android:text="view results"></Button>
 
 

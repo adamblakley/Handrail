@@ -124,7 +124,8 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
  * @param editEventPresenter
  * @param editEventView
  */
-class GetEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEditEventPresenter, editEventView: IEditEventContract.IEditEventView) : IOnFinishedListener<Event> {
+class GetEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEditEventPresenter, editEventView: IEditEventContract.IEditEventView) :
+    IOnFinishedListener<Event> {
 
     lateinit var event: Event
     private var editEventView: IEditEventContract.IEditEventView = editEventView
@@ -183,7 +184,8 @@ class GetEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEdi
  * @param editEventPresenter
  * @param editEventView
  */
-class PostEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEditEventPresenter, editEventView: IEditEventContract.IEditEventView) : IOnFinishedListener<Event> {
+class PostEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEditEventPresenter, editEventView: IEditEventContract.IEditEventView) :
+    IOnFinishedListener<Event> {
 
     lateinit var event: Event
     private var editEventView: IEditEventContract.IEditEventView

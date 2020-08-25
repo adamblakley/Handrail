@@ -6,8 +6,8 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
-import com.orienteering.handrail.utilities.GeofencingConstants.GEOFENCE_LOITERING_DELAY_IN_MS
-import com.orienteering.handrail.utilities.GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
+import com.orienteering.handrail.utilities.GeofencingConstants.GEOFENCE_VISIT_DELAY_MS
+import com.orienteering.handrail.utilities.GeofencingConstants.GEOFENCE_RADIUS_METERS
 
 class GeofenceBuilder {
 
@@ -21,9 +21,9 @@ class GeofenceBuilder {
 
         val geofence = Geofence.Builder()
             .setRequestId(geofenceID.toString())
-            .setCircularRegion(latLng.latitude,latLng.longitude, GEOFENCE_RADIUS_IN_METERS)
+            .setCircularRegion(latLng.latitude,latLng.longitude, GEOFENCE_RADIUS_METERS)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-            .setLoiteringDelay(GEOFENCE_LOITERING_DELAY_IN_MS)
+            .setLoiteringDelay(GEOFENCE_VISIT_DELAY_MS)
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .build()
 

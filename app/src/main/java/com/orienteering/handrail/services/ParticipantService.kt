@@ -3,10 +3,13 @@ package com.orienteering.handrail.services
 import com.orienteering.handrail.models.Event
 import com.orienteering.handrail.models.Participant;
 import com.orienteering.handrail.httprequests.StatusResponseEntity
-import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.http.*
 
+/**
+ * Handles all service requests to REST
+ *
+ */
 interface ParticipantService {
     @POST("events/{id}/participants")
     fun create(@Path("id")eventId : Int?, @Body userId : Long): Call<StatusResponseEntity<Event>>

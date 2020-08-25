@@ -12,12 +12,17 @@ import com.orienteering.handrail.interactors.SignupInteractor
 import com.orienteering.handrail.login.LoginActivity
 import java.util.*
 
+// TAG for Logs
+private val TAG: String = SignupActivity::class.java.name
+
+/**
+ * Class responsible for user interface of sign up use case
+ *
+ */
 class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
 
-    // Tag for class log
-    val TAG : String = "SignupActivity"
-
-    lateinit var signupPerformer : SignupPerformer
+    // presenter handles signup logic
+    lateinit var signupPresenter : SignupPresenter
 
     /**
      * edit texts and text views for user creation fields
@@ -48,6 +53,11 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+    /**
+     * initialise view, buttons, edit text and signup presenter class
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
@@ -55,10 +65,14 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
         createButtons()
         createEditText()
 
-        signupPerformer = SignupPerformer(this, SignupInteractor())
+        signupPresenter = SignupPresenter(this, SignupInteractor())
     }
 
-    override fun createEditText() {
+    /**
+     * initiate edit text for user input
+     *
+     */
+    fun createEditText() {
         editTextFirstName = findViewById(R.id.editText_signup_firstname)
         editTextLastName = findViewById(R.id.editText_signup_lastname)
         editTextEmail = findViewById(R.id.editText_signup_email)
@@ -68,40 +82,46 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
         editTextConfirmPassword = findViewById(R.id.editText_signup_confirm_password)
     }
 
-    override fun createButtons() {
+    /**
+     * Initiate buttons and set onclick listeners
+     *
+     */
+    fun createButtons() {
         btnDob = findViewById(R.id.btn_signup_dob)
         btnCreateAccount = findViewById(R.id.btn_signup_create_account)
-
+        // create date dialog picker
         btnDob.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 val datePickerDialog = DatePickerDialog(this@SignupActivity,
                     DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
-
+                        // hold year, month and day information
                         var yearString : String = Tyear.toString()
                         var monthString : String = Tmonth.toString()
                         var dayString : String = TdayOfMonth.toString()
-
+                        // add leading 0s if day and month<10
                         if (monthString.length==1){
                             monthString="0"+monthString
                         }
                         if (dayString.length==1){
                             dayString="0"+dayString
                         }
+                        // provide string value for user display
                         userDob = "$yearString-$monthString-$dayString"
                         textViewDob.text=userDob
                     }, year, month, day)
+                // max date to prevent future dob values
                 datePickerDialog.datePicker.maxDate=System.currentTimeMillis()
                 datePickerDialog.show()
             }
 
         })
-
+        // create a signup request and request presenter send to source
         btnCreateAccount.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 if (validateFields()){
                     val signupRequest = SignupRequest(editTextFirstName.text.toString(),editTextLastName.text.toString(),editTextEmail.text.toString(),editTextPassword.text.toString(),textViewDob.text.toString(),editTextBio.text.toString())
                     if (signupRequest!=null){
-                        signupPerformer.postDataToServer(signupRequest)
+                        signupPresenter.postDataToServer(signupRequest)
                     }
                     else {
                         makeToast("Problem creating your account. Please check all fields.")
@@ -113,7 +133,12 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
         })
     }
 
-    override fun validateFields(): Boolean {
+    /**
+     * Check each user input field, validate and provide error message if invalid
+     *
+     * @return
+     */
+    fun validateFields(): Boolean {
         var inputsOk : Boolean = true
         if (editTextFirstName.text.toString().trim().length<=0){
             editTextFirstName.setError("Enter your first name")
@@ -165,6 +190,10 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
         editTextEmail.setError("Email already in use")
     }
 
+    /**
+     * Initiate login activity on success of signin
+     *
+     */
     override fun startLoginActivity() {
         val intent = Intent(this@SignupActivity, LoginActivity::class.java).apply {}
         startActivity(intent)

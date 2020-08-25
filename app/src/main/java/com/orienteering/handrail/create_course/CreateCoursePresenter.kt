@@ -192,7 +192,8 @@ class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCour
  * @param createCoursePresenter
  * @param createCourseView
  */
-class PostCourseOnFinishedListener(createCoursePresenter : ICreateCourseContract.ICreateCoursePresenter, createCourseView : ICreateCourseContract.ICreateCourseView) : IOnFinishedListener<Course> {
+class PostCourseOnFinishedListener(createCoursePresenter : ICreateCourseContract.ICreateCoursePresenter, createCourseView : ICreateCourseContract.ICreateCourseView) :
+    IOnFinishedListener<Course> {
     // Events view
     private var createCourseView : ICreateCourseContract.ICreateCourseView
     // Events presenter

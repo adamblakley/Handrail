@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         android:layout_marginTop="16dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_action_user"
         app:layout_constraintStart_toStartOf="@+id/editText_editprofile_firstname"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,6 +67,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Update Info"
+        android:background="@drawable/handrail_button_positive"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_editprofile_bio" />
@@ -77,6 +80,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Select Photo"
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.672"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,6 +94,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Change Password"
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_editprofile_update_account" />
@@ -108,6 +117,9 @@
         android:layout_height="wrap_content"
         android:text="Select Date of Birth"
         android:textSize="8sp"
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView_editprofile_dob"
         app:layout_constraintEnd_toEndOf="@+id/editText_editprofile_email"
         app:layout_constraintTop_toTopOf="@+id/textView_editprofile_dob" />

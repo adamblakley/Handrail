@@ -12,13 +12,21 @@ import okhttp3.Response
  */
 class AuthenticationInterceptor : Interceptor {
 
+    /**
+     * Creates a response, if response status is 401, divert to unauthoizedhandler redirect
+     *
+     * @param chain
+     * @return
+     */
     override fun intercept(chain: Interceptor.Chain): Response {
+        // add header of user authentication token
         var request : Request = chain.request().newBuilder()?.addHeader("Authorization","Bearer ${App.sharedPreferences.getString(App.SharedPreferencesAuthToken,"0")}")?.build()
-
+        // capture response
         var response = chain.proceed(request)
+        // check if access denied
         if (response.code==401){
-            val unauthorizedHandler =
-                UnauthorizedHandler()
+            // redirect via unauthorized handler
+            val unauthorizedHandler = UnauthorizedHandler()
             unauthorizedHandler.redirect()
         }
         return response

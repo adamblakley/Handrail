@@ -65,6 +65,7 @@ interface IEventContract {
         fun setEvent(event : Event)
 
     }
+
     /**
      * View interface, provides functions for presenter-view interaction
      *

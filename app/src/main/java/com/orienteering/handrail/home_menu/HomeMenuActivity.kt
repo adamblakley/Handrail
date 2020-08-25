@@ -13,9 +13,16 @@ import com.orienteering.handrail.events_history.EventsHistoryActivity
 import com.orienteering.handrail.manage_events.ManageEventsActivity
 import com.orienteering.handrail.utilities.App
 
+// tag for logs
+private const val TAG = "HomeActivity"
 
+/**
+ * Home Menu class handles selection of use cases, acts as hub for user
+ *
+ */
 class HomeActivity : AppCompatActivity() {
 
+    // all buttons in menu
     lateinit var buttonCompete: Button
     lateinit var buttonCreateEvent: Button
     lateinit var buttonEventHistory: Button
@@ -24,7 +31,11 @@ class HomeActivity : AppCompatActivity() {
     lateinit var buttonLogout: Button
 
 
-
+    /**
+     * Instantiate all buttons, set view and provide on-click listeners to start correct activity from intent
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_menu)
@@ -92,6 +103,3 @@ class HomeActivity : AppCompatActivity() {
 
     }
 }
-
-private const val TAG = "HomeActivity"
-

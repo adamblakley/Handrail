@@ -11,26 +11,45 @@ import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalcul
 import com.orienteering.handrail.map_utilities.MapUtilities
 import retrofit2.Response
 
-class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceView, participantInteractor: ParticipantInteractor) : IPerformanceContract.IPerformancePresenter {
+/**
+ * Class handles all data retrieval and manipulation of view performance use case
+ *
+ * @constructor
+ *
+ * @param performanceView
+ * @param participantInteractor
+ */
+class PerformancePresenter(performanceView : IPerformanceContract.IPerformanceView, participantInteractor: ParticipantInteractor) : IPerformanceContract.IPerformancePresenter {
 
+    // participant value for dissemination of performance values
     lateinit var participant : Participant
 
-    var performanceView : IPerformanceContract.IPerformanceView?
-    var participantInteractor : ParticipantInteractor
-    var getParticipantOnFinishedListener : GetParticipantOnFinishedListener
+    // view, interactor for data retrieval and onfinished listener to handle retrieval response
+    private var performanceView : IPerformanceContract.IPerformanceView?
+    private var participantInteractor : ParticipantInteractor
+    private var getParticipantOnFinishedListener : GetParticipantOnFinishedListener
 
+    /**
+     * initialise view, interactor and onfinished listener
+     */
     init{
         this.performanceView = performanceView
         this.participantInteractor = participantInteractor
         this.getParticipantOnFinishedListener = GetParticipantOnFinishedListener(this,performanceView)
     }
 
+    /**
+     * utilise interactor to request performance information from source
+     *
+     * @param eventId
+     */
     override fun requestDataFromServer(eventId: Int) {
         participantInteractor.getParticipant(eventId,(App.sharedPreferences.getLong(App.SharedPreferencesUserId, 0)),getParticipantOnFinishedListener)
     }
 
     override fun getControls() {
-        var controlNameLatLng = mutableMapOf<String, LatLng>()
+        val controlNameLatLng = mutableMapOf<String, LatLng>()
+        //  activate controls latlng and add controls to view view addControls method
         for (performance in participant.participantControlPerformances){
             performance.pcpControl.createLatLng()
             controlNameLatLng.put(performance.pcpControl.controlName,performance.pcpControl.controlLatLng)
@@ -39,27 +58,32 @@ class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceVi
     }
 
     override fun getRoute() {
+        // use map utilities class to retrieve all route points from a participant
         val mapUtilities = MapUtilities()
-        var routePointsLatLng = mapUtilities.getAllParticipantRoutePoints(participant)
+        val routePointsLatLng = mapUtilities.getAllParticipantRoutePoints(participant)
+        // determine latlng bounds value using map utilities
         val bounds : LatLngBounds = mapUtilities.determineNESW(routePointsLatLng)
+        // determine total distance using map utilities
         val totalDistance = mapUtilities.calculateTotalDistance(routePointsLatLng)
+        // determine averagepace over all controls
         val pace = mapUtilities.calculatePace(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime,totalDistance)
+        // show route in view bu providing route points, bounds, total distance and average pace
         performanceView?.showRoute(routePointsLatLng,bounds,totalDistance,pace)
     }
 
     override fun getPerformanceInformation(){
         val geofencePerformanceCalculator = GeofencePerformanceCalculator()
         // control names
-        var controlNames = mutableListOf<String>()
+        val controlNames = mutableListOf<String>()
         // control positions
-        var controlPositions = mutableListOf<Int>()
+        val controlPositions = mutableListOf<Int>()
         // image urls for controls
-        var imageUrls = mutableListOf<String>()
+        val imageUrls = mutableListOf<String>()
         // participant time
-        var times = mutableListOf<String>()
+        val times = mutableListOf<String>()
         // distance ran between controls
-        var altitudes = mutableListOf<Double>()
-
+        val altitudes = mutableListOf<Double>()
+        // for performance add active photo to image urls else add dummy text
         for (performance in participant.participantControlPerformances){
             for (photo in performance.pcpControl.controlPhotographs){
                 if(photo.active!!){
@@ -68,13 +92,15 @@ class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceVi
                     imageUrls.add("")
                 }
             }
+            // convert time values to string for visualisation on ui
+            // split performance values into seperate lists to be used individually or not at all by view
             times.add(geofencePerformanceCalculator.convertMilliToMinutes(performance.controlTime))
             controlPositions.add(performance.pcpControl.controlPosition!!)
-            controlNames.add(performance.pcpControl.controlName!!)
+            controlNames.add(performance.pcpControl.controlName)
             performance.pcpControl.controlAltitude?.let { altitudes.add(it) }
         }
-
-        performanceView?.fillRecyclerView(imageUrls,controlPositions,controlNames,times,altitudes)
+        // display information on user interface via view class
+        performanceView?.fillInformation(imageUrls,controlPositions,controlNames,times,altitudes)
     }
 
     override fun setPresenterParticipant(participant: Participant) {
@@ -92,19 +118,12 @@ class PerformancePerformer(performanceView : IPerformanceContract.IPerformanceVi
  * @param performancePerformer
  * @param performanceView
  */
-class GetParticipantOnFinishedListener(performancePerformer : IPerformanceContract.IPerformancePresenter, performanceView : IPerformanceContract.IPerformanceView) : IOnFinishedListener<Participant> {
+class GetParticipantOnFinishedListener(performancePerformer : IPerformanceContract.IPerformancePresenter, performanceView : IPerformanceContract.IPerformanceView) :
+    IOnFinishedListener<Participant> {
     // Events view
-    private var performancePerformer : IPerformanceContract.IPerformancePresenter
+    private var performancePerformer : IPerformanceContract.IPerformancePresenter = performancePerformer
     // Events presenter
-    private var performanceView : IPerformanceContract.IPerformanceView
-
-    /**
-     * Initialises view, presenter
-     */
-    init{
-        this.performanceView = performanceView
-        this.performancePerformer = performancePerformer
-    }
+    private var performanceView : IPerformanceContract.IPerformanceView = performanceView
 
     /**
      * On successful response, ask view to fill recycler view with events information

@@ -13,21 +13,26 @@ import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.interactors.UserInteractor
 import com.orienteering.handrail.models.PasswordUpdateRequest
 
+// TAG for Logs
+private val TAG: String = PasswordUpdateActivity::class.java.name
+
+
+/**
+ * Handles all user interface elements and initiation of events in password update use case
+ *
+ */
 class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPasswordUpdateView {
 
-    // Tag for log
-    val TAG = "PasswordActivity"
-
-    lateinit var passwordUpdatePerformer : IPasswordUpdateContract.IPasswordUpdatePerformer
+    lateinit var passwordUpdatePresenter : IPasswordUpdateContract.IPasswordUpdatePresenter
 
     // new password input
     lateinit var editTextNewPassword : EditText
     // confirm new password input
-    lateinit var editTextConfirmPassword : EditText
+    private lateinit var editTextConfirmPassword : EditText
     // current password input
     lateinit var editTextCurrentPassword : EditText
     // button for submit password change request
-    lateinit var buttonSubmitPassword : Button
+    private lateinit var buttonSubmitPassword : Button
 
     /**
      * Initialise view
@@ -38,7 +43,7 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password)
 
-        passwordUpdatePerformer = PasswordUpdatePerformer(this, UserInteractor())
+        passwordUpdatePresenter = PasswordUpdatePresenter(this, UserInteractor())
 
         createText()
         createButtons()
@@ -48,7 +53,7 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
      * Initialises text input
      *
      */
-    fun createText(){
+    private fun createText(){
         editTextNewPassword=findViewById(R.id.editText_new_password_password)
         editTextConfirmPassword=findViewById(R.id.editText_password_confirm_password)
         editTextCurrentPassword=findViewById(R.id.editText_password_current_password)
@@ -64,8 +69,8 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
         buttonSubmitPassword.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 if (checkFields()){
-                    val passwordUpdateRequest : PasswordUpdateRequest = PasswordUpdateRequest(editTextCurrentPassword.text.toString(),editTextNewPassword.text.toString())
-                    passwordUpdatePerformer.putDataToServer(passwordUpdateRequest)
+                    val passwordUpdateRequest = PasswordUpdateRequest(editTextCurrentPassword.text.toString(),editTextNewPassword.text.toString())
+                    passwordUpdatePresenter.putDataToServer(passwordUpdateRequest)
                 } else {
                     val toast = Toast.makeText(this@PasswordUpdateActivity, "Please check all fields",
                         Toast.LENGTH_SHORT)
@@ -75,19 +80,24 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
         })
     }
 
+    /**
+     * Check validity of all user input fields, provide response
+     *
+     * @return
+     */
     fun checkFields() : Boolean{
-        var inputsOk : Boolean = true
+        var inputsOk = true
 
         if (editTextNewPassword.text.toString().trim().length < 8 || editTextNewPassword.text.toString().trim().length > 16) {
-            editTextNewPassword.setError("Enter a new password, must be a 8-16 characters long")
+            editTextNewPassword.error = "Enter a new password, must be a 8-16 characters long"
             inputsOk = false
         }
         if (editTextConfirmPassword.text.toString().trim().length < 8 || editTextConfirmPassword.text.toString().trim().length > 16 && editTextNewPassword.text.toString()!=editTextConfirmPassword.text.toString()) {
-            editTextConfirmPassword.setError("Password doesn't match")
+            editTextConfirmPassword.error = "Password doesn't match"
             inputsOk = false
         }
         if (editTextCurrentPassword.text.toString().trim().length < 8) {
-            editTextCurrentPassword.setError("Enter your current password, must be a 8-16 characters long")
+            editTextCurrentPassword.error = "Enter your current password, must be a 8-16 characters long"
             inputsOk = false
         }
         return  inputsOk
@@ -106,13 +116,13 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
     override fun onResponsePasswordError() {
         Log.e(TAG, "Error: Incorrect Password")
         Toast.makeText(this@PasswordUpdateActivity,"Error: Incorrect Password.",Toast.LENGTH_SHORT).show()
-        editTextCurrentPassword.setError("Enter your current password")
+        editTextCurrentPassword.error = "Enter your current password"
     }
 
     override fun onResponseSuccess() {
         Log.i(TAG, "Success")
         Toast.makeText(this@PasswordUpdateActivity,"Successfully Updated.",Toast.LENGTH_SHORT).show()
-        val intent : Intent = Intent(this@PasswordUpdateActivity, HomeActivity::class.java)
+        val intent = Intent(this@PasswordUpdateActivity, HomeActivity::class.java)
         startActivity(intent)
         finish()
     }

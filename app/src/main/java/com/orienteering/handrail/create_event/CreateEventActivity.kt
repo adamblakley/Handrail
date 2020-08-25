@@ -142,6 +142,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                         eventDate = "$yearString-$monthString-$dayString"
                         textViewEventDate.text = eventDate
                     }, year, month, day)
+                datePickerDialog.datePicker.maxDate=System.currentTimeMillis()
                 datePickerDialog.show()
             }
         })
@@ -249,7 +250,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     }
 
     override fun setupImage(imageUri : Uri) {
-        val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        val options: RequestOptions = RequestOptions().centerCrop().placeholder(R.drawable.ic_action_event).error(R.drawable.ic_action_event)
         Glide.with(this).asBitmap().load(imageUri).apply(options).into(eventImageView)
     }
 

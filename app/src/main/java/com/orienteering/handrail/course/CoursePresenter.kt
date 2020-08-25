@@ -201,7 +201,8 @@ class CoursePresenter(courseId : Int, courseView : ICourseContract.ICourseView, 
  * @param presenter
  * @param view
  */
-class GetCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, view : ICourseContract.ICourseView) : IOnFinishedListener<Course> {
+class GetCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, view : ICourseContract.ICourseView) :
+    IOnFinishedListener<Course> {
     // Course view
     private var view : ICourseContract.ICourseView
     // Course presenter
@@ -253,7 +254,8 @@ class GetCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, 
  * @param presenter
  * @param view
  */
-class DeleteCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, view : ICourseContract.ICourseView) : IOnFinishedListener<Boolean> {
+class DeleteCourseOnFinishedListener(presenter : ICourseContract.ICoursePresenter, view : ICourseContract.ICourseView) :
+    IOnFinishedListener<Boolean> {
     // Course view
     private var view : ICourseContract.ICourseView
     // Course presenter

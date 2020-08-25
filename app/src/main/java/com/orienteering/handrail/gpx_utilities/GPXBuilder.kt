@@ -39,29 +39,33 @@ class GPXBuilder(context : Context)  {
      */
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun buildGPX(controls :MutableList<Control>){
-
+        // check file saving permissions
         val permission = checkExternalStoragePermission()
         val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
         Log.e("FileWriter","Permission check = $permission")
+        // begin file writing, determine file name
         val fileName = "$timeStamp.gpx"
+        // delcare file header
         val gpxHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Handrail\" version=\"1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n"
+        // declare gpx file name
         val gpxName = "<name>" + "My Controls $timeStamp" + "</name><trkseg>\n";
+        // delcare control segments and initiate
         var controlSegments = ""
-
+        // for each passed control, add latitude and longitude values and date value
         for (control in controls){
             val formattedDate : String = control.controlTime.substring(0,23)+'Z'
             controlSegments += "<trkpt lat=\"" + control.controlLatitude + "\" lon=\"" + control.controlLongitude + "\">" +
                     "<time>" + formattedDate + "</time>" +
                     "</trkpt>\n"
         }
-
+        // add gpx footer
         val gpxfooter = "</trkseg></trk></gpx>"
-
+        // call savegpx method to save to file
         saveGPX(fileName,gpxHeader,gpxName,controlSegments,gpxfooter)
     }
 
     /**
-     * Save GPX File
+     * Save GPX File to system storage, inform user of succcess
      *
      * @param fileName
      * @param gpxHeader
@@ -70,17 +74,18 @@ class GPXBuilder(context : Context)  {
      * @param gpxFooter
      */
     fun saveGPX(fileName : String, gpxHeader : String, gpxName : String, controlSegments : String, gpxFooter : String){
+        // try to create a new file
         try{
             val folder : File? = context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
             var file : File = File(folder, fileName)
 
             if (!file.exists()){
                 file.createNewFile()
-                Log.e("filewriter", "file doesn't exist")
+                Log.e("FileWriter", "file doesn't exist")
             } else {
-                Log.e("filewriter", "file exists")
+                Log.e("FileWriter", "file exists")
             }
-
+            // create an output stream to write fields to bytearray in created file
             val fileOutputSteam = FileOutputStream(file)
 
             if (fileOutputSteam != null) {
@@ -91,21 +96,19 @@ class GPXBuilder(context : Context)  {
                 fileOutputSteam.write(gpxFooter.toByteArray())
 
                 Log.e("FileWriter","Saved $fileName")
-                val toast = Toast.makeText(context,"File Saved as $fileName",Toast.LENGTH_SHORT)
-                toast.show()
+                // tell user file has been saved
+                Toast.makeText(context,"File Saved as $fileName",Toast.LENGTH_SHORT).show()
             } else {
                 Log.e("FileWriter", "Problem with writing content")
-                val toast = Toast.makeText(context,"Error: Problem creating file",Toast.LENGTH_SHORT)
-                toast.show()
+                Toast.makeText(context,"Error: Problem creating file",Toast.LENGTH_SHORT).show()
             }
 
             Log.e("FileWriter","Reading text = ${file.readText()}")
-
+            // catch io exception, inform user and log stacktrace
         } catch (e : IOException){
             Log.e("FileWriter","Problem writing file")
             e.printStackTrace()
-            val toast = Toast.makeText(context,"Error: Problem creating file",Toast.LENGTH_SHORT)
-            toast.show()
+            Toast.makeText(context,"Error: Problem creating file",Toast.LENGTH_SHORT).show()
         }
     }
 }

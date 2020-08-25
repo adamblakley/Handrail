@@ -14,6 +14,7 @@
         android:contentDescription="First Name"
         android:ems="10"
         android:hint="First Name"
+
         android:inputType="textPersonName"
         android:maxLength="20"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,6 +79,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Create Account"
+        android:background="@drawable/handrail_button_positive"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_signup_confirm_password" />
@@ -97,6 +101,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select Date of Birth"
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         android:textSize="8sp"
         app:layout_constraintBottom_toBottomOf="@+id/textView_signup_dob"
         app:layout_constraintEnd_toEndOf="@+id/editText_signup_email"

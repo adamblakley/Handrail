@@ -28,20 +28,23 @@ class GeofenceBroadcastReceiver() : BroadcastReceiver() {
 
 
         if (geofencingEvent.hasError()){
+            // display message if geofence error occurs
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
             Log.e(TAG, errorMessage+"geofence transition not working")
             return
         }
-
+        // check each triggered geofence and respond with message notifying of success
         for (triggeringGeofence in geofencingEvent.triggeringGeofences) {
             Toast.makeText(context,"Control Recorded", Toast.LENGTH_SHORT).show()
         }
 
         val geofenceTransition = geofencingEvent.geofenceTransition
 
+        // trigger geofence method on geofence entry
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
             CourseParticipationActivity.getInstance().triggerGeofence()
         } else {
+            // handle failures
             Toast.makeText(context,"Error: Geofence transition failure", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "error in transition")
         }

@@ -108,7 +108,8 @@ class EditProfilePresenter(editProfileView : IEditProfileContract.IEditProfileVi
  * @param editProfilePresenter
  * @param editProfileView
  */
-class GetEditUserOnFinishedListener(editProfilePresenter : IEditProfileContract.IEditProfilePresenter, editProfileView : IEditProfileContract.IEditProfileView) : IOnFinishedListener<User> {
+class GetEditUserOnFinishedListener(editProfilePresenter : IEditProfileContract.IEditProfilePresenter, editProfileView : IEditProfileContract.IEditProfileView) :
+    IOnFinishedListener<User> {
 
     lateinit var user : User
     private var editProfileView : IEditProfileContract.IEditProfileView = editProfileView
@@ -158,7 +159,8 @@ class GetEditUserOnFinishedListener(editProfilePresenter : IEditProfileContract.
  * @param editProfilePresenter
  * @param editProfileView
  */
-class PutEditUserOnFinishedListener(editProfilePresenter : IEditProfileContract.IEditProfilePresenter, editProfileView : IEditProfileContract.IEditProfileView) : IOnFinishedListener<User> {
+class PutEditUserOnFinishedListener(editProfilePresenter : IEditProfileContract.IEditProfilePresenter, editProfileView : IEditProfileContract.IEditProfileView) :
+    IOnFinishedListener<User> {
 
     lateinit var user : User
     private var editProfileView : IEditProfileContract.IEditProfileView = editProfileView

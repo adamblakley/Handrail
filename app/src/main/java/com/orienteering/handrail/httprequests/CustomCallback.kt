@@ -11,7 +11,6 @@ import retrofit2.Response
  *
  * @param T
  * @constructor
- * TODO
  *
  * @param onFinishedListener
  */
@@ -21,7 +20,7 @@ class CustomCallback<T>(onFinishedListener: IOnFinishedListener<T>) : Callback<S
     var onFinishedListener : IOnFinishedListener<T>
 
     /**
-     * Init block
+     * Initialise listener
      */
     init{
         this.onFinishedListener = onFinishedListener

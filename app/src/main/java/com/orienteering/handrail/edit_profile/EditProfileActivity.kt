@@ -163,7 +163,7 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
 
     override fun setupImage(imageUrl : String){
         val options: RequestOptions =
-            RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+            RequestOptions().centerCrop().placeholder(R.drawable.ic_action_user).error(R.drawable.ic_action_user)
         Glide.with(this)
             .asBitmap()
             .load(imageUrl)
@@ -178,7 +178,7 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
      */
     fun setupImage(imageUri : Uri) {
         val options: RequestOptions =
-            RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+            RequestOptions().centerCrop().placeholder(R.drawable.ic_action_user).error(R.drawable.ic_action_user)
         Glide.with(this)
             .asBitmap()
             .load(imageUri)

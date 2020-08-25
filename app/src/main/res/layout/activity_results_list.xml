@@ -16,6 +16,9 @@
         android:id="@+id/button_view_top_routes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/handrail_button"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
         android:text="Top Routes" />
 
 </LinearLayout>

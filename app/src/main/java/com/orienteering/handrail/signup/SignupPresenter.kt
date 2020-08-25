@@ -6,17 +6,34 @@ import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.SignupInteractor
 import retrofit2.Response
 
-class SignupPerformer(signupView : ISignupContract.ISignupView, signupnteractor: SignupInteractor) : ISignupContract.ISignupPerformer {
+/**
+ * Signup presenter responsible for handling all signup requests
+ *
+ * @constructor
+ *
+ * @param signupView
+ * @param signupnteractor
+ */
+class SignupPresenter(signupView : ISignupContract.ISignupView, signupnteractor: SignupInteractor) : ISignupContract.ISignupPresenter {
 
+    // view, interactor and onfininished listener values
     var signupView : ISignupContract.ISignupView?
-    var signupnteractor : SignupInteractor
-    var signupOnFinishedListener = SignupOnFinishedListener(this,signupView)
+    private var signupnteractor : SignupInteractor
+    var signupOnFinishedListener = SignupOnFinishedListener(signupView)
 
+    /**
+     * initiate interactor and view
+     */
     init{
         this.signupView=signupView
         this.signupnteractor=signupnteractor
     }
 
+    /**
+     * Use interactor to load signup request at source
+     *
+     * @param signupRequest
+     */
     override fun postDataToServer(signupRequest: SignupRequest) {
         signupnteractor.signup(signupRequest,signupOnFinishedListener)
     }
@@ -26,17 +43,24 @@ class SignupPerformer(signupView : ISignupContract.ISignupView, signupnteractor:
     }
 }
 
-class SignupOnFinishedListener(signupPerformer : ISignupContract.ISignupPerformer, signupView: ISignupContract.ISignupView) :
-    IOnFinishedListener<Boolean> {
+/**
+ * Class responsible for handling signup request responses
+ *
+ * @constructor
+ *
+ * @param signupPresenter
+ * @param signupView
+ */
 
-    private var signupView : ISignupContract.ISignupView
-    private var signupPerformer : ISignupContract.ISignupPerformer
+class SignupOnFinishedListener(signupView: ISignupContract.ISignupView) : IOnFinishedListener<Boolean> {
 
-    init{
-        this.signupView = signupView
-        this.signupPerformer = signupPerformer
-    }
+    private var signupView : ISignupContract.ISignupView = signupView
 
+    /**
+     * On success, request login activity
+     *
+     * @param response
+     */
     override fun onFinished(response: Response<StatusResponseEntity<Boolean>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
@@ -49,6 +73,7 @@ class SignupOnFinishedListener(signupPerformer : ISignupContract.ISignupPerforme
                 signupView?.onResponseError()
             }
         } else {
+            // if error is conflic, respond that email is in use
             if (response.code()==409){
                 signupView.emailInUse()
             } else {

@@ -7,6 +7,10 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
+/**
+ * Handles all service requests to REST
+ *
+ */
 interface UserService {
 
     @POST("users")

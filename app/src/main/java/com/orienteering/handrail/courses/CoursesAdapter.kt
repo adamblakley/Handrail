@@ -39,7 +39,7 @@ class CoursesAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<Cour
 
     override fun onBindViewHolder(holder: CoursesViewHolder, position: Int) {
         Log.e(TAG,"onBindViewHolder: Called")
-        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.drawable.ic_action_course).error(R.drawable.ic_action_course)
         if (imageUrls.size>=1){
             Glide.with(holder.itemView.context)
                 .asBitmap()

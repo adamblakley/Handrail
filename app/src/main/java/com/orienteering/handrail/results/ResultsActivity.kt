@@ -66,11 +66,24 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
         })
     }
 
+    /**
+     * utilise recycler view adapter to display results information via recycler view items
+     *
+     * @param names
+     * @param times
+     * @param positions
+     * @param ids
+     * @param imageUrls
+     */
     override fun showInformation(names: List<String>, times: List<String>, positions: List<Int>, ids: MutableList<Int?>, imageUrls: List<String>) {
         val resultsAdapter : ResultsAdapter = ResultsAdapter(names,times,imageUrls,ids,positions)
         recyclerView.adapter = resultsAdapter
     }
 
+    /**
+     * Initiate recycler view and set layour
+     *
+     */
     private fun initRecyclerView(){
         recyclerView = findViewById(R.id.rv_results)
         recyclerView.layoutManager = LinearLayoutManager(this)

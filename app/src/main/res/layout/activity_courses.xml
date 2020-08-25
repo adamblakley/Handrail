@@ -17,7 +17,7 @@
         android:id="@+id/button_create_course_courses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#673AB7"
         android:text="Create a course"
+        android:background="@drawable/handrail_button"
         android:textColor="#FFFFFF" />
 </LinearLayout>

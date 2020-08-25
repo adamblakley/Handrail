@@ -196,7 +196,8 @@ class GetEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter
  * @param eventPresenter
  * @param eventView
  */
-class JoinEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) : IOnFinishedListener<Event> {
+class JoinEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter, eventView : IEventContract.IEventView) :
+    IOnFinishedListener<Event> {
 
     private var eventView : IEventContract.IEventView = eventView
     private var eventPresenter : IEventContract.IEventPresenter = eventPresenter

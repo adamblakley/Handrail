@@ -104,7 +104,8 @@ class CreateEventPresenter(createEventView : ICreateEventContract.ICreateEventVi
  * @param createEventPresenter
  * @param createEventView
  */
-class GetCoursesForEventOnFinishedListener(createEventPresenter : ICreateEventContract.ICreateEventPresenter, createEventView : ICreateEventContract.ICreateEventView) : IOnFinishedListener<List<Course>> {
+class GetCoursesForEventOnFinishedListener(createEventPresenter : ICreateEventContract.ICreateEventPresenter, createEventView : ICreateEventContract.ICreateEventView) :
+    IOnFinishedListener<List<Course>> {
     // Events view
     private var createEventView : ICreateEventContract.ICreateEventView
     // Events presenter
@@ -145,7 +146,8 @@ class GetCoursesForEventOnFinishedListener(createEventPresenter : ICreateEventCo
  * @param createEventPresenter
  * @param createEventView
  */
-class PostEventOnFinishedListener(createEventPresenter : ICreateEventContract.ICreateEventPresenter, createEventView : ICreateEventContract.ICreateEventView) : IOnFinishedListener<Event> {
+class PostEventOnFinishedListener(createEventPresenter : ICreateEventContract.ICreateEventPresenter, createEventView : ICreateEventContract.ICreateEventView) :
+    IOnFinishedListener<Event> {
     // Events view
     private var createEventView : ICreateEventContract.ICreateEventView
     // Events presenter

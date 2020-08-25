@@ -20,7 +20,7 @@
     <application
         android:name=".utilities.App"
         android:allowBackup="true"
-        android:icon="@drawable/ic_action_home"
+        android:icon="@drawable/ic_launcher_playstore"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -29,6 +29,7 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".create_course.CreateCourseActivity"></activity>
         <activity android:name=".toproutes.TopRoutesActivity" >
+            android:label="Top 5 Routes"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -36,6 +37,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".performance.PerformanceActivity" >
+            android:label="View Performance"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -43,6 +45,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".course.CourseActivity" >
+            android:label="View Course"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -50,6 +53,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".create_event.CreateEventActivity" >
+            android:label="Create Event"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -57,6 +61,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".edit_profile.EditProfileActivity" >
+            android:label="Edit Profile"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -64,14 +69,17 @@
                 ></meta-data>
         </activity>
         <activity android:name=".signup.SignupActivity" >
+            android:label="Sign up"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
                 android:value=".home_menu.HomeActivity"
                 ></meta-data>
         </activity>
-        <activity android:name=".login.LoginActivity" />
+        <activity android:name=".login.LoginActivity"
+            android:label="Login"/>
         <activity android:name=".events_history.EventsHistoryActivity" >
+            android:label="Performance History"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -79,6 +87,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".courses.CoursesActivity" >
+            android:label="manage courses"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -93,6 +102,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".password_update.PasswordUpdateActivity" >
+            android:label="update password"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -100,7 +110,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".events.EventsActivity"
-            android:label="Events"
+            android:label="manage events"
             android:parentActivityName=".home_menu.HomeActivity">
             <meta-data
             android:name="android.support.PARENT_ACTIVITY"
@@ -110,6 +120,7 @@
         </activity>
 
         <activity android:name=".event.EventActivity"
+            android:label="view event"
             android:parentActivityName=".home_menu.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -118,6 +129,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".results.ResultsActivity" >
+            android:label="event results"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -125,6 +137,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".manage_events.ManageEventsActivity">
+            android:label="manage events"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -132,6 +145,7 @@
                 ></meta-data>
         </activity>
         <activity android:name=".edit_event.EditEventActivity">
+            android:label="edit event"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:icon="@drawable/ic_action_home"
@@ -151,7 +165,13 @@
             android:value="@string/google_maps_key" />
         <activity
             android:name=".course_participation.CourseParticipationActivity"
-            android:label="Course Participation" />
+            android:label="Event Participation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:icon="@drawable/ic_action_home"
+                android:value=".home_menu.HomeActivity"
+                ></meta-data>
+        </activity>
         <activity
             android:name=".home_menu.HomeActivity"
             android:label="Handrail" />

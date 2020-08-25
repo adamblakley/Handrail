@@ -54,7 +54,7 @@ class EventsAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<Events
     override fun onBindViewHolder(holder: EventsViewHolder, position: Int) {
         Log.e(TAG,"onBindViewHolder: Called")
 
-        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_round).error(R.mipmap.ic_launcher_round)
+        val options : RequestOptions = RequestOptions().centerCrop().placeholder(R.drawable.ic_action_event).error(R.drawable.ic_action_event)
         // load event images by selecting from arraylist position, load via glide as bitmap
         if (eventsList.size>=1){
             Glide.with(holder.itemView.context)

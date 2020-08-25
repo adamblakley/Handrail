@@ -1,6 +1,11 @@
 package com.orienteering.handrail.utilities
 
+/**
+ * Global geofence values
+ */
 internal object GeofencingConstants {
-    const val GEOFENCE_RADIUS_IN_METERS = 20f
-    const val GEOFENCE_LOITERING_DELAY_IN_MS = 100
+    // radius of geofence
+    const val GEOFENCE_RADIUS_METERS = 20f
+    // loitering delay in ms
+    const val GEOFENCE_VISIT_DELAY_MS = 100
 }

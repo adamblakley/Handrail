@@ -10,43 +10,63 @@ import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalcul
 import com.orienteering.handrail.map_utilities.MapUtilities
 import retrofit2.Response
 
-class TopRoutesPerformer(topRoutesView : ITopRoutesContract.ITopRoutesView, participantInteractor: ParticipantInteractor) : ITopRoutesContract.ITopRoutesPerformer {
+/**
+ * Handles logic of retrieveing and displaying top participant routes
+ *
+ * @constructor
+ *
+ * @param topRoutesView
+ * @param participantInteractor
+ */
+class TopRoutesPresenter(topRoutesView : ITopRoutesContract.ITopRoutesView, participantInteractor: ParticipantInteractor) : ITopRoutesContract.ITopRoutesPresenter {
 
-    var topRoutesView : ITopRoutesContract.ITopRoutesView?
-    var participantInteractor : ParticipantInteractor
-    var getParticipantsOnFinishedListener : GetTopParticipantsOnFinishedListener
+    // view, interactor and onfinished listener variables
+    private var topRoutesView : ITopRoutesContract.ITopRoutesView?
+    private var participantInteractor : ParticipantInteractor
+    private var getParticipantsOnFinishedListener : GetTopParticipantsOnFinishedListener
 
+    // list of retrieves top participants
     private lateinit var participants : List<Participant>
 
+    /**
+     * Initialise variables
+     */
     init{
         this.topRoutesView=topRoutesView
         this.participantInteractor=participantInteractor
         this.getParticipantsOnFinishedListener = GetTopParticipantsOnFinishedListener(this,topRoutesView)
     }
 
+    /**
+     * Request top 5 participants via the interactor
+     *
+     * @param eventId
+     */
     override fun requestDataFromServer(eventId: Int) {
-        participantInteractor.getParticipants(eventId,getParticipantsOnFinishedListener)
+        participantInteractor.getTopParticipants(eventId,getParticipantsOnFinishedListener)
     }
 
     override fun processInformation(){
-        val geofencePerformanceCalculator =
-            GeofencePerformanceCalculator()
+        // performance calculator to determine and display each participant performance
+        val geofencePerformanceCalculator = GeofencePerformanceCalculator()
         // participant names
-        var names = mutableListOf<String>()
+        val names = mutableListOf<String>()
         //participant time
-        var times = mutableListOf<String>()
+        val times = mutableListOf<String>()
         //participant positions
-        var positions = mutableListOf<Int>()
+        val positions = mutableListOf<Int>()
         //participant ids
-        var ids = mutableListOf<Int?>()
+        val ids = mutableListOf<Int?>()
         //participant image urls
-        var imageUrls = mutableListOf<String>()
+        val imageUrls = mutableListOf<String>()
+        // for each participant add the names, times, positions ids and photohgraphs to seperate lists for display
         if (participants != null) {
             for (participant in participants){
                 names.add(participant.participantUser.userFirstName)
                 times.add(geofencePerformanceCalculator.convertMilliToMinutes(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime))
                 positions.add(participants.indexOf(participant))
                 ids.add(participant.participantId)
+                // check if participant has a photo and determine active photo
                 if (participant.participantUser.userPhotographs?.size!! >=1){
                     for (photo in participant.participantUser.userPhotographs!!){
                         if (photo.active==true){
@@ -55,26 +75,33 @@ class TopRoutesPerformer(topRoutesView : ITopRoutesContract.ITopRoutesView, part
                         }
                     }
                 } else {
+                    // add dummy value if no photo is available
                     imageUrls.add("dummy")
                 }
             }
         }
-        topRoutesView?.showRecyclerInformation(names,times,positions,ids,imageUrls)
+        // call view to show participants information
+        topRoutesView?.showInformation(names,times,positions,ids,imageUrls)
     }
 
     override fun getControls() {
-        var controlNameLatLng = mutableMapOf<String, LatLng>()
+        val controlNameLatLng = mutableMapOf<String, LatLng>()
+        // for each control in the event course controls, create latlng value and add name and latlng to map for view to display
         for (pcp in participants.get(0).participantControlPerformances){
             pcp.pcpControl.createLatLng()
             controlNameLatLng.put(pcp.pcpControl.controlName,pcp.pcpControl.controlLatLng)
         }
+        // view to display controls
         topRoutesView?.addControls(controlNameLatLng)
     }
 
     override fun getPerformerParticipants(){
         val mapUtilities = MapUtilities()
-        var routePointsLatLng = mapUtilities.getAllParticipantRoutePoints(participants)
+        // use maputilities to find all routepoint vlaues for every participant
+        val routePointsLatLng = mapUtilities.getAllParticipantRoutePoints(participants)
+        // create a bounds for the map display
         val bounds : LatLngBounds = mapUtilities.determineNESW(routePointsLatLng)
+        // show participants routes by passing participants and map bounds
         topRoutesView?.showRoute(participants,bounds)
     }
 
@@ -89,27 +116,20 @@ class TopRoutesPerformer(topRoutesView : ITopRoutesContract.ITopRoutesView, part
 
 /**
  * Listener handles interactor responses
+
  *
- * @param performancePerformer
- * @param performanceView
+ * @param topRoutesPresenter
+ * @param topRoutesView
  */
-class GetTopParticipantsOnFinishedListener(topRoutesPerformer : ITopRoutesContract.ITopRoutesPerformer, topRoutesView : ITopRoutesContract.ITopRoutesView) :
-    IOnFinishedListener<List<Participant>> {
+class GetTopParticipantsOnFinishedListener(topRoutesPresenter : ITopRoutesContract.ITopRoutesPresenter, topRoutesView : ITopRoutesContract.ITopRoutesView) : IOnFinishedListener<List<Participant>> {
     // Events view
-    private var topRoutesPerformer : ITopRoutesContract.ITopRoutesPerformer
+    private var topRoutesPresenter : ITopRoutesContract.ITopRoutesPresenter = topRoutesPresenter
+
     // Events presenter
-    private var topRoutesView : ITopRoutesContract.ITopRoutesView
+    private var topRoutesView : ITopRoutesContract.ITopRoutesView = topRoutesView
 
     /**
-     * Initialises view, presenter
-     */
-    init{
-        this.topRoutesView = topRoutesView
-        this.topRoutesPerformer = topRoutesPerformer
-    }
-
-    /**
-     * On successful response, ask view to fill recycler view with events information
+     * On successful response, asks presenter to filter response and view to update
      * If unsuccessful call view error response handler to display to user
      *
      * @param response
@@ -117,10 +137,11 @@ class GetTopParticipantsOnFinishedListener(topRoutesPerformer : ITopRoutesContra
     override fun onFinished(response: Response<StatusResponseEntity<List<Participant>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                topRoutesPerformer.setPerformerParticipants(response.body()?.entity!!)
-                topRoutesPerformer.processInformation()
-                topRoutesPerformer.getControls()
-                topRoutesPerformer.getPerformerParticipants()
+                // initiate presenter methods to filter response values into usable data
+                topRoutesPresenter.setPerformerParticipants(response.body()?.entity!!)
+                topRoutesPresenter.processInformation()
+                topRoutesPresenter.getControls()
+                topRoutesPresenter.getPerformerParticipants()
             } else {
                 topRoutesView.onResponseError()
             }

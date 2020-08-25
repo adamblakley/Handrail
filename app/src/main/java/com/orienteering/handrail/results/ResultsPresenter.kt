@@ -80,7 +80,8 @@ class ResultsPresenter(resultsView : IResultsContract.IResultsView, participantI
  * @param performancePerformer
  * @param performanceView
  */
-class GetParticipantsOnFinishedListener(resultsPresenter : IResultsContract.IResultsPresenter, resultsView : IResultsContract.IResultsView) : IOnFinishedListener<List<Participant>> {
+class GetParticipantsOnFinishedListener(resultsPresenter : IResultsContract.IResultsPresenter, resultsView : IResultsContract.IResultsView) :
+    IOnFinishedListener<List<Participant>> {
     // Events view
     private var resultsPresenter : IResultsContract.IResultsPresenter
     // Events presenter
