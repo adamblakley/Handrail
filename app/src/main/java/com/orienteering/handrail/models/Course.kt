@@ -4,9 +4,9 @@ import java.io.Serializable
 
 class Course(courseControls: List<Control>? = null, courseName: String, courseNote: String )  : Serializable {
 
-    val courseId : Int? = null
+    var courseId : Int? = null
     var courseName : String
-    var courseNote : String? = null
+    var courseNote : String
     lateinit var courseDate : String
     var courseControls = mutableListOf<Control>()
 

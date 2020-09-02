@@ -142,7 +142,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                         eventDate = "$yearString-$monthString-$dayString"
                         textViewEventDate.text = eventDate
                     }, year, month, day)
-                datePickerDialog.datePicker.maxDate=System.currentTimeMillis()
+                datePickerDialog.datePicker.minDate=System.currentTimeMillis()
                 datePickerDialog.show()
             }
         })

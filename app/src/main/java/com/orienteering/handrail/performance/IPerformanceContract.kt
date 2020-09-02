@@ -23,7 +23,7 @@ interface IPerformanceContract {
          * @param times
          * @param altitudes
          */
-        fun fillInformation(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>)
+        fun fillInformation(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>, position : Int)
 
         /**
          * handle connection failure

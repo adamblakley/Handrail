@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -88,7 +89,7 @@ class EventsAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<Events
         var eventName : TextView
         var eventNote : TextView
         var eventButton : Button
-        var parentLayout : RelativeLayout
+        var parentLayout : LinearLayout
 
         init{
             eventimage = itemView.findViewById(R.id.imageCircle_event_item_image)

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 
 class Event(eventName: String, eventCourse: Course, eventDate: String, eventNote: String) : Serializable{
 
-    val eventId : Int? = null
+    var eventId : Int? = null
     var eventName : String
     lateinit var eventCreated : String
     lateinit var eventOrganiser : User

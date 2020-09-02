@@ -76,7 +76,7 @@ class PerformanceAdapter(controlImages : List<String>, controlPositions : List<I
         }
         holder.name.text=controlNames[position]
         holder.time.text=("Time: "+performanceTimes[position])
-        holder.altitude.text=("Altitude Metres  %.2f".format(controlAltitudes[position]))
+        holder.altitude.text=("Altitude: %.2fm".format(controlAltitudes[position]))
         holder.position.text=(controlPositions[position]+1).toString()
         holder.parentLayout.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {

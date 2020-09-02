@@ -4,6 +4,7 @@ import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.UserInteractor
 import com.orienteering.handrail.models.PasswordUpdateRequest
+import com.orienteering.handrail.models.User
 import com.orienteering.handrail.utilities.App
 import retrofit2.Response
 
@@ -54,15 +55,15 @@ class PasswordUpdatePresenter(passwordUpdateView: IPasswordUpdateContract.IPassw
  * @param passwordUpdatePresenter
  * @param passwordUpdateView
  */
-class PasswordOnFinishedListener(passwordUpdatePresenter: IPasswordUpdateContract.IPasswordUpdatePresenter, passwordUpdateView: IPasswordUpdateContract.IPasswordUpdateView) : IOnFinishedListener<Boolean> {
+class PasswordOnFinishedListener(passwordUpdatePresenter: IPasswordUpdateContract.IPasswordUpdatePresenter, passwordUpdateView: IPasswordUpdateContract.IPasswordUpdateView) : IOnFinishedListener<User> {
 
     // passed view and presenter
     private var passwordUpdateView : IPasswordUpdateContract.IPasswordUpdateView = passwordUpdateView
     private var passwordUpdatePresenter : IPasswordUpdateContract.IPasswordUpdatePresenter = passwordUpdatePresenter
 
-    override fun onFinished(response: Response<StatusResponseEntity<Boolean>>) {
+    override fun onFinished(response: Response<StatusResponseEntity<User>>) {
         if(response.isSuccessful){
-            if (response.body()?.entity ==true) {
+            if (response.body()?.status ==true) {
                 passwordUpdateView.onResponseSuccess()
             } else{
                 passwordUpdateView.onResponseError()

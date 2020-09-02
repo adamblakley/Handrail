@@ -68,9 +68,27 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
         loginButton = findViewById(R.id.button_login)
         loginButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                loginPresenter.requestDataFromServer(userEmail,userPassword)
+                if (checkFields()){
+                    loginPresenter.requestDataFromServer(userEmail,userPassword)
+                }
             }
         })
+    }
+
+    fun checkFields(): Boolean {
+        var inputsOk : Boolean = true
+        if (emailEditText.text.toString().trim().length<=0){
+            emailEditText.setError("Enter an email address")
+            inputsOk=false
+        }
+        if (passwordEditText.text.toString().trim().length<=0){
+            passwordEditText.setError("Enter a password")
+            inputsOk=false
+        }
+        if (!inputsOk){
+            Toast.makeText(this@LoginActivity,"Please check login fields",Toast.LENGTH_SHORT).show()
+        }
+        return inputsOk
     }
 
     override fun makeToast(message: String) {
@@ -82,6 +100,11 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
         val intent = Intent(this@LoginActivity, HomeActivity::class.java).apply {}
         startActivity(intent)
         finish()
+    }
+
+    override fun onResponseIncorrect() {
+        val toast : Toast = Toast.makeText(this@LoginActivity,"Error: Email or Password not found, please check your input and try again",Toast.LENGTH_SHORT)
+        toast.show()
     }
 
     override fun onResponseFailure(throwable: Throwable) {

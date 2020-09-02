@@ -83,58 +83,40 @@
 
     <Button
         android:id="@+id/btn_edit_profile"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:drawableLeft="@android:drawable/ic_menu_preferences"
-        android:text="Edit Profile"
         android:background="@drawable/handrail_button"
-        android:textColor="#FFFFFF"
+        android:drawableLeft="@android:drawable/ic_menu_preferences"
         android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:text="Edit Profile"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_edit_homemenu" />
 
     <Button
         android:id="@+id/btn_logout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:drawableLeft="@android:drawable/ic_menu_revert"
-        android:text="logout"
         android:background="@drawable/handrail_button_danger"
-        android:textColor="#FFFFFF"
+        android:drawableLeft="@android:drawable/ic_menu_revert"
         android:padding="10dp"
+        android:text="logout"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_logout_homemenu" />
-
-    <TextView
-        android:id="@+id/textView_logout_homemenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Logout from your account"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_edit_profile" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_edit_homemenu" />
 
     <TextView
         android:id="@+id/textView_edit_homemenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Manage your account information"
+        android:text="Manage your account information or Logout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

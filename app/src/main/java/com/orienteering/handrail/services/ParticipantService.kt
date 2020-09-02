@@ -29,6 +29,9 @@ interface ParticipantService {
     @GET("events/{id}/participants")
     fun readEventParticipants(@Path("id") eventId : Int) : Call<StatusResponseEntity<List<Participant>>>
 
+    @GET("events/{id}/participants/results")
+    fun readEventParticipantsResults(@Path("id") eventId : Int) : Call<StatusResponseEntity<List<Participant>>>
+
     @PUT("/events/{id}/removeparticipant")
     fun removeParticipant(@Path("id") eventId: Int, @Body userId: Long): Call<StatusResponseEntity<Event>>
 

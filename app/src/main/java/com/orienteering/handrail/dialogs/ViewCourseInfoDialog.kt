@@ -72,10 +72,10 @@ class ViewCourseInfoDialog(courseName: String?=null, courseNote : String?=null, 
             textViewCourseNote.text = courseNote
         }
         if (courseAltitude!=null){
-            textViewCourseAltitude.text = "Average Altitude: %.2f".format(courseAltitude)
+            textViewCourseAltitude.text = "Average Altitude: %.2f m".format(courseAltitude)
         }
         if (courseDistance!=null){
-            textViewCourseDistance.text = "Total Distance: %.2f".format(courseDistance)
+            textViewCourseDistance.text = "Total Distance: %.2f m".format(courseDistance)
         }
 
     }

@@ -1,6 +1,7 @@
 package com.orienteering.handrail.edit_event
 
 import android.net.Uri
+import android.util.Log
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.image_utilities.ImageSelect
@@ -70,13 +71,12 @@ class EditEventPresenter(eventId: Int, editEventView: IEditEventContract.IEditEv
             this.event?.eventDate = eventDate
         }
         if (imageUri != null) {
-             // if image available, create multipartbody.part and add to update request
+             // if image available, create multipartbody.part and add to update request else update without multipartbody.part
             val imageMultipartBodyPart = imageUri?.let { event?.eventName?.let { it1 -> multipartBodyFactory.createImageMultipartBody(imageSelect.activity, it, it1) } }
             this.event?.eventId?.let { eventInteractor.update(it, event!!, imageMultipartBodyPart, postEditEventOnFinishedListener) }
         } else {
             this.event?.eventId?.let { eventInteractor.update(it, event!!, postEditEventOnFinishedListener) }
         }
-
     }
 
     /**

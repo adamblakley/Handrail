@@ -16,6 +16,7 @@ import com.orienteering.handrail.course_participation.CourseParticipationActivit
 import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.interactors.ParticipantInteractor
+import com.orienteering.handrail.manage_events.ManageEventsActivity
 import com.orienteering.handrail.results.ResultsActivity
 
 /**
@@ -51,7 +52,7 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         if (intent.extras!=null){
             this.eventId = intent.getSerializableExtra("EVENT_ID") as Int
         } else {
-            startViewEventsActivity()
+            startViewAllEventsActivity()
         }
 
         this.eventPresenter = EventPresenter(this.eventId,this, EventInteractor(), ParticipantInteractor())
@@ -245,6 +246,15 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
      *
      */
     override fun startViewEventsActivity(){
+        val intent = Intent(this@EventActivity, ManageEventsActivity::class.java).apply {}
+        startActivity(intent)
+    }
+
+    /**
+     * start view events activity
+     *
+     */
+    fun startViewAllEventsActivity(){
         val intent = Intent(this@EventActivity, EventsActivity::class.java).apply {}
         startActivity(intent)
     }

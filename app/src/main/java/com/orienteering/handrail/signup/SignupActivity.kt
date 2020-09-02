@@ -144,7 +144,7 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
             editTextFirstName.setError("Enter your first name")
             inputsOk=false
         }
-        if (editTextFirstName.text.toString().trim().length<=0){
+        if (editTextLastName.text.toString().trim().length<=0){
             editTextLastName.setError("Enter your last name")
             inputsOk=false
         }

@@ -66,7 +66,7 @@ class ResultsPresenter(resultsView : IResultsContract.IResultsView, participantI
     }
 
     override fun requestDataFromServer(eventId: Int) {
-        participantInteractor.getParticipants(eventId,getParticipantsOnFinishedListener)
+        participantInteractor.getParticipantsResults(eventId,getParticipantsOnFinishedListener)
     }
 
     override fun onDestroy() {

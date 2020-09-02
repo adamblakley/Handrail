@@ -82,7 +82,7 @@ class UserInteractor {
      * @param passwordUpdateRequest
      * @param onFinishedListener
      */
-    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, onFinishedListener: IOnFinishedListener<Boolean>){
+    fun updatePassword(userId: Long, passwordUpdateRequest: PasswordUpdateRequest, onFinishedListener: IOnFinishedListener<User>){
         val call = userService.updatePassword(userId,passwordUpdateRequest)
         val customCallback = CustomCallback(onFinishedListener)
         call.enqueue(customCallback)

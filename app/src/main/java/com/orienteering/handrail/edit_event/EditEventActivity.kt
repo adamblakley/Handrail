@@ -76,15 +76,15 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     private lateinit var textViewEventCourse : TextView
 
     // button to select photo for event
-    private var buttonUpdatePhoto: Button? = null
+    private lateinit var buttonUpdatePhoto: Button
     // button to select date for event
-    private var buttonSelectDate: Button? = null
+    private lateinit var buttonSelectDate: Button
     // button to select time for event
-    private var buttonSelectTime: Button? = null
+    private lateinit var buttonSelectTime: Button
     //button to select course for event
-    private var buttonSelectCourse: Button? = null
+    private lateinit var buttonSelectCourse: Button
     // button to create event
-    private var buttonCreateEvent: Button? = null
+    private lateinit var buttonEditEvent: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +111,8 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         buttonSelectTime = findViewById(R.id.button_event_time)
         buttonSelectCourse = findViewById<Button>(R.id.button_event_course)
         buttonSelectCourse?.visibility=View.INVISIBLE
-        buttonCreateEvent = findViewById<Button>(R.id.button_event_create)
+        buttonEditEvent = findViewById<Button>(R.id.button_event_create)
+        buttonEditEvent.text="Update Event"
 
         buttonUpdatePhoto?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -140,6 +141,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
                         eventDate = "$yearString-$monthString-$dayString"
                         textViewEventDate.text = eventDate
                     }, year, month, day)
+                datePickerDialog.datePicker.minDate=System.currentTimeMillis()
                 datePickerDialog.show()
             }
         })
@@ -167,7 +169,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
             }
         })
         // check all fields, and request update of event information via presenter
-        buttonCreateEvent?.setOnClickListener(object : View.OnClickListener {
+        buttonEditEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (checkFields()) {
                     // refactor date string to acceptable value format
@@ -356,7 +358,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
                 1002 -> {
                     // gallery intent- bind uri from selected data after check
                     if (resultCode == Activity.RESULT_OK && data != null) {
-                        data.data?.let { setupImage(it) }
+                        data.data?.let { editEventPresenter.setImage(it) }
                         data.data?.let { setupImage(it) }
                     } else {
                         Log.e(TAG,"Result: $resultCode  Data: $data")

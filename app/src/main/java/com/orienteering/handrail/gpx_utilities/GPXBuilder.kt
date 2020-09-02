@@ -27,9 +27,9 @@ class GPXBuilder(context : Context)  {
      * Check external storage permissions
      * @return
      */
-    fun checkExternalStoragePermission() : Boolean{
+    private fun checkExternalStoragePermission() : Boolean{
         val state : String = Environment.getExternalStorageState()
-        return Environment.MEDIA_MOUNTED.equals(state)
+        return Environment.MEDIA_MOUNTED == state
     }
 
     /**
@@ -45,11 +45,11 @@ class GPXBuilder(context : Context)  {
         Log.e("FileWriter","Permission check = $permission")
         // begin file writing, determine file name
         val fileName = "$timeStamp.gpx"
-        // delcare file header
+        // declare file header
         val gpxHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Handrail\" version=\"1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n"
         // declare gpx file name
         val gpxName = "<name>" + "My Controls $timeStamp" + "</name><trkseg>\n";
-        // delcare control segments and initiate
+        // declare control segments and initiate
         var controlSegments = ""
         // for each passed control, add latitude and longitude values and date value
         for (control in controls){
@@ -73,7 +73,7 @@ class GPXBuilder(context : Context)  {
      * @param controlSegments
      * @param gpxFooter
      */
-    fun saveGPX(fileName : String, gpxHeader : String, gpxName : String, controlSegments : String, gpxFooter : String){
+    private fun saveGPX(fileName : String, gpxHeader : String, gpxName : String, controlSegments : String, gpxFooter : String){
         // try to create a new file
         try{
             val folder : File? = context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)

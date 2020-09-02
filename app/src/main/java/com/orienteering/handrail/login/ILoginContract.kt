@@ -50,6 +50,12 @@ interface ILoginContract {
         fun onResponseError()
 
         /**
+         * Handle incorrect password
+         *
+         */
+        fun onResponseIncorrect()
+
+        /**
          * Redirect user to hub
          *
          */

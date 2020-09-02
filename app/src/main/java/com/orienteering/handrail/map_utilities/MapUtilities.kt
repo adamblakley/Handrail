@@ -1,5 +1,6 @@
 package com.orienteering.handrail.map_utilities
 
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.orienteering.handrail.models.Control
@@ -85,28 +86,35 @@ class MapUtilities {
      */
     fun calculateTotalDistance(latlngs : MutableList<LatLng>) : Double {
         var totalDistance : Double = 0.0
+
+        if (latlngs.size<=1){
+            return 0.0
+        }
+
         // iterate through list of latitude and longitude, stopping at preantepenultimate to prevent index out of bounds error
         for (currentLatLng in 0..latlngs.size-2){
+
             // calculate lat and long differences, subtract current latitude and longitude values from the next latlng value in the list
             val lngDistance = Math.toRadians(latlngs[currentLatLng+1].longitude - latlngs[currentLatLng].longitude)
             val latDistance = Math.toRadians(latlngs[currentLatLng+1].latitude - latlngs[currentLatLng].latitude)
             // utilize Haversine forumla to calculate total distance between two points on a sphere (globe)
             // Angle a of triangle - find sine value of latitude distance/2 squared
-            val a: Double = sin(latDistance / 2) * sin(latDistance / 2)
+            val a: Double = sin(latDistance / 2) * sin(latDistance / 2) +
             // add to the cosine value of the radian value of the current latitude * the radian value of the next latitude
             // multiplied by the sine value of the lngdistance/2 squared
             // Angle b of triangle
-            + cos(Math.toRadians(latlngs[currentLatLng].latitude)) * cos(Math.toRadians(latlngs[currentLatLng+1].latitude))* sin(lngDistance / 2) * sin(lngDistance / 2)
+                    cos(Math.toRadians(latlngs[currentLatLng].latitude)) * cos(Math.toRadians(latlngs[currentLatLng+1].latitude))*
+                    sin(lngDistance / 2) * sin(lngDistance / 2)
+
             // determine the value of 2 * the angle of the euclidean plane providing the x and y axis points of the square root of a and the square root of 1-a
             val c: Double = 2 * atan2(sqrt(a), sqrt(1 - a))
             // the calculated distance is now the radius of the globe multiplied by the value of c multiplied by 1000 to determine distance in meters
             var calculatedDistance: Double = GLOBAL_RADIUS * c * 1000
+            Log.e("Total Distance","$calculatedDistance")
             // add to total distance
             totalDistance+=calculatedDistance
         }
         // return total added distance
         return totalDistance
     }
-
-
 }

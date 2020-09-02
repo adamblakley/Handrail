@@ -68,5 +68,12 @@
         android:layout_toRightOf="@+id/textView_control_item_name"
         android:text="Info" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/imageCircle_control_item_image"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimaryDark" />
+
 
 </RelativeLayout>

@@ -1,11 +1,12 @@
 package com.orienteering.handrail.permissions
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 
 // tag for logs
@@ -101,7 +102,15 @@ class PermissionManager  {
             }
         }
         if (permissionGranted==false){
-            Toast.makeText(context,"You may be unable to user certain app features. Please grant permissions in system settings",Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(context)
+                .setTitle("Permission Request")
+                .setMessage("You may be unable to user certain app features. Please grant permissions in system settings.")
+                .setPositiveButton("I Understand",
+                    DialogInterface.OnClickListener { dialog, which ->
+
+                    })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show()
         }
             // if true, return to calling method to return
         return permissionGranted

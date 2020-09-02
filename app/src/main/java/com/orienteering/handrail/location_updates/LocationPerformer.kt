@@ -21,10 +21,10 @@ private val TAG: String = LocationPerformer::class.java.getName()
  * @param activity
  */
 class LocationPerformer(locationResponder : ILocationResponder, context : Context, activity : Activity) {
-    // Request code for location permission
-    private val REQUEST_SETTINGS_CHECK_CODE = 2
     // Responder class implementing ILocationResponder to receive location update responses
     var locationResponder : ILocationResponder
+    // Request code for location permission
+    private val REQUEST_SETTINGS_CHECK_CODE = 2
     // Activity context from view
     var context : Context
     // Activity for view

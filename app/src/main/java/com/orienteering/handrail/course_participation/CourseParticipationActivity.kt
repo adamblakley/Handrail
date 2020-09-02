@@ -1,7 +1,9 @@
 package com.orienteering.handrail.course_participation
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.PendingIntent
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.location.Location
@@ -30,6 +32,7 @@ import com.orienteering.handrail.models.*
 import com.orienteering.handrail.performance.PerformanceActivity
 import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
 import com.orienteering.handrail.permissions.PermissionManager
+
 
 // TAG for Logs
 private val TAG: String = CourseParticipationActivity::class.java.name
@@ -388,6 +391,13 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
+    override fun onDestroy(){
+        super.onDestroy()
+        geofencingClient.removeGeofences(geoFencingRequestIds).addOnSuccessListener { Log.e(TAG,"FENCE REMOVED") }
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+        presenter.onDestroy()
+    }
+
     public override fun onResume() {
         super.onResume()
         if (!locationUpdateState) {
@@ -438,14 +448,28 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
 
     override fun onParticipantPostError(){
         Log.e(TAG, "Error posting event")
-        Toast.makeText(this@CourseParticipationActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT).show()
-        Toast.makeText(this@CourseParticipationActivity,"Please try again once connection resolved, do not leave this page or performance will be lost",Toast.LENGTH_SHORT).show()
+        AlertDialog.Builder(this@CourseParticipationActivity)
+            .setTitle("Error: Service currently unavailable")
+            .setMessage("Please try again once connection resolved, do not leave this page or performance will be lost")
+            .setPositiveButton("I Understand",
+                DialogInterface.OnClickListener { dialog, which ->
+
+                })
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
 
     override fun onParticipantPostFailure(){
         Log.e(TAG, "Failure posting participant")
-        Toast.makeText(this@CourseParticipationActivity,"Error: Failure to connect to service",Toast.LENGTH_SHORT).show()
-        Toast.makeText(this@CourseParticipationActivity,"Please try again once connection resolved, do not leave this page or performance will be lost",Toast.LENGTH_SHORT).show()
+        AlertDialog.Builder(this@CourseParticipationActivity)
+            .setTitle("Error: Failure to connect to service")
+            .setMessage("Please try again once connection resolved, do not leave this page or performance will be lost")
+            .setPositiveButton("I Understand",
+                DialogInterface.OnClickListener { dialog, which ->
+
+                })
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
 
 }

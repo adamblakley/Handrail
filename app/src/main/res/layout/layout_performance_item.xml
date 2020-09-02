@@ -49,28 +49,35 @@
         android:layout_marginStart="0dp"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginRight="50dp"
         android:layout_toRightOf="@id/textView_performance_control_position"
-        android:text="Time:"
+        android:ellipsize="end"
         android:gravity="center"
         android:scrollHorizontally="true"
-        android:ellipsize="end"
         android:singleLine="true"
-        />
+        android:text="Time:" />
 
     <TextView
         android:id="@+id/textView_performance_control_altitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView_performance_control_name"
-        android:layout_marginStart="65dp"
-        android:layout_marginLeft="65dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/textView_performance_control_time"
-        android:layout_toRightOf="@+id/textView_performance_control_time"
-        android:text="Altitude:"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:ellipsize="end"
         android:gravity="center"
         android:scrollHorizontally="true"
-        android:ellipsize="end" />
+        android:text="Altitude:" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/imageView_performance_control"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimaryDark" />
 
 </RelativeLayout>

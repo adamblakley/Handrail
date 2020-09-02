@@ -20,19 +20,19 @@
 
     <TextView
         android:id="@+id/textView_course_item_name"
-        android:layout_width="100dp"
+        android:layout_width="123dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="25dp"
         android:layout_toRightOf="@id/imageCircle_course_item_image"
-        android:text="No Name Available"
+        android:ellipsize="end"
         android:gravity="center"
         android:scrollHorizontally="true"
-        android:ellipsize="end"
-        android:textSize="20sp"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:text="No Name Available"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/button_course_item_open"
@@ -41,16 +41,17 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginEnd="35dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginRight="35dp"
         android:background="@drawable/handrail_button"
-        android:textColor="#FFFFFF"
         android:padding="10dp"
-        android:layout_toEndOf="@+id/textView_course_item_name"
-        android:layout_toRightOf="@+id/textView_course_item_name"
-        android:text="Open" />
-
+        android:text="Open"
+        android:textColor="#FFFFFF" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/imageCircle_course_item_image"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimaryDark" />
 
 </RelativeLayout>

@@ -99,8 +99,11 @@ class PerformancePresenter(performanceView : IPerformanceContract.IPerformanceVi
             controlNames.add(performance.pcpControl.controlName)
             performance.pcpControl.controlAltitude?.let { altitudes.add(it) }
         }
+        val position = participant.position
         // display information on user interface via view class
-        performanceView?.fillInformation(imageUrls,controlPositions,controlNames,times,altitudes)
+        if (position != null) {
+            performanceView?.fillInformation(imageUrls,controlPositions,controlNames,times,altitudes,position)
+        }
     }
 
     override fun setPresenterParticipant(participant: Participant) {

@@ -23,7 +23,7 @@ import retrofit2.Response
 class CourseParticipationPresenter(eventId : Int, view: ICourseParticipationContract.ICourseActivity, eventInteractor: EventInteractor, pcpInteractor: PCPInteractor) : ICourseParticipationContract.ICoursePresenter{
 
     private var eventId: Int
-    private var view : ICourseParticipationContract.ICourseActivity
+    private var view : ICourseParticipationContract.ICourseActivity?
     private var eventInteractor : EventInteractor
     private var pcpInteractor : PCPInteractor
 
@@ -40,7 +40,7 @@ class CourseParticipationPresenter(eventId : Int, view: ICourseParticipationCont
      */
     override fun getDataFromDatabase(){
         val eventInteractor = EventInteractor()
-        eventInteractor.retreiveByID(eventId,GetEventOnFinishedListener(view))
+        view?.let { GetEventOnFinishedListener(it) }?.let { eventInteractor.retreiveByID(eventId, it) }
     }
 
     /**
@@ -49,7 +49,11 @@ class CourseParticipationPresenter(eventId : Int, view: ICourseParticipationCont
      * @param performanceUploadRequest
      */
     override fun uploadParticipantControlPerformances(performanceUploadRequest : PerformanceUploadRequest){
-        pcpInteractor.create(eventId,App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),performanceUploadRequest,PostPerformanceOnFinishedListener(view))
+        view?.let { PostPerformanceOnFinishedListener(it) }?.let { pcpInteractor.create(eventId,App.sharedPreferences.getLong(App.SharedPreferencesUserId,0),performanceUploadRequest, it) }
+    }
+
+    override fun onDestroy() {
+        view = null
     }
 }
 

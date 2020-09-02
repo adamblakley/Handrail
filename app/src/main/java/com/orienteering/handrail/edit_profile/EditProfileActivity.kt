@@ -207,7 +207,7 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
             editTextFirstName.error = "Enter your first name"
             inputsOk = false
         }
-        if (editTextFirstName.text.toString().trim().length <= 0) {
+        if (editTextLastName.text.toString().trim().length <= 0) {
             editTextLastName.error = "Enter your last name"
             inputsOk = false
         }

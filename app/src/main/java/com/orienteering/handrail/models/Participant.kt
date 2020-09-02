@@ -7,11 +7,10 @@ class Participant(participantUser : User){
     var participantUser : User
     var participantControlPerformances = mutableListOf<ParticipantControlPerformance>()
     var routePoints = mutableListOf<RoutePoint>()
+    var position : Int? = null
 
     init{
         this.participantUser=participantUser
-        this.participantControlPerformances= participantControlPerformances
-        this.routePoints= routePoints
     }
 
     override fun toString(): String {

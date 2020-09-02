@@ -36,6 +36,7 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
     private lateinit var textViewPace : TextView
     // google map view
     private lateinit var performanceMap: GoogleMap
+    private lateinit var textPosition : TextView
 
     /**
      * Request view intialise along with ui elements and presenter
@@ -117,6 +118,7 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
     private fun createTextView(){
         textViewDistance = findViewById(R.id.textView_distance_performance)
         textViewPace = findViewById(R.id.textView_pace_performance)
+        textPosition = findViewById(R.id.textView_position_performance)
     }
 
     /**
@@ -137,8 +139,11 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
      * @param times
      * @param altitudes
      */
-    override fun fillInformation(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>) {
+    override fun fillInformation(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>, position : Int) {
         val performanceAdapter : PerformanceAdapter = PerformanceAdapter(imageUrls,controlPositions,controlNames,times,altitudes)
+        if (position!=0){
+            textPosition.text = "Position: $position"
+        }
         recyclerView.adapter = performanceAdapter
     }
 

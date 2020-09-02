@@ -1,5 +1,6 @@
 package com.orienteering.handrail.toproutes
 
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.orienteering.handrail.httprequests.IOnFinishedListener
@@ -63,6 +64,7 @@ class TopRoutesPresenter(topRoutesView : ITopRoutesContract.ITopRoutesView, part
         if (participants != null) {
             for (participant in participants){
                 names.add(participant.participantUser.userFirstName)
+                Log.e("TAG","${participant.participantUser.userFirstName}")
                 times.add(geofencePerformanceCalculator.convertMilliToMinutes(participant.participantControlPerformances[participant.participantControlPerformances.size-1].controlTime))
                 positions.add(participants.indexOf(participant))
                 ids.add(participant.participantId)

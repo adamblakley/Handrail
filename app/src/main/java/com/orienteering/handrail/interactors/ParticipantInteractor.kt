@@ -43,6 +43,21 @@ class ParticipantInteractor {
     }
 
     /**
+     * get participants of single event that have completed the event via participantService
+     *
+     * @param eventId
+     * @param onFinishedListener
+     */
+    fun getParticipantsResults(eventId : Int, onFinishedListener: IOnFinishedListener<List<Participant>>){
+        val call : Call<StatusResponseEntity<List<Participant>>> = participantService.readEventParticipantsResults(eventId)
+        val customCallback : CustomCallback<List<Participant>> =
+            CustomCallback(
+                onFinishedListener
+            )
+        call.enqueue(customCallback)
+    }
+
+    /**
      * get top 5 participants of single event via participantService
      *
      * @param eventId
