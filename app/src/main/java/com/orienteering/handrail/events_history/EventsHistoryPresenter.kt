@@ -51,8 +51,7 @@ class EventsHistoryPresenter(eventsHistoryView : IEventsHistoryContract.IEventsH
  * @param presenter
  * @param view
  */
-class GetEventsHistoryOnFinishedListener(view : IEventsHistoryContract.IEventsHistoryView) :
-    IOnFinishedListener<List<Event>> {
+class GetEventsHistoryOnFinishedListener(view : IEventsHistoryContract.IEventsHistoryView) : IOnFinishedListener<List<Event>> {
     // Events view
     private var view :  IEventsHistoryContract.IEventsHistoryView = view
 
