@@ -1,13 +1,17 @@
 package com.orienteering.handrail.course
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -48,6 +52,10 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
     private lateinit var buttonExport : Button
     // button for delete
     private lateinit var buttonDelete : Button
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * Handles creation of view, buttons and requests data from presenter
@@ -58,19 +66,21 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
         setContentView(R.layout.activity_course2)
         // set map view as supportmap fragment of selected map view layout
         mapFragment = supportFragmentManager.findFragmentById(R.id.map_course_view) as SupportMapFragment
-
+        createButtons()
         // check intent for course id, then initialise presenter and request
         if(intent.extras!=null) {
             mapFragment.getMapAsync(this)
             courseId = intent.getSerializableExtra("COURSE_ID") as Int
             presenter = this.courseId?.let { CoursePresenter(it,this, CourseInteractor()) }!!
+            progressDialog.setMessage("Loading Content...")
+            progressDialog.show()
             presenter.requestDataFromServer()
         }
         // textview for the course name
         textViewCourseName = findViewById(R.id.textView_course_view_name)
         // initialise recyclerview and buttons
         initRecyclerView()
-        createButtons()
+
 
     }
 
@@ -94,6 +104,8 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
         buttonInfo = findViewById(R.id.btn_course_view_info)
         buttonExport = findViewById(R.id.btn_course_view_export)
         buttonDelete = findViewById(R.id.btn_course_view_delete)
+        progressDialog = ProgressDialog(this@CourseActivity)
+        progressDialog.setCancelable(false)
 
         buttonInfo.setOnClickListener {
             presenter.courseInformation()
@@ -104,6 +116,8 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
         }
 
         buttonDelete.setOnClickListener {
+            progressDialog.setMessage("Deleting...")
+            progressDialog.show()
             presenter.removeDataFromServer()
         }
     }
@@ -226,7 +240,9 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
      * @param controls
      * @param courseName
      */
-    override fun onGetResponseSuccess(controls: List<Control>,courseName : String) {
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun onGetResponseSuccess(controls: List<Control>, courseName : String) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         fillRecyclerView(controls)
         presenter.getRoute(controls)
         if (courseName.isNotEmpty()){
@@ -238,6 +254,7 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
      * Confirm course deletion start activity Courses
      */
     override fun onDeleteResponseSuccess() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.i(TAG, "Success deleting course")
         Toast.makeText(this@CourseActivity,"Course successfully deleted",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@CourseActivity, com.orienteering.handrail.courses.CoursesActivity::class.java)
@@ -249,6 +266,7 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
      * @param throwable
      */
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure reaching resource")
         Toast.makeText(this@CourseActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT).show()
     }
@@ -257,6 +275,7 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
      * Notify user of error
      */
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure processing course request")
         Toast.makeText(this@CourseActivity,"Error: If problem persists, please contact admin",Toast.LENGTH_SHORT).show()
     }

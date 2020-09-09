@@ -1,9 +1,11 @@
 package com.orienteering.handrail.signup
 
 import android.app.DatePickerDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.*
 import com.orienteering.handrail.R
@@ -34,6 +36,10 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
     lateinit var editTextBio : EditText
     lateinit var editTextPassword : EditText
     lateinit var editTextConfirmPassword : EditText
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
     /**
      * buttons for dob entry and create account (calls signup service)
      */
@@ -89,6 +95,8 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
     fun createButtons() {
         btnDob = findViewById(R.id.btn_signup_dob)
         btnCreateAccount = findViewById(R.id.btn_signup_create_account)
+        progressDialog = ProgressDialog(this@SignupActivity)
+        progressDialog.setCancelable(false)
         // create date dialog picker
         btnDob.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
@@ -121,6 +129,8 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
                 if (validateFields()){
                     val signupRequest = SignupRequest(editTextFirstName.text.toString(),editTextLastName.text.toString(),editTextEmail.text.toString(),editTextPassword.text.toString(),textViewDob.text.toString(),editTextBio.text.toString())
                     if (signupRequest!=null){
+                        progressDialog.setMessage("Creating Account...")
+                        progressDialog.show()
                         signupPresenter.postDataToServer(signupRequest)
                     }
                     else {
@@ -178,14 +188,19 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
+
         makeToast("Service unavailable. Please try again later.")
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
+
         makeToast("Service unavailable. Please try again later.")
     }
 
     override fun emailInUse(){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         makeToast("Email already in use.")
         editTextEmail.setError("Email already in use")
     }
@@ -195,6 +210,7 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
      *
      */
     override fun startLoginActivity() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val intent = Intent(this@SignupActivity, LoginActivity::class.java).apply {}
         startActivity(intent)
         finish()

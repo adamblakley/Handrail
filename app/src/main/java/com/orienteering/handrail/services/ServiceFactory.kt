@@ -13,7 +13,9 @@ import java.util.concurrent.TimeUnit
 object ServiceFactory {
 
     // url of rest service
-    private const val API_BASE_URL = "http://192.168.0.21:8080/"
+    // Test http://192.168.0.21:8080/
+    // AWS http://handrail-env-2.eba-wmrcuzkd.us-east-2.elasticbeanstalk.com/
+    private const val API_BASE_URL = "http://handrail-env-2.eba-wmrcuzkd.us-east-2.elasticbeanstalk.com/"
 
     /**
      * Retrofit make service function, create and connect a http client with rest service, associate service class

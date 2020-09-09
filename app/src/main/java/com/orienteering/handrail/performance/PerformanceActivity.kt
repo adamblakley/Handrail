@@ -1,8 +1,10 @@
 package com.orienteering.handrail.performance
 
+import android.app.ProgressDialog
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
@@ -37,6 +39,10 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
     // google map view
     private lateinit var performanceMap: GoogleMap
     private lateinit var textPosition : TextView
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * Request view intialise along with ui elements and presenter
@@ -52,12 +58,15 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
 
         initRecyclerView()
         createTextView()
-
+        progressDialog = ProgressDialog(this@PerformanceActivity)
+        progressDialog.setCancelable(false)
         this.performancePresenter = PerformancePresenter(this, ParticipantInteractor())
         // if intent extra is provided in form of event id, request presenter find performance
         if(intent.extras!=null) {
             // request map initialisation
             mapCourseFragment.getMapAsync(this)
+            progressDialog.setMessage("Loading Content...")
+            progressDialog.show()
             performancePresenter.requestDataFromServer(intent.getSerializableExtra("EVENT_ID") as Int)
         }
     }
@@ -140,6 +149,7 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
      * @param altitudes
      */
     override fun fillInformation(imageUrls : List<String>,controlPositions : List<Int>,controlNames : List<String>,times : List<String>,altitudes : List<Double>, position : Int) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val performanceAdapter : PerformanceAdapter = PerformanceAdapter(imageUrls,controlPositions,controlNames,times,altitudes)
         if (position!=0){
             textPosition.text = "Position: $position"
@@ -148,11 +158,13 @@ class PerformanceActivity : AppCompatActivity(), OnMapReadyCallback, IPerformanc
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure connecting to service")
         Toast.makeText(this@PerformanceActivity,"Error: Unable to connect to service",Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error getting performance")
         Toast.makeText(this@PerformanceActivity,"Error: Unable to retreive performance",Toast.LENGTH_SHORT).show()
     }

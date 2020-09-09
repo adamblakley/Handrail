@@ -39,20 +39,20 @@ class CreateControlDialog : AppCompatDialogFragment() {
 
         alertDialogueBuilder.setView(view).setTitle("Add Control").setNegativeButton("Cancel") { _: DialogInterface, _: Int -> }
             .setPositiveButton("Create") { _: DialogInterface, _: Int ->
-                val username : String = edittextControlName.text.toString()
-                val note : String = edittextControlNote.text.toString()
+                val controlName : String = edittextControlName.text.toString()
+                val controlNote : String = edittextControlNote.text.toString()
                 // when not empty pass information to listener via applytext method
                 when {
-                    username.trim().isEmpty() -> {
+                    controlName.trim().isEmpty() -> {
                         edittextControlName.error="Please enter a control name"
                         Toast.makeText(context,"Please enter a name and note",Toast.LENGTH_SHORT).show()
                     }
-                    note.trim().isEmpty() -> {
+                    controlNote.trim().isEmpty() -> {
                         edittextControlName.error="Please enter a control note"
                         Toast.makeText(context,"Please enter a name and note",Toast.LENGTH_SHORT).show()
                     }
                     else -> {
-                        listener.applyText(username,note)
+                        listener.applyText(controlName,controlNote)
                     }
                 }
             }

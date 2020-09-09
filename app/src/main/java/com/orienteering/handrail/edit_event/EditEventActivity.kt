@@ -2,11 +2,13 @@ package com.orienteering.handrail.edit_event
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.app.ProgressDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -48,6 +50,10 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     var eventTime : String = ""
     // check event change date
     var eventDateChange : Boolean = false
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     // calendar for date and time values to correctly display and modify for creation
     val calendar: Calendar = Calendar.getInstance()
@@ -90,8 +96,11 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imageSelect = ImageSelect(this, this@EditEventActivity)
+        createButtons()
         if (intent.extras!=null){
             this.editEventPresenter = EditEventPresenter(intent.getSerializableExtra("EVENT_ID") as Int,this,imageSelect, EventInteractor())
+            progressDialog.setMessage("Loading Content...")
+            progressDialog.show()
             editEventPresenter.getDataFromServer()
         } else {
             val intent = Intent(this@EditEventActivity, EventsActivity::class.java).apply {}
@@ -99,7 +108,6 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         }
         setContentView(R.layout.activity_create_event)
         initiateText()
-        createButtons()
     }
 
     /**
@@ -113,6 +121,8 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         buttonSelectCourse?.visibility=View.INVISIBLE
         buttonEditEvent = findViewById<Button>(R.id.button_event_create)
         buttonEditEvent.text="Update Event"
+        progressDialog = ProgressDialog(this@EditEventActivity)
+        progressDialog.setCancelable(false)
 
         buttonUpdatePhoto?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -176,8 +186,12 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
                     val eventDateString = "$eventDate"+"T"+"$eventTime"
                     if (eventName != null && eventDescription != null) {
                         if (eventDateChange){
+                            progressDialog.setMessage("Updating Event...")
+                            progressDialog.show()
                             editEventPresenter.putDataOnServer(eventName,eventDescription,eventDateString)
                         } else {
+                            progressDialog.setMessage("Updating Event...")
+                            progressDialog.show()
                             editEventPresenter.putDataOnServer(eventName,eventDescription,null)
                         }
 
@@ -246,22 +260,26 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     }
 
     override fun onGetResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure connecting to service")
         Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onGetResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error event empty")
         Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
 
     override fun onUpdateResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure connecting to service")
         Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onUpdateResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error event empty")
         Toast.makeText(this@EditEventActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
@@ -272,6 +290,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
      * @param eventId
      */
     override fun onUpdatePartialResponseError(eventId: Int) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Partial success updating Event")
         Toast.makeText(this@EditEventActivity,"Error: Partial Success updating event, please reupload event image.",Toast.LENGTH_SHORT).show()
         val intent : Intent = Intent(this@EditEventActivity, EventActivity::class.java)
@@ -285,6 +304,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
      * @param eventId
      */
     override fun onUpdateResponseSuccess(eventId: Int) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Success updating Event")
         Toast.makeText(this@EditEventActivity,"Success updating event.",Toast.LENGTH_SHORT).show()
         val intent : Intent = Intent(this@EditEventActivity, EventActivity::class.java)
@@ -303,6 +323,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
      * @param courseName
      */
     override fun fillInformation(eventName: String, eventNote: String, eventTime: String, eventDate: String, courseName : String) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         this.eventName=eventName
         this.eventDescription=eventNote
         this.eventTime=eventTime

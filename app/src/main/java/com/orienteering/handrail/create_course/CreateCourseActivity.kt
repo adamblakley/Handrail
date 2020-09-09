@@ -1,15 +1,16 @@
 package com.orienteering.handrail.create_course
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -17,9 +18,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
 import com.orienteering.handrail.course.CourseActivity
-import com.orienteering.handrail.dialogs.*
-import com.orienteering.handrail.interactors.CourseInteractor
+import com.orienteering.handrail.dialogs.EventDialogListener
+import com.orienteering.handrail.dialogs.StandardDialogListener
+import com.orienteering.handrail.dialogs.ViewMarkerDialog
 import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.interactors.CourseInteractor
+
 
 /**
  * View for the creation of a course. Allow user to create control and course via a map fragment, adding notes and images
@@ -45,6 +49,8 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     lateinit var btnSaveCourse : Button
     // pattern of polyline
     lateinit var pattern : MutableList<PatternItem>
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
 
     /**
      * Initialise map fragment, image select and presenter - request buttons and pattern be created and location requested
@@ -85,7 +91,9 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
         //map buttons and add listeners
         btnAddMarker = findViewById<Button>(R.id.btn_add_marker)
         btnSaveCourse = findViewById<Button>(R.id.btn_save_course)
-
+        progressDialog = ProgressDialog(this@CreateCourseActivity)
+        progressDialog.setCancelable(false)
+        progressDialog.setMessage("Creating course...")
         btnAddMarker.setOnClickListener() {
             presenter.saveLatLng()
         }
@@ -191,6 +199,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
      */
     override fun applyEventText(name: String, note: String) {
         presenter.createCourse(name, note)
+        progressDialog.show()
     }
 
     /**
@@ -252,15 +261,21 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     }
 
     override fun onResponseError() {
+        progressDialog.dismiss()
         Toast.makeText(this@CreateCourseActivity,"Error: Unable to process request, please try again",Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponseFailure() {
+        progressDialog.dismiss()
         Toast.makeText(this@CreateCourseActivity,"Error: Failure to connect to service",Toast.LENGTH_SHORT).show()
     }
 
     override fun onLocationUpdateFailure() {
         Toast.makeText(this@CreateCourseActivity,"Error: Failure to acquire location",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun makeToast(message : String){
+        Toast.makeText(this@CreateCourseActivity, message, Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -269,6 +284,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
      * @param courseId
      */
     override fun onPostResponseSuccess(courseId: Int) {
+        progressDialog.dismiss()
         Toast.makeText(this@CreateCourseActivity,"Success creating course course",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@CreateCourseActivity, CourseActivity::class.java).apply {}
         intent.putExtra("COURSE_ID", courseId)

@@ -1,8 +1,10 @@
 package com.orienteering.handrail.login
 
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -31,6 +33,10 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
     lateinit var emailEditText: EditText
     lateinit var passwordEditText: EditText
     lateinit var loginButton: Button
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * Strings for login
@@ -66,9 +72,13 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
 
     override fun createButtons() {
         loginButton = findViewById(R.id.button_login)
+        progressDialog = ProgressDialog(this@LoginActivity)
+        progressDialog.setCancelable(false)
         loginButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (checkFields()){
+                    progressDialog.setMessage("Logging In...")
+                    progressDialog.show()
                     loginPresenter.requestDataFromServer(userEmail,userPassword)
                 }
             }
@@ -97,22 +107,26 @@ class LoginActivity : AppCompatActivity(), ILoginContract.ILoginView {
     }
 
     override fun startHomeMenuActivity() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val intent = Intent(this@LoginActivity, HomeActivity::class.java).apply {}
         startActivity(intent)
         finish()
     }
 
     override fun onResponseIncorrect() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast : Toast = Toast.makeText(this@LoginActivity,"Error: Email or Password not found, please check your input and try again",Toast.LENGTH_SHORT)
         toast.show()
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast : Toast = Toast.makeText(this@LoginActivity,"Error: Connection unavailable, please try again later",Toast.LENGTH_SHORT)
         toast.show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast : Toast = Toast.makeText(this@LoginActivity,"User email or password incorrect", Toast.LENGTH_SHORT)
         toast.show()
         emailEditText.setError("Please check email")

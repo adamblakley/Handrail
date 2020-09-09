@@ -1,15 +1,13 @@
 package com.orienteering.handrail.create_event
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -89,6 +87,10 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     private var buttonSelectCourse: Button? = null
     // button to create event
     private var buttonCreateEvent: Button? = null
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
 
     /**
@@ -114,6 +116,8 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         buttonSelectTime = findViewById(R.id.button_event_time)
         buttonSelectCourse = findViewById(R.id.button_event_course)
         buttonCreateEvent = findViewById(R.id.button_event_create)
+        progressDialog = ProgressDialog(this@CreateEventActivity)
+        progressDialog.setCancelable(false)
         // select image on button click from gallery or camera intent
         buttonUpdatePhoto?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -173,6 +177,8 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         // get event data from presenter
         buttonSelectCourse?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
+                progressDialog.setMessage("Loading Content...")
+                progressDialog.show()
                 createEventPresenter.getDataFromServer()
             }
         })
@@ -182,7 +188,10 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                 if (checkFields()) {
                     val eventDateString = "$eventDate $eventTime"
                     if (eventName != null && eventDescription != null) {
+
                         val event = Event(eventName, eventcourse, eventDateString, eventDescription)
+                        progressDialog.setMessage("Creating Event...")
+                        progressDialog.show()
                         createEventPresenter.postDataOnServer(event)
                     }
                 } else {
@@ -260,11 +269,13 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
     }
 
     override fun onResponseFailure() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure connecting successfully")
         Toast.makeText(this@CreateEventActivity,"Error: Connection Failure, please try again later",Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error with response")
         Toast.makeText(this@CreateEventActivity,"Error: If problem persists, please contact admin.",Toast.LENGTH_SHORT).show()
     }
@@ -275,6 +286,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
      * @param eventId
      */
     override fun onPostResponseSuccess(eventId : Int) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Success adding Event")
         Toast.makeText(this@CreateEventActivity,"Success creating event.",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@CreateEventActivity, EventActivity::class.java)
@@ -289,6 +301,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
      * @param courses
      */
     override fun onGetResponseSuccess(courses: List<Course>) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val courseNames = mutableListOf<String>()
         for (course in courses){
             courseNames.add(course.courseName)

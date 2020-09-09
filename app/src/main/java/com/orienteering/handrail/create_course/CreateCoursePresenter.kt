@@ -108,6 +108,14 @@ class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCour
      * @param note
      */
     override fun createControl(name : String, note : String) {
+        // check if control exists, return
+        for (control in controlsForCourse){
+            if (control.controlName==name){
+                createCourseView.makeToast("Control with that name already exists")
+                return
+            }
+        }
+        // create new control with values, initiate image select
         val calendar = java.util.Calendar.getInstance()
         val date = calendar.time
         val control = Control(name, note, potentialLatLng.latitude, potentialLatLng.longitude, potentialAltitude, date)

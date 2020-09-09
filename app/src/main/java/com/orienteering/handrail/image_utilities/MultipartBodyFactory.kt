@@ -11,6 +11,7 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 /**
  * Responsible for creation of MultipartBody for images file upload
  *
@@ -45,7 +46,7 @@ class MultipartBodyFactory(imageSelect: ImageSelect) {
             try {
                 // create new temp file in cachedir with unique date name
                 val timeStamp : String = SimpleDateFormat("yyyMMdd_HHmmss").format(Date())
-                var cachedFile: File = File(activity.cacheDir, "JPEG_${timeStamp}.jpg")
+                var cachedFile: File = File(activity.cacheDir, "JPEG_${fileName}_${timeStamp}.jpg")
                 try {
                     // attempt write to file via output stream, catch errors
                     var outputStream: OutputStream = FileOutputStream(cachedFile)
@@ -66,6 +67,7 @@ class MultipartBodyFactory(imageSelect: ImageSelect) {
         }
         // else request file from image uri
         var file = File(imageSelect.getImagePath(fileUri))
+        Log.e(TAG,"${file.length()}")
         // create a request body with file type associated and cached file added as body
         val requestBody : RequestBody = RequestBody.create(activity.contentResolver.getType(fileUri)?.let { it.toMediaTypeOrNull() },file)
         // create multipart.body.part to pass file to service along with additional json objects

@@ -1,9 +1,11 @@
 package com.orienteering.handrail.event
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -41,6 +43,10 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     private lateinit var buttonDelete: Button
     // presenter contains logic for view event activity
     private lateinit var eventPresenter : IEventContract.IEventPresenter
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     // Id passed via intent
     override var eventId : Int = 0
@@ -60,6 +66,8 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         intialiseTextView()
         createButtons()
         createImages()
+        progressDialog.setMessage("Loading Content...")
+        progressDialog.show()
         // request event information from presenter
         eventPresenter.requestDataFromServer()
     }
@@ -70,8 +78,12 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     fun createButtons() {
         buttonDelete = findViewById(R.id.button_delete_event_view_event)
         buttonAction = findViewById(R.id.button_action_view_event)
+        progressDialog = ProgressDialog(this@EventActivity)
+        progressDialog.setCancelable(false)
         buttonDelete.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
+                progressDialog.setMessage("Deleting Event...")
+                progressDialog.show()
                 eventPresenter.deleteEvent()
             }
         })
@@ -169,6 +181,7 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
      * @param time
      */
     override fun fillInformation(name : String, note : String, date : String, time : String) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         eventNameTextView.text = name
         eventNoteTextView.text = note
         eventDateTextView.text = date
@@ -221,11 +234,13 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast = Toast.makeText(this@EventActivity,"Error: Connectivity Error, unable to process request ", Toast.LENGTH_SHORT)
         toast.show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast = Toast.makeText(this@EventActivity,"Error: Please contact an administrator",Toast.LENGTH_SHORT)
         toast.show()
     }

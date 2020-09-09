@@ -53,7 +53,7 @@ class CreateCourseDialog : AppCompatDialogFragment() {
                 } else if(courseNote.trim().length<=0){
                     edittextCourseNote.error="Please enter a course note"
                     Toast.makeText(context,"Please enter a course name and note",Toast.LENGTH_SHORT).show()
-                } else {
+                }else{
                     // apply listener on change of input
                     listener.applyEventText(courseName,courseNote)
                 }

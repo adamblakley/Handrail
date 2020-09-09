@@ -1,7 +1,9 @@
 package com.orienteering.handrail.manage_events
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -25,6 +27,10 @@ class ManageEventsActivity : AppCompatActivity(), IManageEventsContract.IManageE
     private lateinit var btnCreateEvent : Button
     // presenter handles retrieval of events
     private lateinit var presenter : IManageEventsContract.IManageEventsPresenter
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * initialise elements, initialise presenter and request event information
@@ -36,6 +42,8 @@ class ManageEventsActivity : AppCompatActivity(), IManageEventsContract.IManageE
         setContentView(R.layout.activity_manage_events)
         initRecyclerView()
         createButtons()
+        progressDialog.setMessage("Loading Content...")
+        progressDialog.show()
         presenter = ManageEventsPresenter(this, EventInteractor())
         presenter.requestDataFromServer()
     }
@@ -47,6 +55,8 @@ class ManageEventsActivity : AppCompatActivity(), IManageEventsContract.IManageE
     private fun createButtons(){
         btnCreateEvent = findViewById(R.id.button_create_manage_events)
         // initiate the create event use case
+        progressDialog = ProgressDialog(this@ManageEventsActivity)
+        progressDialog.setCancelable(false)
         btnCreateEvent?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 val intent = Intent(this@ManageEventsActivity, CreateEventActivity::class.java).apply {}
@@ -70,16 +80,19 @@ class ManageEventsActivity : AppCompatActivity(), IManageEventsContract.IManageE
      * @param eventsList
      */
     override fun fillInformation(eventsList: ArrayList<Event>) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val eventsAdapter : ManageEventsAdapter = ManageEventsAdapter(eventsList)
         recyclerView.adapter = eventsAdapter
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast = Toast.makeText(this@ManageEventsActivity,"Error: Connectivity Error, unable to retreive events", Toast.LENGTH_SHORT)
         toast.show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast = Toast.makeText(this@ManageEventsActivity,"No Events available", Toast.LENGTH_SHORT)
         toast.show()
     }

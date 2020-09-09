@@ -1,8 +1,10 @@
 package com.orienteering.handrail.toproutes
 
+import android.app.ProgressDialog
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +31,10 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
     private lateinit var topRoutesPresenter: ITopRoutesContract.ITopRoutesPresenter
     // google map view
     private lateinit var routesMap: GoogleMap
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * Initialise view, recycler view, map fragment and presenter. request participant information
@@ -41,12 +47,15 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
         val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_route_results) as SupportMapFragment
 
         initRecyclerView()
-
+        progressDialog = ProgressDialog(this@TopRoutesActivity)
+        progressDialog.setCancelable(false)
         this.eventIdPassed = intent.getSerializableExtra("EVENT_ID") as Int
         topRoutesPresenter = TopRoutesPresenter(this, ParticipantInteractor())
 
         if (intent.extras != null) {
             //if event id is available intialise map and request participant data
+            progressDialog.setMessage("Loading Content...")
+            progressDialog.show()
             topRoutesPresenter.requestDataFromServer(intent.getSerializableExtra("EVENT_ID") as Int)
             this.eventIdPassed = intent.getSerializableExtra("EVENT_ID") as Int
             mapCourseFragment.getMapAsync(this)
@@ -141,15 +150,18 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
      * @param imageUrls
      */
     override fun showInformation(names: List<String>, times: List<String>, positions: List<Int>, ids: MutableList<Int?>, imageUrls: List<String>) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val resultsAdapter = ResultsAdapter(names, times, imageUrls, ids, positions)
         recyclerView.adapter = resultsAdapter
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Toast.makeText(this@TopRoutesActivity, "Error: Connectivity Error, unable to retreive results", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Toast.makeText(this@TopRoutesActivity, "No results available", Toast.LENGTH_SHORT).show()
     }
 }

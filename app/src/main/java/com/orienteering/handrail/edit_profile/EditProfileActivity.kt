@@ -2,10 +2,12 @@ package com.orienteering.handrail.edit_profile
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -48,6 +50,10 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
     private lateinit var buttonSelectDOB : Button
     private lateinit var buttonUpdateInfo : Button
     private lateinit var buttonChangePassword: Button
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * user dob value
@@ -78,6 +84,8 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
             this@EditProfileActivity
         )
         editProfilePresenter = EditProfilePresenter(this,UserInteractor(),imageSelect)
+        progressDialog.setMessage("Loading Content...")
+        progressDialog.show()
         editProfilePresenter.getDataFromServer()
     }
 
@@ -89,6 +97,8 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
         buttonSelectDOB = findViewById(R.id.btn_editprofile_dob)
         buttonUpdateInfo = findViewById(R.id.btn_editprofile_update_account)
         buttonChangePassword = findViewById(R.id.btn_editprofile_change_password)
+        progressDialog = ProgressDialog(this@EditProfileActivity)
+        progressDialog.setCancelable(false)
         // starts gallery or camera intent from dialog selection
         buttonSelectImage.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -125,6 +135,8 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
                 if (checkUserFields()){
                     val user : User = User(editTextEmail.text.toString(),editTextFirstName.text.toString(),editTextLastName.text.toString(),userDob,editTextBio.text.toString())
                     if (user!=null){
+                        progressDialog.setMessage("Updating Profile...")
+                        progressDialog.show()
                         editProfilePresenter.putDataOnServer(user)
                     } else {
                         Toast.makeText(this@EditProfileActivity,"Error: Problem updating your account. Please check all fields.",Toast.LENGTH_SHORT).show()
@@ -191,6 +203,7 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
      *
      */
     override fun fillInformation(firstName : String, lastName : String, email : String, bio : String, dob : String){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         editTextFirstName.setText(firstName)
         editTextLastName.setText(lastName)
         editTextEmail.setText(email)
@@ -229,29 +242,33 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
     }
 
     override fun onGetResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure connecting to service")
-        Log.e(TAG,"Error: Service Currently Unavailable")
         val toast : Toast = Toast.makeText(this@EditProfileActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT)
         toast.show()
     }
 
     override fun onGetResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error getting user")
         val toast : Toast = Toast.makeText(this@EditProfileActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT)
         toast.show()
     }
 
     override fun onUpdateResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure connecting to service")
         Toast.makeText(this@EditProfileActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onUpdateResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error user empty")
         Toast.makeText(this@EditProfileActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onUpdatePartialResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error Image upload failure")
         Toast.makeText(this@EditProfileActivity,"Error: Image update unavailable.",Toast.LENGTH_SHORT).show()
     }

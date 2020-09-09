@@ -1,7 +1,9 @@
 package com.orienteering.handrail.password_update
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -33,6 +35,10 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
     lateinit var editTextCurrentPassword : EditText
     // button for submit password change request
     private lateinit var buttonSubmitPassword : Button
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * Initialise view
@@ -65,11 +71,14 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
      */
     fun createButtons(){
         buttonSubmitPassword=findViewById(R.id.button_password_submit)
-
+        progressDialog = ProgressDialog(this@PasswordUpdateActivity)
+        progressDialog.setCancelable(false)
         buttonSubmitPassword.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 if (checkFields()){
                     val passwordUpdateRequest = PasswordUpdateRequest(editTextCurrentPassword.text.toString(),editTextNewPassword.text.toString())
+                    progressDialog.setMessage("Updating Password...")
+                    progressDialog.show()
                     passwordUpdatePresenter.putDataToServer(passwordUpdateRequest)
                 } else {
                     val toast = Toast.makeText(this@PasswordUpdateActivity, "Please check all fields",
@@ -104,22 +113,26 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
     }
 
     override fun onResponseFailure(throwable: Throwable) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error: Service Failure")
         Toast.makeText(this@PasswordUpdateActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error: Service Error")
         Toast.makeText(this@PasswordUpdateActivity,"Error: Service unavailable. Please try again later.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponsePasswordError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error: Incorrect Password")
         Toast.makeText(this@PasswordUpdateActivity,"Error: Incorrect Password.",Toast.LENGTH_SHORT).show()
         editTextCurrentPassword.error = "Enter your current password"
     }
 
     override fun onResponseSuccess() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.i(TAG, "Success")
         Toast.makeText(this@PasswordUpdateActivity,"Successfully Updated.",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@PasswordUpdateActivity, HomeActivity::class.java)

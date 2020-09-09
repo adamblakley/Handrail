@@ -160,5 +160,12 @@ interface ICreateCourseContract {
          *
          */
         fun setUpMap()
+
+        /**
+         * Make a toast message
+         *
+         * @param message
+         */
+        fun makeToast(message : String)
     }
 }

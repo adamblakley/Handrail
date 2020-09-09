@@ -3,12 +3,14 @@ package com.orienteering.handrail.course_participation
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.PendingIntent
+import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
@@ -79,21 +81,22 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
     private lateinit var locationCallback: LocationCallback
     // location request used to create a
     private lateinit var locationRequest: LocationRequest
-
+    // state of location upadtes
     private var locationUpdateState = false
-
     //Last Location
     private lateinit var lastLocation: Location
-
     // participant startTime
     private var startTime : Long = 0
     // participant performances
     var participantControlPerformances = mutableListOf<ParticipantControlPerformance>()
     // participant route points
     var participantRoutePoints = mutableListOf<RoutePoint>()
-
     // geofence performance calculator
     val geofencePerformanceCalculator = GeofencePerformanceCalculator()
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     /**
      * Companion object, contains permission request codes
@@ -170,13 +173,16 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
     fun createButtons(){
         uploadResultsButton = findViewById(R.id.button_upload_results_course_participation)
         viewResultsButton =findViewById(R.id.button_view_results_course_participation)
-
+        progressDialog = ProgressDialog(this@CourseParticipationActivity)
+        progressDialog.setCancelable(false)
         uploadResultsButton.visibility= View.INVISIBLE
         viewResultsButton.visibility=View.INVISIBLE
         // upload participation on click
         uploadResultsButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 uploadParticipantControlPerformances()
+                progressDialog.setMessage("Uploading...")
+                progressDialog.show()
             }
         })
     }
@@ -186,6 +192,8 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
      */
     private fun getEvents(){
         presenter.getDataFromDatabase()
+        progressDialog.setMessage("Loading Content...")
+        progressDialog.show()
     }
 
     /**
@@ -406,6 +414,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
     }
 
     override fun onEventGetSuccess(event : Event){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Success getting event")
         if (event != null) {
 
@@ -423,16 +432,19 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
     }
 
     override fun onEventGetError(){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error getting event")
         Toast.makeText(this@CourseParticipationActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT).show()
     }
 
     override fun onEventGetFailure(){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure getting event")
         Toast.makeText(this@CourseParticipationActivity,"Error: Failure to connect to service",Toast.LENGTH_SHORT).show()
     }
 
     override fun onParticipantPostSuccess(participant : Participant){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG,"Success adding performance")
         val toast = Toast.makeText(this@CourseParticipationActivity,"Performance Recorded",Toast.LENGTH_SHORT)
         toast.show()
@@ -447,6 +459,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
     }
 
     override fun onParticipantPostError(){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error posting event")
         AlertDialog.Builder(this@CourseParticipationActivity)
             .setTitle("Error: Service currently unavailable")
@@ -460,6 +473,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
     }
 
     override fun onParticipantPostFailure(){
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure posting participant")
         AlertDialog.Builder(this@CourseParticipationActivity)
             .setTitle("Error: Failure to connect to service")

@@ -1,7 +1,9 @@
 package com.orienteering.handrail.results
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -20,9 +22,12 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
 
     // Recycler view to display list of participants and their positions within the event results
     private lateinit var recyclerView : RecyclerView
-
     // Handles all logic and retrieves the model for display
     private lateinit var presenter : IResultsContract.IResultsPresenter
+    // progress dialog for web queries
+    lateinit var progressDialog : ProgressDialog
+    // handler delay web query dialog
+    val handler : Handler = Handler();
 
     //button for top routes
     lateinit var viewTopRoutesButton : Button
@@ -46,6 +51,8 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
 
         if(intent.extras!=null) {
             eventId = intent.getSerializableExtra("EVENT_ID") as Int
+            progressDialog.setMessage("Loading Content...")
+            progressDialog.show()
             presenter.requestDataFromServer(eventId)
         }
     }
@@ -55,6 +62,8 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
      */
     private fun createButtons(){
         viewTopRoutesButton = findViewById(R.id.button_view_top_routes)
+        progressDialog = ProgressDialog(this@ResultsActivity)
+        progressDialog.setCancelable(false)
         viewTopRoutesButton.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 val intentRoutes = Intent(this@ResultsActivity, TopRoutesActivity::class.java)
@@ -76,6 +85,7 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
      * @param imageUrls
      */
     override fun showInformation(names: List<String>, times: List<String>, positions: List<Int>, ids: MutableList<Int?>, imageUrls: List<String>) {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val resultsAdapter : ResultsAdapter = ResultsAdapter(names,times,imageUrls,ids,positions)
         recyclerView.adapter = resultsAdapter
     }
@@ -90,10 +100,12 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
     }
 
     override fun onResponseFailure() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Toast.makeText(this@ResultsActivity,"Error: Connectivity Error, unable to retreive results", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResponseError() {
+        handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Toast.makeText(this@ResultsActivity,"No results available", Toast.LENGTH_SHORT).show()
     }
 
