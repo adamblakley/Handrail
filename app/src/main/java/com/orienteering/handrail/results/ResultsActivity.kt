@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
+import com.orienteering.handrail.event.EventActivity
 import com.orienteering.handrail.interactors.ParticipantInteractor
 import com.orienteering.handrail.toproutes.TopRoutesActivity
 
@@ -113,4 +114,5 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
         super.onDestroy()
         presenter.onDestroy()
     }
+
 }

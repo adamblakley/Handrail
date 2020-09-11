@@ -455,7 +455,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
             startActivity(intentResults)
             finish()
         }
-
     }
 
     override fun onParticipantPostError(){
@@ -480,7 +479,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
             .setMessage("Please try again once connection resolved, do not leave this page or performance will be lost")
             .setPositiveButton("I Understand",
                 DialogInterface.OnClickListener { dialog, which ->
-
                 })
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show()

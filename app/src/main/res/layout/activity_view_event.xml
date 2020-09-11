@@ -38,7 +38,6 @@
         android:gravity="center"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:text="TextView"
         android:textAllCaps="true"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="25sp"
@@ -73,7 +72,6 @@
                 android:inputType="textMultiLine"
                 android:maxLength="200"
                 android:maxLines="8"
-                android:text="TextView"
                 android:textSize="17sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +85,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:textSize="30sp"
-        android:text="Date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView_event_note_view_event" />
@@ -98,7 +95,6 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:layout_marginTop="16dp"
-        android:text="Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_event_date_event_view" />

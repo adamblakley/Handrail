@@ -86,11 +86,9 @@ class MapUtilities {
      */
     fun calculateTotalDistance(latlngs : MutableList<LatLng>) : Double {
         var totalDistance : Double = 0.0
-
         if (latlngs.size<=1){
             return 0.0
         }
-
         // iterate through list of latitude and longitude, stopping at preantepenultimate to prevent index out of bounds error
         for (currentLatLng in 0..latlngs.size-2){
 

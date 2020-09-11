@@ -259,6 +259,7 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
         Toast.makeText(this@CourseActivity,"Course successfully deleted",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@CourseActivity, com.orienteering.handrail.courses.CoursesActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     /**

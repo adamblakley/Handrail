@@ -59,10 +59,18 @@ class GetManageEventsOnFinishedListener(presenter : IManageEventsContract.IManag
     override fun onFinished(response: Response<StatusResponseEntity<List<Event>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                view.fillInformation(response.body()!!.entity as ArrayList<Event>)
-            } else {
+                if (response.code()!=403) {
+                    view.fillInformation(response.body()!!.entity as ArrayList<Event>)
+                } else {
+                    view.onResponseForbidden()
+                }
+            } else if(response.code()==403){
+                view.onResponseForbidden()
+            } else{
                 view.onResponseError()
             }
+        } else if(response.code()==403){
+            view.onResponseForbidden()
         } else {
             view.onResponseError()
         }

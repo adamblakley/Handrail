@@ -31,6 +31,12 @@ interface IManageEventsContract {
          *
          */
         fun onResponseError()
+
+        /**
+         * Handle forbidden requests
+         *
+         */
+        fun onResponseForbidden()
     }
 
     /**

@@ -49,5 +49,11 @@ interface ICoursesContract {
          *
          */
         fun onResponseError()
+
+        /**
+         * Handle forbidden reqeust
+         *
+         */
+        fun onResponseForbidden()
     }
 }

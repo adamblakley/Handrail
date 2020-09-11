@@ -96,6 +96,8 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imageSelect = ImageSelect(this, this@EditEventActivity)
+        setContentView(R.layout.activity_create_event)
+        initiateText()
         createButtons()
         if (intent.extras!=null){
             this.editEventPresenter = EditEventPresenter(intent.getSerializableExtra("EVENT_ID") as Int,this,imageSelect, EventInteractor())
@@ -106,8 +108,7 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
             val intent = Intent(this@EditEventActivity, EventsActivity::class.java).apply {}
             startActivity(intent)
         }
-        setContentView(R.layout.activity_create_event)
-        initiateText()
+
     }
 
     /**

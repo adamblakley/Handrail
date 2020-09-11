@@ -28,6 +28,37 @@ interface IWelcomeContract {
          *
          */
         fun onResponseError()
+        /**
+         * Handle connection failure
+         *
+         * @param throwable
+         */
+        fun onResponseFailureLogin(throwable : Throwable)
+
+        /**
+         * Handle service error
+         *
+         */
+        fun onResponseErrorLogin()
+
+        /**
+         * Handle incorrect password
+         *
+         */
+        fun onResponseIncorrect()
+
+        /**
+         * Redirect user to hub
+         *
+         */
+        fun startHomeMenuActivity()
+
+        /**
+         * Display message to user
+         *
+         * @param message
+         */
+        fun makeToast(message : String)
     }
 
     /**
@@ -46,6 +77,23 @@ interface IWelcomeContract {
          *
          */
         fun onDestroy()
+
+        /**
+         * Request user information from sever
+         *
+         * @param email
+         * @param password
+         */
+        fun requestDataFromServer(email : String, password : String)
+
+        /**
+         * Insert authorization into shared preferences for storage
+         *
+         * @param authToken
+         * @param tokenType
+         * @param userId
+         */
+        fun insertSharedPreferences(authToken : String, tokenType : String,userId : Long)
     }
 
 }

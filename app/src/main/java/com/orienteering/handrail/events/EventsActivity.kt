@@ -43,6 +43,8 @@ class EventsActivity : AppCompatActivity(), IEventsContract.IEventsView {
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
+
+
     /**
      * initialise reycler view adapter and fill information via recyclerview
      *

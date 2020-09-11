@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
 import com.orienteering.handrail.create_event.CreateEventActivity
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.interactors.EventInteractor
 import com.orienteering.handrail.models.Event
 
@@ -95,6 +96,13 @@ class ManageEventsActivity : AppCompatActivity(), IManageEventsContract.IManageE
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val toast = Toast.makeText(this@ManageEventsActivity,"No Events available", Toast.LENGTH_SHORT)
         toast.show()
+    }
+
+    override fun onResponseForbidden() {
+        val intent = Intent(this@ManageEventsActivity, HomeActivity::class.java).apply {}
+        Toast.makeText(this@ManageEventsActivity,"Contact an admin to grant access to create and manage events",Toast.LENGTH_LONG).show()
+        startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {

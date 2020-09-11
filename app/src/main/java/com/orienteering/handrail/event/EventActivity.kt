@@ -294,4 +294,8 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         super.onDestroy()
     }
 
+    override fun finish(){
+        super.finish()
+    }
+
 }

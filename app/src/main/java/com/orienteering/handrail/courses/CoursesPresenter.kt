@@ -1,5 +1,6 @@
 package com.orienteering.handrail.courses
 
+import android.util.Log
 import com.orienteering.handrail.httprequests.IOnFinishedListener
 import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.CourseInteractor
@@ -73,11 +74,19 @@ class GetCoursesOnFinishedListener(coursesView : ICoursesContract.ICoursesView) 
     override fun onFinished(response: Response<StatusResponseEntity<List<Course>>>) {
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
-                coursesView.fillInformation(response.body()!!.entity as ArrayList<Course>)
+                if (response.code()!=403){
+                    coursesView.fillInformation(response.body()!!.entity as ArrayList<Course>)
+                } else{
+                    coursesView.onResponseForbidden()
+                }
+            } else if (response.code()==403){
+                coursesView.onResponseForbidden()
             } else {
                 coursesView.onResponseError()
             }
-        } else {
+        } else if (response.code()==403){
+            coursesView.onResponseForbidden()
+        } else{
             coursesView.onResponseError()
         }
     }

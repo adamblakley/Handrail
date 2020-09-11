@@ -145,5 +145,11 @@ interface IEventContract {
          * @param message
          */
         fun makeToast(message : String)
+
+        /**
+         * Finish event view
+         *
+         */
+        fun finish()
     }
 }

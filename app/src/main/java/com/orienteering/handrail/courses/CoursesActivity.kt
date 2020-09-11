@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
 import com.orienteering.handrail.course.CourseAdapter
 import com.orienteering.handrail.create_course.CreateCourseActivity
+import com.orienteering.handrail.home_menu.HomeActivity
 import com.orienteering.handrail.interactors.CourseInteractor
 import com.orienteering.handrail.models.Course
 
@@ -101,6 +102,13 @@ class CoursesActivity : AppCompatActivity(), ICoursesContract.ICoursesView{
     override fun onResponseError() {
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Toast.makeText(this@CoursesActivity,"No Courses available",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResponseForbidden() {
+        val intent = Intent(this@CoursesActivity, HomeActivity::class.java).apply {}
+        Toast.makeText(this@CoursesActivity,"Contact an admin to grant access to create and manage courses",Toast.LENGTH_LONG).show()
+        startActivity(intent)
+        finish()
     }
 
     /**

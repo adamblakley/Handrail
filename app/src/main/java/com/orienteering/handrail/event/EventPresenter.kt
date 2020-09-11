@@ -313,6 +313,7 @@ class DeleteEventOnFinishedListener(eventPresenter : IEventContract.IEventPresen
             if (response.body()?.entity != null) {
                 eventView.makeToast("Event Successfully Deleted")
                 eventView.startViewEventsActivity()
+                eventView.finish()
             } else {
                 eventView.onResponseError()
             }

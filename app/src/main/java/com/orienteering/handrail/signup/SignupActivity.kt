@@ -11,7 +11,7 @@ import android.widget.*
 import com.orienteering.handrail.R
 import com.orienteering.handrail.httprequests.SignupRequest
 import com.orienteering.handrail.interactors.SignupInteractor
-import com.orienteering.handrail.login.LoginActivity
+import com.orienteering.handrail.welcome.WelcomeActivity
 import java.util.*
 
 // TAG for Logs
@@ -211,7 +211,7 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
      */
     override fun startLoginActivity() {
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
-        val intent = Intent(this@SignupActivity, LoginActivity::class.java).apply {}
+        val intent = Intent(this@SignupActivity, WelcomeActivity::class.java).apply {}
         startActivity(intent)
         finish()
     }
