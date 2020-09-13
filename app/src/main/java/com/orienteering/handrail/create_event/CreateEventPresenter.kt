@@ -51,6 +51,10 @@ class CreateEventPresenter(createEventView : ICreateEventContract.ICreateEventVi
         this.postEventOnFinishedListener = PostEventOnFinishedListener(this,createEventView)
     }
 
+    override fun checkImage(): Boolean {
+        return imageUri != null
+    }
+
     override fun onDestroy() {
         if(createEventView!=null){
             createEventView = null

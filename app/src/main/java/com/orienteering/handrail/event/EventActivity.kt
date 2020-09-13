@@ -3,6 +3,8 @@ package com.orienteering.handrail.event
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -37,6 +39,8 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     private lateinit var eventDateTextView: TextView
     // text view for event time
     private lateinit var eventTimeTextView: TextView
+    // text view status
+    private lateinit var eventStatusTextView: TextView
     // button to action event
     private lateinit var buttonAction: Button
     // button to delete event
@@ -110,6 +114,7 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         eventNoteTextView = findViewById(R.id.textView_event_note_view_event)
         eventDateTextView = findViewById(R.id.textView_event_date_event_view)
         eventTimeTextView = findViewById(R.id.textView_event_time_event_view)
+        eventStatusTextView = findViewById(R.id.textView_event_status_view_event)
     }
 
     /**
@@ -159,11 +164,15 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
                 buttonDelete.visibility = View.INVISIBLE
                 buttonAction.tag = 2
                 buttonAction.text = "End Event"
+                eventStatusTextView.text="Ongoing"
+                eventStatusTextView.setTextColor(Color.GREEN)
             }
             Integer(3) -> {
                 buttonDelete.visibility = View.INVISIBLE
                 buttonAction.tag = 3
                 buttonAction.text = "View Results"
+                eventStatusTextView.text="Finished"
+                eventStatusTextView.setTextColor(Color.RED)
             }
             else -> {
                 buttonDelete.visibility = View.INVISIBLE
@@ -180,12 +189,20 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
      * @param date
      * @param time
      */
-    override fun fillInformation(name : String, note : String, date : String, time : String) {
+    override fun fillInformation(name : String, note : String, date : String, time : String, status : Integer) {
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         eventNameTextView.text = name
         eventNoteTextView.text = note
-        eventDateTextView.text = date
-        eventTimeTextView.text = time
+        eventDateTextView.text = "Date: $date"
+        eventTimeTextView.text = "Time: $time"
+        when (status){
+            Integer(1) -> {eventStatusTextView.text="Status: Upcoming"
+            eventStatusTextView.setTextColor(Color.GRAY)}
+            Integer(2)->{eventStatusTextView.text="Status: Ongoing"
+                eventStatusTextView.setTextColor(Color.GREEN)}
+            Integer(3)->{eventStatusTextView.text="Status: Finished"
+                eventStatusTextView.setTextColor(Color.RED)}
+        }
     }
 
     /**
@@ -254,6 +271,7 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
         val intent = Intent(this@EventActivity, CourseParticipationActivity::class.java).apply {}
         intent.putExtra("EVENT_ID", eventId)
         startActivity(intent)
+        finish()
     }
 
     /**
@@ -263,15 +281,17 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
     override fun startViewEventsActivity(){
         val intent = Intent(this@EventActivity, ManageEventsActivity::class.java).apply {}
         startActivity(intent)
+        finish()
     }
 
     /**
      * start view events activity
      *
      */
-    fun startViewAllEventsActivity(){
+    override fun startViewAllEventsActivity(){
         val intent = Intent(this@EventActivity, EventsActivity::class.java).apply {}
         startActivity(intent)
+        finish()
     }
 
     /**

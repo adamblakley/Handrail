@@ -1,6 +1,7 @@
 package com.orienteering.handrail.manage_events
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,6 +50,11 @@ class ManageEventsAdapter(eventsList : ArrayList<Event>) : RecyclerView.Adapter<
                 .apply(options)
                 .into(holder.eventimage)
             holder.eventName.text = eventsList[position].eventName
+            when (eventsList[position].eventStatus){
+                Integer(1)->{holder.eventName.setTextColor(Color.GRAY)}
+                Integer(2)->{holder.eventName.setTextColor(Color.GREEN)}
+                Integer(3)->{holder.eventName.setTextColor(Color.RED)}
+            }
             holder.eventNote.text = eventsList[position].eventNote
         }
 

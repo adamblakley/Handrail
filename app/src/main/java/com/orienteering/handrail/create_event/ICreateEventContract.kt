@@ -91,6 +91,13 @@ interface ICreateEventContract {
          * @param imageUri
          */
         fun setImage(imageUri : Uri)
+
+        /**
+         * Check image has been selected
+         *
+         * @return
+         */
+        fun checkImage() : Boolean
     }
 
 }

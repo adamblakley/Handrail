@@ -89,12 +89,19 @@ class TopRoutesPresenter(topRoutesView : ITopRoutesContract.ITopRoutesView, part
     override fun getControls() {
         val controlNameLatLng = mutableMapOf<String, LatLng>()
         // for each control in the event course controls, create latlng value and add name and latlng to map for view to display
-        for (pcp in participants.get(0).participantControlPerformances){
-            pcp.pcpControl.createLatLng()
-            controlNameLatLng.put(pcp.pcpControl.controlName,pcp.pcpControl.controlLatLng)
+        if (participants!=null){
+            for (participant in participants){
+                if (participant.participantControlPerformances!=null){
+                    for (pcp in participants.get(0).participantControlPerformances){
+                        pcp.pcpControl.createLatLng()
+                        controlNameLatLng.put(pcp.pcpControl.controlName,pcp.pcpControl.controlLatLng)
+                    }
+                    // view to display controls
+                    topRoutesView?.addControls(controlNameLatLng)
+                    break
+                }
+            }
         }
-        // view to display controls
-        topRoutesView?.addControls(controlNameLatLng)
     }
 
     override fun getPerformerParticipants(){

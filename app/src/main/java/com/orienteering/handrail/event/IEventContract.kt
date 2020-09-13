@@ -82,7 +82,7 @@ interface IEventContract {
          * @param date
          * @param time
          */
-        fun fillInformation(name : String, note : String, date : String, time : String)
+        fun fillInformation(name : String, note : String, date : String, time : String, status : Integer)
 
         /**
          * inform user of connectivity failure on response of event retrieval
@@ -109,6 +109,12 @@ interface IEventContract {
          *
          */
         fun startViewEventsActivity()
+
+        /**
+         * View all events on request
+         *
+         */
+        fun startViewAllEventsActivity()
 
         /**
          * request results view on request of view

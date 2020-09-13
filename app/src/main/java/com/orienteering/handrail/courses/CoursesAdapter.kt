@@ -1,6 +1,7 @@
 package com.orienteering.handrail.courses
 
 import android.content.Intent
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -47,7 +48,6 @@ class CoursesAdapter(courseList : ArrayList<Course>) : RecyclerView.Adapter<Cour
                 .load(imageUrls.get(position))
                 .into(holder.courseImage)
         }
-
         holder.courseName.text = courseList[position].courseName
         holder.courseButton.setOnClickListener(object : View.OnClickListener {
 

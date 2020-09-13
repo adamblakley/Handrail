@@ -16,27 +16,32 @@ class MapUtilities {
      * @return
      */
     fun determineNESW(latlngs : MutableList<LatLng>) : LatLngBounds {
-        var latNE : Double? = null
-        var latSW : Double? = null
-        var lngNE : Double? = null
-        var lngSW : Double? = null
+        if (latlngs.size>=1){
+            var latNE : Double? = null
+            var latSW : Double? = null
+            var lngNE : Double? = null
+            var lngSW : Double? = null
 
-        // fill the first latitude and longitude values from the first latlng provided
-        for (latlng in latlngs){
-            if (latNE==null||latSW==null||lngNE==null||lngSW==null){
-                latSW = latlng.latitude
-                latNE  = latlng.latitude
-                lngSW = latlng.longitude
-                lngNE = latlng.longitude
-            } else {
-                // if the next latitude and longitude is more northeasterly or southwesterly update latNE, lngNE, latSW and lngSW
-                if (latlng.latitude > latNE) latNE = latlng.latitude;
-                if (latlng.latitude < latSW) latSW = latlng.latitude;
-                if (latlng.longitude > lngNE) lngNE = latlng.longitude;
-                if (latlng.longitude < lngSW) lngSW = latlng.longitude;
+            // fill the first latitude and longitude values from the first latlng provided
+            for (latlng in latlngs){
+                if (latNE==null||latSW==null||lngNE==null||lngSW==null){
+                    latSW = latlng.latitude
+                    latNE  = latlng.latitude
+                    lngSW = latlng.longitude
+                    lngNE = latlng.longitude
+                } else {
+                    // if the next latitude and longitude is more northeasterly or southwesterly update latNE, lngNE, latSW and lngSW
+                    if (latlng.latitude > latNE) latNE = latlng.latitude;
+                    if (latlng.latitude < latSW) latSW = latlng.latitude;
+                    if (latlng.longitude > lngNE) lngNE = latlng.longitude;
+                    if (latlng.longitude < lngSW) lngSW = latlng.longitude;
+                }
             }
+            return LatLngBounds(LatLng(latSW!!, lngSW!!), LatLng(latNE!!,lngNE!!))
+        } else {
+            return LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0,0.0))
         }
-        return LatLngBounds(LatLng(latSW!!, lngSW!!), LatLng(latNE!!,lngNE!!))
+
     }
 
     fun getAllParticipantRoutePoints(participants: List<Participant>) : MutableList<LatLng> {

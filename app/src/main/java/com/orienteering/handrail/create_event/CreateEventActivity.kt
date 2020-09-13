@@ -123,6 +123,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             override fun onClick(p0: View?) {
                 if (PermissionManager.checkPermission(this@CreateEventActivity, this@CreateEventActivity, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PermissionManager.MULTIPLE_REQUEST_CODES)) {
                     imageUri=imageSelect.selectImage()
+                    buttonUpdatePhoto?.error=null
                 }
             }
         })
@@ -130,7 +131,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         buttonSelectDate?.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
-
+                buttonSelectDate?.error=null
                 val datePickerDialog = DatePickerDialog(this@CreateEventActivity,
                     DatePickerDialog.OnDateSetListener{ view: DatePicker?, Tyear: Int, Tmonth: Int, TdayOfMonth: Int ->
                         val yearString : String = Tyear.toString()
@@ -154,7 +155,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
         buttonSelectTime?.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onClick(p0: View?) {
-
+                buttonSelectTime?.error=null
                 val timePickerDialog = TimePickerDialog(this@CreateEventActivity,
                     TimePickerDialog.OnTimeSetListener{ view: TimePicker?, Thour: Int, Tminute: Int ->
                         Log.e(TAG,"$Thour,$Tminute")
@@ -180,6 +181,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                 progressDialog.setMessage("Loading Content...")
                 progressDialog.show()
                 createEventPresenter.getDataFromServer()
+                buttonSelectCourse?.error=null
             }
         })
         // post event to server via presenter
@@ -255,6 +257,11 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             buttonSelectCourse?.error = "Please select a course"
             inputsOk = false
         }
+        if (!createEventPresenter.checkImage()){
+            buttonUpdatePhoto?.error = "Select an image"
+            inputsOk = false
+        }
+
         return inputsOk
     }
 

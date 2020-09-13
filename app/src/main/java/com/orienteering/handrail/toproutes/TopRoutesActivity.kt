@@ -101,10 +101,10 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
         routesMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120))
         // determine polyline pattern
         val pattern: MutableList<PatternItem> = mutableListOf()
-        pattern.add(Dot())
-        pattern.add(Gap(20F))
-        pattern.add(Dash(30F))
-        pattern.add(Gap(20F))
+        pattern.add(Dash(20F))
+        pattern.add(Gap(15F))
+        pattern.add(Dash(20F))
+        pattern.add(Gap(15F))
         // iterate through participants route points, add each to new latlng of color
         for (participant in participants) {
             val route: MutableList<LatLng> = mutableListOf()
@@ -119,13 +119,13 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
                 1 -> color = Color.BLUE
                 2 -> color = Color.GREEN
                 3 -> color = Color.YELLOW
-                5 -> color = Color.CYAN
+                4 -> color = Color.RED
             }
             // create polyline for participant
             routesMap.addPolyline(
                 PolylineOptions()
                     .addAll(route)
-                    .width(10f)
+                    .width(5f)
                     .color(color)
                     .pattern(pattern)
             )

@@ -68,14 +68,14 @@ class ResultsAdapter(participantNames: List<String>, participantTimes: List<Stri
                 .apply(options)
                 .into(holder.image)
         }
-        holder.image.borderColor = Color.RED
+        holder.image.borderColor = Color.CYAN
         // set performer colour based on position
         when (position){
             0 -> holder.image.borderColor = Color.MAGENTA
             1 -> holder.image.borderColor = Color.BLUE
             2 -> holder.image.borderColor = Color.GREEN
             3 -> holder.image.borderColor= Color.YELLOW
-            4 -> holder.image.borderColor = Color.CYAN
+            4 -> holder.image.borderColor = Color.RED
         }
 
         holder.name.text=participantNames[position]

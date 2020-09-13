@@ -26,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.orienteering.handrail.R
+import com.orienteering.handrail.events.EventsActivity
 import com.orienteering.handrail.geofence_utilities.GeofenceBroadcastReceiver
 import com.orienteering.handrail.geofence_utilities.GeofenceBuilder
 import com.orienteering.handrail.interactors.EventInteractor
@@ -206,8 +207,6 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         courseMap.uiSettings.setCompassEnabled(false)
         courseMap.uiSettings.setMyLocationButtonEnabled(false)
         courseMap.uiSettings.setAllGesturesEnabled(false)
-
-        setUpMap()
     }
 
     /**
@@ -417,7 +416,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Success getting event")
         if (event != null) {
-
+            setUpMap()
             startTime = System.currentTimeMillis()
 
             for (control in event.eventCourse.courseControls){
@@ -435,12 +434,14 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error getting event")
         Toast.makeText(this@CourseParticipationActivity,"Error: Service currently unavailable",Toast.LENGTH_SHORT).show()
+        Intent(this@CourseParticipationActivity, EventsActivity::class.java).apply { }
     }
 
     override fun onEventGetFailure(){
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Failure getting event")
         Toast.makeText(this@CourseParticipationActivity,"Error: Failure to connect to service",Toast.LENGTH_SHORT).show()
+        Intent(this@CourseParticipationActivity, EventsActivity::class.java).apply { }
     }
 
     override fun onParticipantPostSuccess(participant : Participant){

@@ -150,6 +150,9 @@ class GetEditEventOnFinishedListener(editEventPresenter: IEditEventContract.IEdi
                 eventTime = timeFormatter.format(dateformatted)
                 // set presenter event and update view with fillinformation method
                 editEventPresenter.setEvent(event)
+                if (event.eventStatus!=Integer(1)){
+                    editEventView.incorrectStatus()
+                }
                 response.body()!!.entity?.let { editEventView.fillInformation(event.eventName, event.eventNote, eventTime, eventDate, event.eventCourse.courseName
                     )
                 }

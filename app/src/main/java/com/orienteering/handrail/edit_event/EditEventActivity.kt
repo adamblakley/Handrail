@@ -336,6 +336,11 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         this.textViewEventCourse.setText(courseName)
     }
 
+    override fun incorrectStatus() {
+        buttonEditEvent.visibility=View.INVISIBLE
+        Toast.makeText(this@EditEventActivity, "Cannot edit an ongoing or finished event",Toast.LENGTH_SHORT).show()
+    }
+
 
     /**
      * set image display to select uri from device

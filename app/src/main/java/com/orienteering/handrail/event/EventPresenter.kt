@@ -163,7 +163,7 @@ class GetEventOnFinishedListener(eventPresenter : IEventContract.IEventPresenter
                 }
                 //set event in presenter
                 eventPresenter.setEvent(event)
-                response.body()!!.entity?.let { eventView.fillInformation(event.eventName,event.eventNote,eventDate,eventTime) }
+                response.body()!!.entity?.let { eventView.fillInformation(event.eventName,event.eventNote,eventDate,eventTime,event.eventStatus) }
                 for (photo in response.body()!!.entity?.eventPhotographs!!){
                     if (photo.active!!){
                         eventView.setupImage(photo.photoPath)
@@ -277,7 +277,7 @@ class LeaveEventOnFinishedListener(eventPresenter : IEventContract.IEventPresent
         if(response.isSuccessful){
             if (response.body()?.entity != null) {
                 eventView.makeToast("Event Successfully Left")
-                eventView.startViewEventsActivity()
+                eventView.startViewAllEventsActivity()
             } else {
                 eventView.onResponseError()
             }

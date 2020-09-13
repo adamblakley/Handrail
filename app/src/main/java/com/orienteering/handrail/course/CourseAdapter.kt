@@ -88,7 +88,6 @@ class CourseAdapter(controls : List<Control>) : RecyclerView.Adapter<CourseAdapt
         })
     }
 
-
     /**
      * @return
      */

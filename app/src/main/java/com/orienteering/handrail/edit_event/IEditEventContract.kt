@@ -73,6 +73,12 @@ interface IEditEventContract {
          * @param imagepath
          */
         fun setupImage(imagepath : String)
+
+        /**
+         * Do not allow edit event
+         *
+         */
+        fun incorrectStatus()
     }
     /**
      * Presenter interface, provides functions for presenter-view interaction
