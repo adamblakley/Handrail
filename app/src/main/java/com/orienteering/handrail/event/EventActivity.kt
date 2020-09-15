@@ -290,6 +290,7 @@ class EventActivity : AppCompatActivity(), IEventContract.IEventView {
      */
     override fun startViewAllEventsActivity(){
         val intent = Intent(this@EventActivity, EventsActivity::class.java).apply {}
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }

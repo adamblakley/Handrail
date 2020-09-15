@@ -145,6 +145,7 @@ class WelcomeActivity: AppCompatActivity(), IWelcomeContract.IWelcomeView {
     override fun startHomeMenuActivity() {
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val intent = Intent(this@WelcomeActivity, HomeActivity::class.java).apply {}
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }

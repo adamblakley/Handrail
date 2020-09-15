@@ -9,6 +9,7 @@ import com.orienteering.handrail.interactors.ParticipantInteractor
 import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.performance_utilities.GeofencePerformanceCalculator
 import com.orienteering.handrail.map_utilities.MapUtilities
+import com.orienteering.handrail.models.Control
 import retrofit2.Response
 
 /**
@@ -25,6 +26,7 @@ class TopRoutesPresenter(topRoutesView : ITopRoutesContract.ITopRoutesView, part
     private var topRoutesView : ITopRoutesContract.ITopRoutesView?
     private var participantInteractor : ParticipantInteractor
     private var getParticipantsOnFinishedListener : GetTopParticipantsOnFinishedListener
+    private var controlList = mutableListOf<Control>()
 
     // list of retrieves top participants
     private lateinit var participants : List<Participant>
@@ -94,6 +96,7 @@ class TopRoutesPresenter(topRoutesView : ITopRoutesContract.ITopRoutesView, part
                 if (participant.participantControlPerformances!=null){
                     for (pcp in participants.get(0).participantControlPerformances){
                         pcp.pcpControl.createLatLng()
+                        controlList.add(pcp.pcpControl)
                         controlNameLatLng.put(pcp.pcpControl.controlName,pcp.pcpControl.controlLatLng)
                     }
                     // view to display controls
@@ -102,6 +105,25 @@ class TopRoutesPresenter(topRoutesView : ITopRoutesContract.ITopRoutesView, part
                 }
             }
         }
+    }
+
+    override fun controlInformation(markerTitle : String) {
+        var noteOfControl: String?
+        var positionOfControl: Int?
+        var imagePathOfControl: String? = null
+        for (control in controlList)
+            if (control.controlName==markerTitle) {
+                noteOfControl = control.controlNote
+                positionOfControl = control.controlPosition
+                if (control.isControlPhotographInitialised()){
+                    for (photo in control.controlPhotographs){
+                        if (photo.active!!){
+                            imagePathOfControl=photo.photoPath
+                        }
+                    }
+                    topRoutesView?.showControlInformation(markerTitle,noteOfControl,positionOfControl,imagePathOfControl)
+                }
+            }
     }
 
     override fun getPerformerParticipants(){

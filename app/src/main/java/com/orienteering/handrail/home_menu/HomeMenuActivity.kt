@@ -96,6 +96,7 @@ class HomeActivity : AppCompatActivity() {
                 sharedPreferencesEditor.remove(App.SharedPreferencesAuthToken).commit()
                 sharedPreferencesEditor.remove(App.SharedPreferencesUserId).commit()
                 val intent = Intent(this@HomeActivity, com.orienteering.handrail.welcome.WelcomeActivity::class.java).apply {}
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }
 

@@ -212,6 +212,7 @@ class SignupActivity : AppCompatActivity(), ISignupContract.ISignupView{
     override fun startLoginActivity() {
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val intent = Intent(this@SignupActivity, WelcomeActivity::class.java).apply {}
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }

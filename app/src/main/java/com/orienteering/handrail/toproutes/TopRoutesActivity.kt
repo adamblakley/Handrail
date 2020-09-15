@@ -5,6 +5,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.orienteering.handrail.R
+import com.orienteering.handrail.dialogs.ViewMarkerCourseControlDialog
 import com.orienteering.handrail.interactors.ParticipantInteractor
 import com.orienteering.handrail.models.Participant
 import com.orienteering.handrail.results.ResultsAdapter
@@ -22,7 +24,7 @@ import com.orienteering.handrail.results.ResultsAdapter
  * Class responsible for user interface and displaying participant information of the top participant routes
  *
  */
-class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesContract.ITopRoutesView {
+class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesContract.ITopRoutesView, GoogleMap.OnMarkerClickListener {
     // event id passed through intent extra
     var eventIdPassed: Int = 0
     // recycler view to display performance items for participants
@@ -33,6 +35,8 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
     private lateinit var routesMap: GoogleMap
     // progress dialog for web queries
     lateinit var progressDialog : ProgressDialog
+    // map fragment for displaying course
+    private lateinit var mapCourseFragment: SupportMapFragment
     // handler delay web query dialog
     val handler : Handler = Handler();
 
@@ -44,7 +48,7 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_top_routes)
-        val mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_route_results) as SupportMapFragment
+        mapCourseFragment = supportFragmentManager.findFragmentById(com.orienteering.handrail.R.id.map_route_results) as SupportMapFragment
 
         initRecyclerView()
         progressDialog = ProgressDialog(this@TopRoutesActivity)
@@ -70,6 +74,7 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
         routesMap = googleMap
         routesMap.uiSettings.isZoomControlsEnabled = false
         routesMap.uiSettings.isCompassEnabled = false
+        routesMap.setOnMarkerClickListener(this)
         routesMap.uiSettings.isMyLocationButtonEnabled = false
         routesMap.uiSettings.setAllGesturesEnabled(false)
         routesMap.isMyLocationEnabled = false
@@ -89,6 +94,27 @@ class TopRoutesActivity : AppCompatActivity(), OnMapReadyCallback, ITopRoutesCon
             routesMap.addMarker(markerOptions)
         }
     }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        Log.e("TAG","WHAT")
+        if (marker != null) {
+            topRoutesPresenter.controlInformation(marker.title)
+        }
+        return true
+    }
+
+    /**
+     * Show control information in a new dialog
+     * @param nameOfControl
+     * @param noteOfControl
+     * @param positionOfControl
+     * @param imagePath
+     */
+    override fun showControlInformation(nameOfControl: String?, noteOfControl: String?, positionOfControl: Int?, imagePath: String?) {
+        val markerDialog = ViewMarkerCourseControlDialog(nameOfControl, noteOfControl, positionOfControl, imagePath)
+        markerDialog.show(mapCourseFragment.childFragmentManager, "ViewMarkerDialog")
+    }
+
 
     /**
      * Animate camera to route bounds, add pattern for each participant

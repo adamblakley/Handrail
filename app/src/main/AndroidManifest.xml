@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -28,62 +27,79 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
-
-
-        <activity android:name=".create_course.CreateCourseActivity"
-            android:label="Create A Course"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".toproutes.TopRoutesActivity"
-            android:label="Top 5 Routes"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".performance.PerformanceActivity"
-            android:label="View Performance"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".course.CourseActivity"
-            android:label="View Course"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".create_event.CreateEventActivity"
-            android:label="Create Event"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".edit_profile.EditProfileActivity"
-            android:label="Edit Profile"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".signup.SignupActivity"
-            android:label="Sign up" />
-        <activity android:name=".events_history.EventsHistoryActivity"
-            android:label="Performance History"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".courses.CoursesActivity"
-            android:label="Manage Courses"
-            android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".welcome.WelcomeActivity">
+        <activity android:name=".splash.SplashView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".password_update.PasswordUpdateActivity"
+        <activity
+            android:name=".create_course.CreateCourseActivity"
+            android:label="Create A Course"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".toproutes.TopRoutesActivity"
+            android:label="Top 5 Routes"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".performance.PerformanceActivity"
+            android:label="View Performance"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".course.CourseActivity"
+            android:label="View Course"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".create_event.CreateEventActivity"
+            android:label="Create Event"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".edit_profile.EditProfileActivity"
+            android:label="Edit Profile"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".signup.SignupActivity"
+            android:label="Sign up" />
+        <activity
+            android:name=".events_history.EventsHistoryActivity"
+            android:label="Performance History"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity
+            android:name=".courses.CoursesActivity"
+            android:label="Manage Courses"
+            android:parentActivityName=".home_menu.HomeActivity" />
+        <activity android:name=".welcome.WelcomeActivity">
+
+        </activity>
+        <activity
+            android:name=".password_update.PasswordUpdateActivity"
             android:label="Update Password" />
-        <activity android:name=".events.EventsActivity"
+        <activity
+            android:name=".events.EventsActivity"
             android:label="View Events"
             android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".event.EventActivity"
+        <activity
+            android:name=".event.EventActivity"
             android:label="View Event"
             android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".results.ResultsActivity"
+        <activity
+            android:name=".results.ResultsActivity"
             android:label="Event Results"
             android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".manage_events.ManageEventsActivity"
+        <activity
+            android:name=".manage_events.ManageEventsActivity"
             android:label="Manage Events"
             android:parentActivityName=".home_menu.HomeActivity" />
-        <activity android:name=".edit_event.EditEventActivity"
+        <activity
+            android:name=".edit_event.EditEventActivity"
             android:label="Edit Event"
             android:parentActivityName=".home_menu.HomeActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <activity
             android:name=".course_participation.CourseParticipationActivity"
             android:label="Event Participation" />

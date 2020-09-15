@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.orienteering.handrail.R
-import com.orienteering.handrail.event.EventActivity
 import com.orienteering.handrail.interactors.ParticipantInteractor
 import com.orienteering.handrail.toproutes.TopRoutesActivity
 
@@ -29,9 +28,9 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
     lateinit var progressDialog : ProgressDialog
     // handler delay web query dialog
     val handler : Handler = Handler();
-
     //button for top routes
     lateinit var viewTopRoutesButton : Button
+    // event id passed as intent extra
     var eventId : Int = 0
 
     /**
@@ -86,6 +85,10 @@ class ResultsActivity : AppCompatActivity(), IResultsContract.IResultsView {
      * @param imageUrls
      */
     override fun showInformation(names: List<String>, times: List<String>, positions: List<Int>, ids: MutableList<Int?>, imageUrls: List<String>) {
+        if (names.isEmpty()){
+            viewTopRoutesButton.visibility=View.INVISIBLE
+            Toast.makeText(this@ResultsActivity,"No results registered",Toast.LENGTH_SHORT).show()
+        }
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         val resultsAdapter : ResultsAdapter = ResultsAdapter(names,times,imageUrls,ids,positions)
         recyclerView.adapter = resultsAdapter

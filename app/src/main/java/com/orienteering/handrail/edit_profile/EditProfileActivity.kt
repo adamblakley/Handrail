@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,6 +20,7 @@ import com.orienteering.handrail.interactors.UserInteractor
 import com.orienteering.handrail.models.User
 import com.orienteering.handrail.password_update.PasswordUpdateActivity
 import com.orienteering.handrail.image_utilities.ImageSelect
+import com.orienteering.handrail.permissions.PermissionManager
 import java.util.*
 
 // TAG for Logs
@@ -164,6 +166,21 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
         editTextEmail = findViewById(R.id.editText_editprofile_email)
         textViewDob = findViewById(R.id.textView_editprofile_dob)
         editTextBio = findViewById(R.id.editText_editprofile_bio)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        var granted = false
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (result in grantResults){
+            if (result == PackageManager.PERMISSION_GRANTED){
+                granted = true
+                editProfilePresenter.selectImage()
+            } else {
+                granted = false
+                PermissionManager.displayPermissionRejection(this@EditProfileActivity)
+                break
+            }
+        }
     }
 
     /**

@@ -45,6 +45,7 @@ class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCour
 
     //coordinates array for polyline
     val listOfRoutePoints: MutableList<LatLng> = mutableListOf()
+    var permissionsRejected = false
 
     init{
         this.courseInteractor = courseInteractor
@@ -81,8 +82,7 @@ class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCour
      * Request fine location, find current location and locate device
      */
     override fun setUpMap() {
-        if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
-
+        if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
             createCourseView.setUpMap()
         }
     }
@@ -93,7 +93,7 @@ class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCour
      */
     override fun saveLatLng(){
         if (potentialLatLng.latitude != 0.0 && potentialLatLng.longitude != 0.0) {
-            if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)) {
+            if (PermissionManager.checkPermission(createCourseView.returnActivity(), createCourseView.returnContext(), arrayOf(android.Manifest.permission.CAMERA,android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE), PermissionManager.EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE)) {
                 createCourseView.onSaveLatLngSuccess()
             }
         } else {

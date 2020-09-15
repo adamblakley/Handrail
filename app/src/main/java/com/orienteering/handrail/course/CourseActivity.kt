@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -12,6 +11,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -133,7 +133,7 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
         courseMap.uiSettings.isMyLocationButtonEnabled = false
         courseMap.uiSettings.setAllGesturesEnabled(false)
         courseMap.setOnMarkerClickListener(this)
-        courseMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        courseMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
         courseMap.isMyLocationEnabled=false
         setUpMap()
     }
@@ -143,7 +143,6 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
      */
     private fun setUpMap() {
         courseMap.setOnMarkerClickListener(this)
-        courseMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
         courseMap.isMyLocationEnabled=false
     }
 
@@ -258,6 +257,7 @@ class CourseActivity : AppCompatActivity(),ICourseContract.ICourseView, OnMapRea
         Log.i(TAG, "Success deleting course")
         Toast.makeText(this@CourseActivity,"Course successfully deleted",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@CourseActivity, com.orienteering.handrail.courses.CoursesActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }

@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -16,12 +17,12 @@ private val TAG = PermissionManager::class.qualifiedName
  * Class responsible for requesting permissions
  *
  */
-class PermissionManager  {
+class PermissionManager{
 
     /**
      * Hold all static methods and values
      */
-    companion object{
+    companion object {
         const val MULTIPLE_REQUEST_CODES = 0
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
         const val REQUEST_CHECK_SETTINGS = 2
@@ -38,30 +39,34 @@ class PermissionManager  {
          * @param requestCode
          * @return
          */
-    fun checkPermission(activity : Activity, context : Context, permissions : Array<String>, requestCode : Int) : Boolean{
+        fun checkPermission(
+            activity: Activity,
+            context: Context,
+            permissions: Array<String>,
+            requestCode: Int
+        ): Boolean {
 
-        Log.e(TAG, "Checking Permission")
-        var permissionsNotGranted  = arrayListOf<String>()
+            Log.e(TAG, "Checking Permission")
+            var permissionsNotGranted = arrayListOf<String>()
             // check package manager that permission has been granted, add to list if not granted
-        for (permission in permissions){
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Log.e(TAG,"Permission not granted $permission")
-                permissionsNotGranted.add(permission)
+            for (permission in permissions) {
+                if (ActivityCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    Log.e(TAG, "Permission not granted $permission")
+                    permissionsNotGranted.add(permission)
+                }
+            }
+            // iterate through list of ungranted permissions, response of granted permission is false
+            if (permissionsNotGranted.size >= 1) {
+                return grantPermission(activity, context, permissionsNotGranted, requestCode)
+            } else {
+                // all permissions granted return true
+                return true
             }
         }
-        // iterate through list of ungranted permissions, response of granted permission is false
-        if (permissionsNotGranted.size>=1){
-            return grantPermission(activity, context, permissionsNotGranted, requestCode)
-        } else{
-            // all permissions granted return true
-            return true
-        }
-
-    }
 
         /**
          * use activitycompat to request permissions, return result
@@ -72,14 +77,18 @@ class PermissionManager  {
          * @param requestCode
          * @return
          */
-        fun grantPermission(activity : Activity, context: Context, permissions: ArrayList<String>, requestCode: Int) : Boolean{
-        Log.e(TAG, "Requesting Permission")
+        fun grantPermission(
+            activity: Activity,
+            context: Context,
+            permissions: ArrayList<String>,
+            requestCode: Int
+        ): Boolean {
+            Log.e(TAG, "Requesting Permission")
             // request each permission inside arraylist of permissions
-        ActivityCompat.requestPermissions(activity, permissions.toTypedArray(), requestCode)
+            ActivityCompat.requestPermissions(activity, permissions.toTypedArray(), requestCode)
             // handle permission, return boolean value
-         return handlePermissionResult(context, permissions)
-    }
-
+            return handlePermissionResult(context, permissions)
+        }
 
         /**
          * Handles all permission request responses
@@ -90,30 +99,32 @@ class PermissionManager  {
          * @param requestCode
          * @return
          */
-        fun handlePermissionResult(context: Context, permissions: ArrayList<String>) : Boolean{
-        Log.e(TAG, "Handling Permission")
-        var permissionGranted : Boolean = true
-        // check if permission has been granted for each permission
-        for (permission in permissions){
-            if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED){
-                // if false, permission granted = false, break and inform user
-                permissionGranted = false
-                break
+        fun handlePermissionResult(context: Context, permissions: ArrayList<String>): Boolean {
+            Log.e(TAG, "Handling Permission")
+            var permissionGranted: Boolean = true
+            // check if permission has been granted for each permission
+            for (permission in permissions) {
+                if (ActivityCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // if false, permission granted = false, break and inform user
+                    permissionGranted = false
+                    break
+                }
             }
+            // if true, return to calling method to return
+            return permissionGranted
         }
-        if (permissionGranted==false){
+
+        fun displayPermissionRejection(context: Context){
             AlertDialog.Builder(context)
                 .setTitle("Permission Request")
-                .setMessage("You may be unable to user certain app features. Please grant permissions in system settings.")
-                .setPositiveButton("I Understand",
-                    DialogInterface.OnClickListener { dialog, which ->
-
-                    })
+                .setMessage("You may be unable to use certain app features. Please grant permissions in system settings.")
+                .setPositiveButton("I Understand", DialogInterface.OnClickListener { dialog, which ->})
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show()
         }
-            // if true, return to calling method to return
-        return permissionGranted
-    }
     }
 }

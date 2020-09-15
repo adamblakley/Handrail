@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,6 +25,7 @@ import com.orienteering.handrail.dialogs.StandardDialogListener
 import com.orienteering.handrail.dialogs.ViewMarkerDialog
 import com.orienteering.handrail.image_utilities.ImageSelect
 import com.orienteering.handrail.interactors.CourseInteractor
+import com.orienteering.handrail.permissions.PermissionManager
 
 
 /**
@@ -37,8 +40,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     // map fragment to display course
     private lateinit var mapFragment: SupportMapFragment
     // dialog for control create
-    val createControlDialog: CreateControlDialog =
-        CreateControlDialog()
+    val createControlDialog: CreateControlDialog = CreateControlDialog()
     // performer
     lateinit var presenter : ICreateCourseContract.ICreateCoursePresenter
     // image select class to pick image
@@ -51,6 +53,7 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     lateinit var pattern : MutableList<PatternItem>
     // progress dialog for web queries
     lateinit var progressDialog : ProgressDialog
+    var mapsetup = false
 
     /**
      * Initialise map fragment, image select and presenter - request buttons and pattern be created and location requested
@@ -65,7 +68,6 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
         mapFragment.getMapAsync(this)
         imageSelect = ImageSelect(this, this@CreateCourseActivity)
         presenter = CreateCoursePresenter(this,CourseInteractor(),imageSelect)
-        presenter.createLocationRequest()
         definePattern()
         createButtons()
     }
@@ -134,6 +136,27 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     override fun setUpMap(){
         map.isMyLocationEnabled = true
         map.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        presenter.createLocationRequest()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        var granted = false
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.e("TAG", "RequestCode "+ requestCode.toString())
+        for (result in grantResults){
+            if (result == PackageManager.PERMISSION_GRANTED){
+                if (requestCode.equals(PermissionManager.EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE)){
+                    Toast.makeText(this@CreateCourseActivity,"Thanks, you can now add a Control. Go ahead, try it!",Toast.LENGTH_SHORT).show()
+                } else if (requestCode.equals(PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)){
+                    setUpMap()
+                }
+                granted = true
+            } else {
+                granted = false
+                PermissionManager.displayPermissionRejection(this@CreateCourseActivity)
+                break
+            }
+        }
     }
 
     /**
@@ -154,7 +177,9 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
      *
      */
     override fun onSaveLatLngSuccess(){
-        createControlDialog.show(mapFragment.childFragmentManager, "ControlDialog")
+        if (!createControlDialog.isAdded){
+            createControlDialog.show(mapFragment.childFragmentManager, "ControlDialog")
+        }
     }
 
     override fun onPolylineClick(p0: Polyline?) {
@@ -182,7 +207,6 @@ class CreateCourseActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
      *
      */
     private fun openSaveCourseDialog() {
-
         if (presenter.getCourseLength()){
             val courseDialog = CreateCourseDialog()
             courseDialog.show(mapFragment.childFragmentManager, "CreateEventDialog")

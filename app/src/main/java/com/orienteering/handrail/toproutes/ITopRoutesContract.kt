@@ -43,6 +43,13 @@ interface ITopRoutesContract {
          *
          */
         fun getControls()
+
+        /**
+         * diplay control information on supply of title
+         *
+         * @param markerTitle
+         */
+        fun controlInformation(markerTitle : String)
     }
 
     /**
@@ -87,6 +94,15 @@ interface ITopRoutesContract {
          */
         fun addControls(controlsNameLatLng : Map<String, LatLng>)
 
+        /**
+         * get control information from passed title
+         *
+         * @param nameOfControl
+         * @param noteOfControl
+         * @param positionOfControl
+         * @param imagePath
+         */
+        fun showControlInformation(nameOfControl: String?, noteOfControl: String?, positionOfControl: Int?, imagePath: String?)
     }
 
 }

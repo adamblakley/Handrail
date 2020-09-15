@@ -68,7 +68,6 @@ class ResultsAdapter(participantNames: List<String>, participantTimes: List<Stri
                 .apply(options)
                 .into(holder.image)
         }
-        holder.image.borderColor = Color.CYAN
         // set performer colour based on position
         when (position){
             0 -> holder.image.borderColor = Color.MAGENTA

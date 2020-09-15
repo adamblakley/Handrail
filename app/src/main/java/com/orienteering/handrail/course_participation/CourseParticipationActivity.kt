@@ -7,6 +7,7 @@ import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.orienteering.handrail.R
 import com.orienteering.handrail.events.EventsActivity
@@ -44,7 +46,7 @@ private val TAG: String = CourseParticipationActivity::class.java.name
  * Class responsible for recording participants event performances
  *
  */
-class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICourseParticipationContract.ICourseActivity {
+class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICourseParticipationContract.ICourseActivity, GoogleMap.OnMarkerClickListener {
 
     // presenter for retrieval and upload of data
     lateinit var presenter : ICourseParticipationContract.ICoursePresenter
@@ -205,22 +207,24 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         getEvents()
         courseMap.uiSettings.setZoomControlsEnabled(false)
         courseMap.uiSettings.setCompassEnabled(false)
+        courseMap.setOnMarkerClickListener(this)
         courseMap.uiSettings.setMyLocationButtonEnabled(false)
         courseMap.uiSettings.setAllGesturesEnabled(false)
+        // manage additional map features such as display
+        courseMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
     }
 
     /**
      * Setup map and request permissions
      */
     private fun setUpMap() {
-        // manage additional map features such as display
-        courseMap.isMyLocationEnabled = true
-        courseMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
         // check permissions for location, if so add onsuccess listener to location service
         if(PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
                 PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
-        )
+        ){
+            courseMap.isMyLocationEnabled = true
+        }
             // necessary for devices with Q or later
             if (runningQOrLater) {
                 PermissionManager.checkPermission(this,this@CourseParticipationActivity,
@@ -430,6 +434,21 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         addNextControl()
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        var granted = false
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (result in grantResults){
+            if (result == PackageManager.PERMISSION_GRANTED){
+                granted = true
+                courseMap.isMyLocationEnabled = true
+            } else {
+                granted = false
+                PermissionManager.displayPermissionRejection(this@CourseParticipationActivity)
+                break
+            }
+        }
+    }
+
     override fun onEventGetError(){
         handler.postDelayed(Runnable() { run() { progressDialog.dismiss() } },500);
         Log.e(TAG, "Error getting event")
@@ -483,6 +502,10 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
                 })
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show()
+    }
+
+    override fun onMarkerClick(p0: Marker?): Boolean {
+        return true
     }
 
 }

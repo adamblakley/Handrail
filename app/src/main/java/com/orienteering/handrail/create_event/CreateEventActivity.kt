@@ -3,6 +3,7 @@ package com.orienteering.handrail.create_event
 import android.app.*
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -147,7 +148,7 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                         eventDate = "$yearString-$monthString-$dayString"
                         textViewEventDate.text = eventDate
                     }, year, month, day)
-                datePickerDialog.datePicker.minDate=System.currentTimeMillis()
+                datePickerDialog.datePicker.minDate=(System.currentTimeMillis()+86400000)
                 datePickerDialog.show()
             }
         })
@@ -228,6 +229,20 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        var granted = false
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (result in grantResults){
+            if (result == PackageManager.PERMISSION_GRANTED){
+                granted = true
+            } else {
+                granted = false
+                PermissionManager.displayPermissionRejection(this@CreateEventActivity)
+                break
+            }
+        }
     }
 
     /**

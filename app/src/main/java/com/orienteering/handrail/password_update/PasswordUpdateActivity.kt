@@ -136,6 +136,7 @@ class PasswordUpdateActivity : AppCompatActivity(), IPasswordUpdateContract.IPas
         Log.i(TAG, "Success")
         Toast.makeText(this@PasswordUpdateActivity,"Successfully Updated.",Toast.LENGTH_SHORT).show()
         val intent = Intent(this@PasswordUpdateActivity, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }

@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -109,6 +110,21 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
             startActivity(intent)
         }
 
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        var granted = false
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (result in grantResults){
+            if (result == PackageManager.PERMISSION_GRANTED){
+                granted = true
+                imageUri=imageSelect.selectImage()
+            } else {
+                granted = false
+                PermissionManager.displayPermissionRejection(this@EditEventActivity)
+                break
+            }
+        }
     }
 
     /**
