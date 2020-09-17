@@ -243,6 +243,9 @@ class CreateEventActivity : AppCompatActivity(), ICreateEventContract.ICreateEve
                 break
             }
         }
+        if (granted==true){
+            createEventPresenter.selectImage()
+        }
     }
 
     /**

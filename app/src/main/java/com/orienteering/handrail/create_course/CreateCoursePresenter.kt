@@ -23,6 +23,15 @@ import retrofit2.Response
 // TAG for Logs
 private val TAG: String = CreateCoursePresenter::class.java.getName()
 
+/**
+ * Presenter for the create course use case
+ *
+ * @constructor
+ *
+ * @param createCourseView
+ * @param courseInteractor
+ * @param imageSelect
+ */
 class CreateCoursePresenter(createCourseView : ICreateCourseContract.ICreateCourseView, courseInteractor: CourseInteractor, imageSelect: ImageSelect) : ICreateCourseContract.ICreateCoursePresenter,
     ILocationResponder {
     var courseInteractor : CourseInteractor

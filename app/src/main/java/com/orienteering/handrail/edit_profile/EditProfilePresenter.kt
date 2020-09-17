@@ -79,14 +79,7 @@ class EditProfilePresenter(editProfileView : IEditProfileContract.IEditProfileVi
 
     override fun selectImage() {
         if (PermissionManager.checkPermission(imageSelect.activity, imageSelect.context,
-                arrayOf(
-                    android.Manifest.permission.CAMERA,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
-                PermissionManager.MULTIPLE_REQUEST_CODES
-            )
-        ) {
+                arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PermissionManager.MULTIPLE_REQUEST_CODES)) {
             imageUri=imageSelect.selectImage()
         }
     }

@@ -118,12 +118,14 @@ class EditEventActivity : AppCompatActivity(), IEditEventContract.IEditEventView
         for (result in grantResults){
             if (result == PackageManager.PERMISSION_GRANTED){
                 granted = true
-                imageUri=imageSelect.selectImage()
             } else {
                 granted = false
                 PermissionManager.displayPermissionRejection(this@EditEventActivity)
                 break
             }
+        }
+        if (granted==true){
+            imageUri=imageSelect.selectImage()
         }
     }
 

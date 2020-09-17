@@ -130,7 +130,7 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
         setContentView(R.layout.activity_course_participation)
 
         val mapCourseFragment = supportFragmentManager.findFragmentById(R.id.map_course_participation) as SupportMapFragment
-
+        PermissionManager.checkPermission(this,this@CourseParticipationActivity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
         createButtons()
 
 
@@ -219,18 +219,9 @@ class CourseParticipationActivity : AppCompatActivity(), OnMapReadyCallback ,ICo
      */
     private fun setUpMap() {
         // check permissions for location, if so add onsuccess listener to location service
-        if(PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)
-        ){
+        if(PermissionManager.checkPermission(this,this@CourseParticipationActivity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION), PermissionManager.LOCATION_PERMISSION_REQUEST_CODE)){
             courseMap.isMyLocationEnabled = true
         }
-            // necessary for devices with Q or later
-            if (runningQOrLater) {
-                PermissionManager.checkPermission(this,this@CourseParticipationActivity,
-                    arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                    PermissionManager.BACKGROUND_PERMISSION_REQUEST_CODE)
-            }
 
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
 

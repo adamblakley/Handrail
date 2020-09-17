@@ -13,19 +13,16 @@ class WelcomePresenter(welcomeView: IWelcomeContract.IWelcomeView, loginInteract
 
     private var welcomeView : IWelcomeContract.IWelcomeView?
     private var loginInteractor : LoginInteractor
-    private var checkLoginOnFinishedListener : IOnFinishedListener<Boolean>
     // provides output for logininteractor
     var loginPostOnFinishedListener : LoginPostOnFinishedListener
 
     init{
         this.welcomeView=welcomeView
         this.loginInteractor=loginInteractor
-        checkLoginOnFinishedListener = CheckLoginOnFinishedListener(welcomeView,this)
         this.loginPostOnFinishedListener = LoginPostOnFinishedListener(welcomeView,this)
     }
 
     override fun checkLogin() {
-        loginInteractor.checkLogin(checkLoginOnFinishedListener)
     }
 
     /**
@@ -60,33 +57,7 @@ class WelcomePresenter(welcomeView: IWelcomeContract.IWelcomeView, loginInteract
     }
 }
 
-class CheckLoginOnFinishedListener(welcomeView : IWelcomeContract.IWelcomeView, welcomePresenter: IWelcomeContract.IWelcomePresenter) : IOnFinishedListener<Boolean> {
 
-    private var welcomeView : IWelcomeContract.IWelcomeView = welcomeView
-    private var welcomePresenter : IWelcomeContract.IWelcomePresenter = welcomePresenter
-
-    override fun onFinished(response: Response<StatusResponseEntity<Boolean>>) {
-        if(response.isSuccessful){
-            if (response.body()?.entity != null) {
-                if (response.body()?.entity==true){
-                    welcomeView.onResponseSuccess()
-                } else if (response.code()==403) {
-                    welcomeView?.onResponseError()
-                }
-            } else {
-                welcomeView?.onResponseError()
-            }
-        } else {
-            welcomeView?.onResponseError()
-        }
-    }
-
-    override fun onFailure(t: Throwable) {
-        if (welcomeView!=null){
-            welcomeView?.onResponseFailure(t)
-        }
-    }
-}
 
 /**
  * Responsible for handling login response from interactor callback
@@ -123,7 +94,6 @@ class LoginPostOnFinishedListener(welcomeView : IWelcomeContract.IWelcomeView, w
         } else if(response.code()==403){
             loginView?.onResponseIncorrect()
         }  else {
-            Log.e("TAG","last")
             loginView?.onResponseError()
         }
     }

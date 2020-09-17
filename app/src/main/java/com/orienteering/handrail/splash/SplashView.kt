@@ -30,9 +30,7 @@ class SplashView : AppCompatActivity(), ISplashContract.ISplashView {
     }
 
     override fun onResponseFailure() {
-        handler.postDelayed(Runnable() { run() {        val intent = Intent(this@SplashView, WelcomeActivity::class.java).apply {}
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent) } },500);
+        handler.postDelayed(Runnable() {    },500);
     }
 
     override fun onresponseError() {

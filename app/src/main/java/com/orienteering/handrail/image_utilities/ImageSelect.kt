@@ -66,7 +66,7 @@ class ImageSelect(activity: Activity, context: Context){
         val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-        builder.setTitle("Choose Control Photo")
+        builder.setTitle("Choose Photo")
         builder.setItems(
             options,
             DialogInterface.OnClickListener() { dialogInterface: DialogInterface, item: Int ->

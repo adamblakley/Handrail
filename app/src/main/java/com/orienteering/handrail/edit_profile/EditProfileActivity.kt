@@ -174,12 +174,15 @@ class EditProfileActivity : AppCompatActivity(), IEditProfileContract.IEditProfi
         for (result in grantResults){
             if (result == PackageManager.PERMISSION_GRANTED){
                 granted = true
-                editProfilePresenter.selectImage()
+
             } else {
                 granted = false
                 PermissionManager.displayPermissionRejection(this@EditProfileActivity)
                 break
             }
+        }
+        if (granted==true){
+            editProfilePresenter.selectImage()
         }
     }
 

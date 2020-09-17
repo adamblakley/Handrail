@@ -53,7 +53,6 @@ class WelcomeActivity: AppCompatActivity(), IWelcomeContract.IWelcomeView {
         createButtons()
         createEditText()
         welcomePresenter = WelcomePresenter(this,LoginInteractor())
-        welcomePresenter.checkLogin()
     }
 
     /**

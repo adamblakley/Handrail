@@ -5,6 +5,13 @@ import com.orienteering.handrail.httprequests.StatusResponseEntity
 import com.orienteering.handrail.interactors.LoginInteractor
 import retrofit2.Response
 
+/**
+ * Handle splash screen logic
+ *
+ * @constructor
+ *
+ * @param view
+ */
 class SplashPresenter(view: ISplashContract.ISplashView) : ISplashContract.ISplashPresenter {
 
     var view : ISplashContract.ISplashView
